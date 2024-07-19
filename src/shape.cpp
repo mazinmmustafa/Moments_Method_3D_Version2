@@ -218,9 +218,10 @@ void shape_t::get_mesh(){
     shape_t::log_mesh();
 }
 
-void shape_t::assign_volume_properties(const complex_t eps, const int_t physical_group){
+void shape_t::assign_volume_properties(const complex_t mu, const complex_t eps, const int_t physical_group){
     for (size_t i=0; i<this->N_tetrahedrons; i++){
         if (this->tetrahedron_data[i].physical_group==physical_group){
+            this->tetrahedron_data[i].mu = mu;
             this->tetrahedron_data[i].eps = eps;
         }
     }
@@ -241,8 +242,12 @@ size_t mod_3d(const size_t a){
 }
 
 void shape_t::get_basis_functions(const real_t unit_length){
+    assert_error(this->is_edge_allocated, "no 1d shape elements were found");
+    assert_error(!this->is_basis_1d_list_allocated, "1d basis functions were already allocated");
     assert_error(this->is_triangle_allocated, "no 2d shape elements were found");
     assert_error(!this->is_basis_2d_list_allocated, "2d basis functions were already allocated");
+    assert_error(this->is_tetrahedron_allocated, "no 3d shape elements were found");
+    assert_error(!this->is_basis_3d_list_allocated, "3d basis functions were already allocated");
     file_t file;
     // 1d basis
     file.open("mesh/basis/basis_1d.txt", 'w');

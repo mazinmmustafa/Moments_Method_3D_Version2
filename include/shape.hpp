@@ -54,8 +54,8 @@ struct tetrahedron_t{
     vector_t<real_t> v[4];
     int_t physical_group=0;
     real_t volume=0.0;
-    complex_t eps=complex_t(+1.0, -0.0);
     complex_t mu=complex_t(+1.0, -0.0);
+    complex_t eps=complex_t(+1.0, -0.0);
     size_t N_adjacents=0;
     tetrahedron_t(){}
     tetrahedron_t(const vector_t<real_t> v1, const vector_t<real_t> v2, 
@@ -214,7 +214,7 @@ class shape_t{
         basis_1d_t get_basis_1d(const size_t index);
         basis_2d_t get_basis_2d(const size_t index);
         basis_3d_t get_basis_3d(const size_t index);
-        void assign_volume_properties(const complex_t eps, const int_t physical_group);
+        void assign_volume_properties(const complex_t mu, const complex_t eps, const int_t physical_group);
         void get_basis_functions(const real_t unit_length);
         void load_basis_functions();
         shape_info_t get_shape_info();
