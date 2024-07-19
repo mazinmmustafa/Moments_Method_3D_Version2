@@ -551,8 +551,10 @@ shape_info_t shape_t::get_shape_info(){
 void shape_t::set_medium(const complex_t mu, const complex_t eps, const real_t freq){
     this->mu = mu;
     this->eps = eps;
-    this->k = 2.0*pi*freq*sqrt(mu_0*eps_0)*sqrt(mu*eps);
-    this->eta = sqrt(mu_0/eps_0)*sqrt(mu/eps);
+    const real_t k_0= 2.0*pi*freq*sqrt(mu_0*eps_0);
+    const real_t eta_0=sqrt(mu_0/eps_0);
+    this->k = k_0*sqrt(mu*eps);
+    this->eta = eta_0*sqrt(mu/eps);
     assert_error(freq>0.0, "invalid frequency");
     this->freq = freq;
     this->lambda = 2.0*pi/real(this->k);
@@ -593,8 +595,8 @@ void shape_t::mesh_3d(const char *gmsh_filename, const real_t clmax){
 }
 
 void shape_t::check(){
-    // assert_error(this->is_basis_1d_list_allocated, "no 1d basis functions found");
+    assert_error(this->is_basis_1d_list_allocated, "no 1d basis functions found");
     assert_error(this->is_basis_2d_list_allocated, "no 2d basis functions found");
-    // assert_error(this->is_basis_3d_list_allocated, "no 3d basis functions found");
+    assert_error(this->is_basis_3d_list_allocated, "no 3d basis functions found");
     assert_error(this->is_medium_set, "medium paramters not set yet");
 }

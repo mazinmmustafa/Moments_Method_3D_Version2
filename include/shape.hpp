@@ -85,7 +85,7 @@ struct basis_1d_t{
     }
     void get_values(){
         this->L_m = +1.0*(e_1-r_m);
-        this->L_p = -1.0*(e_1-r_p);
+        this->L_p = +1.0*(e_1-r_p);
     }
 };
 
@@ -119,6 +119,7 @@ struct basis_2d_t{
 struct basis_3d_t{
     vector_t<real_t> r_m, r_p, e_1, e_2, e_3;
     vector_t<real_t> n, n_m1, n_m2, n_m3, n_p1, n_p2, n_p3;
+    real_t A_m1, A_m2, A_m3, A_p1, A_p2, A_p3;
     real_t A, V_m, V_p;
     vector_t<real_t> L_m1, L_m2, L_m3, L_p1, L_p2, L_p3;
     int_t physical_group_m=0, physical_group_p=0;
@@ -136,14 +137,36 @@ struct basis_3d_t{
         this->L_m1 = +1.0*(this->e_1-this->r_m);
         this->L_m2 = +1.0*(this->e_2-this->r_m);
         this->L_m3 = +1.0*(this->e_3-this->r_m);
-        this->L_p1 = -1.0*(this->e_1-this->r_p);
-        this->L_p2 = -1.0*(this->e_2-this->r_p);
-        this->L_p3 = -1.0*(this->e_3-this->r_p);
+        this->L_p1 = +1.0*(this->e_1-this->r_p);
+        this->L_p2 = +1.0*(this->e_2-this->r_p);
+        this->L_p3 = +1.0*(this->e_3-this->r_p);
         vector_t<real_t> vector;
         vector=(e_2-e_1)^(e_3-e_1);
         this->A = mag(vector)/2.0;
+        this->n = unit(vector);
+        //
+        vector=(e_2-r_m)^(e_1-r_m);
+        this->A_m1 = mag(vector)/2.0;
+        this->n_m1 = unit(vector);
+        vector=(e_3-r_m)^(e_2-r_m);
+        this->A_m2 = mag(vector)/2.0;
+        this->n_m2 = unit(vector);
+        vector=(e_1-r_m)^(e_3-r_m);
+        this->A_m3 = mag(vector)/2.0;
+        this->n_m3 = unit(vector);
+        //
+        vector=(e_1-r_p)^(e_2-r_p);
+        this->A_p1 = mag(vector)/2.0;
+        this->n_p1 = unit(vector);
+        vector=(e_2-r_p)^(e_3-r_p);
+        this->A_p2 = mag(vector)/2.0;
+        this->n_p2 = unit(vector);
+        vector=(e_3-r_p)^(e_1-r_p);
+        this->A_p3 = mag(vector)/2.0;
+        this->n_p3 = unit(vector);
+        //
         this->V_m = +1.0*(L_m1^L_m2)*L_m3/6.0;
-        this->V_p = -1.0*(L_p1^L_p2)*L_p3/6.0;
+        this->V_p = +1.0*(L_p2^L_p1)*L_p3/6.0;
     }
 };
 
