@@ -1,5 +1,13 @@
 Merge "test_shape.brep";
 //+
-Physical Surface("Surface", 1) = {1, 2, 3, 4, 5, 6};
+MeshSize {17, 18, 19, 20} = 1.0; // Thin Wire
 //+
-Physical Volume("Volume", 2) = {1};
+MeshSize {13, 14, 15, 16} = 4.0; // Patch
+//+
+Physical Curve("Curve", 1) = {23};
+//+
+Physical Surface("Surface", 1) = {4, 7, 8, 9, 10};
+//+
+Physical Volume("Volume", 1) = {1};
+//+
+
