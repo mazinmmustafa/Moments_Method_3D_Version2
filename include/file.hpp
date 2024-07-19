@@ -9,8 +9,8 @@
 class file_t{
     protected:
         FILE *file_ptr=NULL;
-        char mode='w';
-        const size_t max_length=150;
+        char mode='0';
+        const size_t max_length=200;
         char *filename=NULL;
         int is_open=false;
     public:
@@ -19,7 +19,7 @@ class file_t{
         void open(const char *filename, const char mode);
         void close();
         void write(const char *format, ...);
-        int read(const char *format, ...);
+        int_t read(const char *format, ...);
 };
 
 class binary_file_t : public file_t{

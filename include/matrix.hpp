@@ -144,6 +144,7 @@ class matrix_t{
     void lup(){
         assert_error(this->is_allocated, "matrix is not allocated");
         assert_error(this->rows==this->cols, "matrix is not square");
+        assert_error(this->is_P_allocated==false, "P is already allocated");
         size_t N=this->cols;
         type_t *ptr;
         size_t i_max, i_temp; 

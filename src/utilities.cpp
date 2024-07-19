@@ -114,23 +114,24 @@ void range_t::get_info(real_t *x_min, real_t *x_max, size_t *Ns){
 
 //
 
-timer_lib_t::timer_lib_t(){}
+stopwatch_t::stopwatch_t(){}
 
-timer_lib_t::~timer_lib_t(){}
+stopwatch_t::~stopwatch_t(){}
 
-void timer_lib_t::set(){
+void stopwatch_t::set(){
     #ifdef __windows__
     this->start = clock();
     #endif
     #ifdef __linux__
     timespec_get(&(this->start), TIME_UTC);
     #endif
+    this->elapsed = 0.0;
     this->is_set = true;
 }
 
-void timer_lib_t::unset(){
+void stopwatch_t::unset(){
     if (!this->is_set){
-        timer_lib_t::set();
+        stopwatch_t::set();
     }
     #ifdef __windows__
         this->stop = clock();
@@ -143,20 +144,20 @@ void timer_lib_t::unset(){
     #endif    
     print("elapsed time is ");
     if (this->elapsed<0.1){
-        print("%5.2f milliseconds\n", this->elapsed*1000.0);
+        print("%4.2f milliseconds\n", this->elapsed*1000.0);
     }else
     if (this->elapsed<60.0){
-        print("%5.2f seconds\n", this->elapsed);
+        print("%4.2f seconds\n", this->elapsed);
     }else
     if (this->elapsed<3600.0){
-        print("%5.2f mintues\n", this->elapsed/60.0);
+        print("%4.2f mintues\n", this->elapsed/60.0);
     }else{
-        print("%5.2f hours\n", this->elapsed/3600.0);
+        print("%4.2f hours\n", this->elapsed/3600.0);
     }
     this->is_set = false;
 }
 
-void timer_lib_t::unset_silent(){
+void stopwatch_t::unset_silent(){
     #ifdef __windows__
         this->stop = clock();
         this->elapsed = (double)(this->stop-this->start)/CLOCKS_PER_SEC;
@@ -166,28 +167,29 @@ void timer_lib_t::unset_silent(){
         this->elapsed = (double)(this->stop.tv_sec-this->start.tv_sec)+
             ((double)(this->stop.tv_nsec-this->start.tv_nsec)/1000000000L);
     #endif   
+    this->is_set = false;
 }
 
-double timer_lib_t::get_elapsed(){
+double stopwatch_t::get_elapsed(){
     return this->elapsed;
 }
 
-const real_t eps_sinc=1.0E-6;
+const real_t eps_sinc=1.0E-5;
 
-complex_t sinc(const complex_t x){
-    return abs(x)<eps_sinc ? 1.0 : sin(x)/x;
+complex_t sinc(const complex_t z){
+    return abs(z)<eps_sinc ? 1.0-z*z/6.0+z*z*z*z/120.0 : sin(z)/z;
 }
 
 real_t sinc(const real_t x){
-    return abs(x)<eps_sinc ? 1.0 : sin(x)/x;
+    return abs(x)<eps_sinc ? 1.0-x*x/6.0+x*x*x*x/120.0 : sin(x)/x;
 }
 
-complex_t sinc_dx(const complex_t x){
-    return abs(x)<eps_sinc ? 0.0 : (x*cos(x)-sin(x))/(x*x);
+complex_t sinc_dx(const complex_t z){
+    return abs(z)<eps_sinc ? -z/3.0+z*z*z/30.0-z*z*z*z*z/840.0 : (cos(z)-sinc(z))/z;
 }
 
 real_t sinc_dx(const real_t x){
-    return abs(x)<eps_sinc ? 0.0 : (x*cos(x)-sin(x))/(x*x);
+    return abs(x)<eps_sinc ? -x/3.0+x*x*x/30.0-x*x*x*x*x/840.0 : (cos(x)-sinc(x))/x;
 }
 
 real_t deg2rad(const real_t theta){

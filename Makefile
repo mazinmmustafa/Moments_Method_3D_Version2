@@ -86,7 +86,7 @@ $(ODIR)/%.o: $(SDIR)/%.f
 	$(FC) $(F77FLG) $(F77OPT) -o $@ -c $<
 
 clean:
-	@$(RM) -rv $(BDIR)/$(EXE) $(ODIR)/*.o $(DDIR)/*.d 
+	@$(RM) -rv $(BDIR)/$(EXE) $(ODIR)/*.o $(DDIR)/*.d *.txt
 
 clean_mesh:
 	@$(RM) -rv mesh/basis/* mesh/mesh/* mesh/shape.vtk

@@ -120,3 +120,7 @@ vector_t<complex_t> operator * (const vector_t<real_t> A, const complex_t a){
 vector_t<complex_t> operator * (const complex_t a, const vector_t<real_t> A){
     return vector_t<complex_t>(a*A.x, a*A.y, a*A.z);
 }
+
+vector_t<complex_t> operator / (const vector_t<real_t> A, const complex_t a){
+    return vector_t<complex_t>(A.x/a, A.y/a, A.z/a);
+}

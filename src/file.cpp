@@ -48,12 +48,12 @@ void file_t::write(const char *format, ...){
     va_end(args);
 }
 
-int file_t::read(const char *format, ...){
+int_t file_t::read(const char *format, ...){
     assert_error(this->is_open, "can't read from unopened file");
     va_list args;
     va_start(args, format);
-    int n=vfscanf(this->file_ptr, format, args);
-    assert(n>-1);
+    int_t n=vfscanf(this->file_ptr, format, args);
+    assert(n>=0);
     va_end(args);
     return feof(this->file_ptr);
 }
@@ -61,9 +61,7 @@ int file_t::read(const char *format, ...){
 //
 
 void binary_file_t::open(const char *filename, const char mode){
-    if (this->is_open){
-        binary_file_t::close();
-    }
+    assert_error(this->is_open==false, "file is already open");
     this->filename = (char*)calloc(this->max_length, sizeof(char));
     strcpy(this->filename, filename);
     assert_error(mode=='r'||mode=='w'||mode=='a', "invalid file mode");

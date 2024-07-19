@@ -62,5 +62,6 @@ vector_t<real_t> imag_v(const vector_t<complex_t> A);
 
 vector_t<complex_t> operator * (const vector_t<real_t> A, const complex_t a);
 vector_t<complex_t> operator * (const complex_t a, const vector_t<real_t> A);
+vector_t<complex_t> operator / (const vector_t<real_t> A, const complex_t a);
 
 #endif

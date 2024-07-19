@@ -1,6 +1,6 @@
 //
 #include "engine_2d.hpp"
-
+/*
 const size_t line_max=100;
 
 const real_t eps_projection=1.0E-4;
@@ -1056,3 +1056,5 @@ void engine_2d_t::export_currents(){
     print(", done!\n");
     free(triangles_list);
 }
+
+*/

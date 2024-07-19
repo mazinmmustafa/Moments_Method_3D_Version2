@@ -24,7 +24,7 @@ class range_t{
         void get_info(real_t *x_min, real_t *x_max, size_t *Ns);
 };
 
-class timer_lib_t{
+class stopwatch_t{
 private:
     int is_set=false;
     #ifdef __windows__
@@ -35,8 +35,8 @@ private:
     #endif
     double elapsed=0.0;
 public:
-    timer_lib_t();
-    ~timer_lib_t();
+    stopwatch_t();
+    ~stopwatch_t();
     void set();
     void unset();
     void unset_silent();
@@ -44,19 +44,23 @@ public:
 };
 
 // Functions
+void __assert_error(const int_t condition, const char *error_msg, 
+    const char* filename, const size_t line);
+
 void print(const char *format, ...);
 void print(const int_t n);
 void print(const size_t n);
 void print(const real_t x);
 void print(const complex_t z);
-void __assert_error(const int_t condition, const char *error_msg, 
-    const char* filename, const size_t line);
+
 void progress_bar(const size_t i, const size_t N, const char *msg);
-complex_t sinc(const complex_t x);
-real_t sinc(const real_t x);
-complex_t sinc_dx(const complex_t x);
-real_t sinc_dx(const real_t x);
+
 real_t deg2rad(const real_t theta);
 real_t rad2deg(const real_t theta);
+
+real_t sinc(const real_t x);
+complex_t sinc(const complex_t z);
+real_t sinc_dx(const real_t x);
+complex_t sinc_dx(const complex_t z);
 
 #endif

@@ -70,23 +70,26 @@ struct tetrahedral_domain_t{ // domain x, y, z
 class quadl_domain_t{
     private:
         // 1d
-        size_t k_max_1d=0;
+        size_t k_max_1d=40;
         real_t tol_1d=1.0E-4;
-        int rule_1d=1, N_1d=8;
-        real_t *x_1d=null, *w_1d=null;
-        int is_1d_allocated=false;
+        const size_t N_1d=3;
+        const real_t x_1d[3]={-sqrt(0.6), 0.0, +sqrt(0.6)};
+        const real_t w_1d[3]={5.0/9.0, 8.0/9.0, 5.0/9.0};
         // 2d
-        size_t k_max_2d=0;
+        size_t k_max_2d=20;
         real_t tol_2d=1.0E-4;
-        int rule_2d=3, N_2d=4;
-        real_t *x_2d=null, *y_2d=null, *w_2d=null;
-        int is_2d_allocated=false;
+        const size_t N_2d=4;
+        const real_t x_2d[4]={1.0/3.0, 0.6, 0.2, 0.2};
+        const real_t y_2d[4]={1.0/3.0, 0.2, 0.6, 0.2};
+        const real_t w_2d[4]={-27.0/48.0, 25.0/48.0, 25.0/48.0, 25.0/48.0};
         // 3d
-        size_t k_max_3d=0;
+        size_t k_max_3d=10;
         real_t tol_3d=1.0E-4;
-        int rule_3d=8, N_3d=16;
-        real_t *x_3d=null, *y_3d=null, *z_3d=null, *w_3d=null;
-        int is_3d_allocated=false;
+        const size_t N_3d=5;
+        const real_t x_3d[5]={1.0/4.0, 1.0/2.0, 1.0/6.0, 1.0/6.0, 1.0/6.0};
+        const real_t y_3d[5]={1.0/4.0, 1.0/6.0, 1.0/2.0, 1.0/6.0, 1.0/6.0};
+        const real_t z_3d[5]={1.0/4.0, 1.0/6.0, 1.0/6.0, 1.0/2.0, 1.0/6.0};
+        const real_t w_3d[5]={-4.0/5.0, 9.0/20.0, 9.0/20.0, 9.0/20.0, 9.0/20.0};
         //
         complex_t quadl_1d(complex_t (*func)(const complex_t, void*), 
             void *args, const line_domain_t line);
@@ -96,45 +99,22 @@ class quadl_domain_t{
             void *args, triangle_domain_t triangle);
         complex_t quadl_2d_(complex_t (*func)(const complex_t, const complex_t, void*), 
             void *args, const triangle_domain_t triangle, size_t &k, const complex_t I_p);
-        // complex_t quadl_3d(complex_t (*func)(const complex_t, const complex_t, const complex_t, void*), 
-        //     void *args, tetrahedral_domain_t tetrahedron);
-        // complex_t quadl_3d_(complex_t (*func)(const complex_t, const complex_t, const complex_t, void*), 
-        //     void *args, const tetrahedral_domain_t tetrahedron, size_t &k, const complex_t I_p);
+        complex_t quadl_3d(complex_t (*func)(const complex_t, const complex_t, const complex_t, void*), 
+            void *args, tetrahedral_domain_t tetrahedron);
+        complex_t quadl_3d_(complex_t (*func)(const complex_t, const complex_t, const complex_t, void*), 
+            void *args, const tetrahedral_domain_t tetrahedron, size_t &k, const complex_t I_p);
     public:
-        void unset_1d(){
-            if (this->is_1d_allocated){
-                free(this->x_1d);
-                free(this->w_1d);
-                this->is_1d_allocated = false;
-            }
-        }
-        void unset_2d(){
-            if (this->is_2d_allocated){
-                free(this->x_2d);
-                free(this->y_2d);
-                free(this->w_2d);
-                this->is_2d_allocated = false;
-            }
-        }
-        void unset_3d(){
-            if (this->is_3d_allocated){
-                free(this->x_3d);
-                free(this->y_3d);
-                free(this->z_3d);
-                free(this->w_3d);
-                this->is_3d_allocated = false;
-            }
-        }
         quadl_domain_t(){}
         ~quadl_domain_t(){}
         void set_1d(const size_t k_max, const real_t tol);
         void set_2d(const size_t k_max, const real_t tol);
+        void set_3d(const size_t k_max, const real_t tol);
         complex_t integral_1d(complex_t (*func)(const complex_t, void*), 
             void *args, const line_domain_t line, int &flag);
         complex_t integral_2d(complex_t (*func)(const complex_t, const complex_t, void*), 
             void *args, const triangle_domain_t triangle, int &flag);
-        // complex_t integral_3d(complex_t (*func)(const complex_t, const complex_t, const complex_t, void*), 
-        //     void *args, const tetrahedral_domain_t tetrahedron, int &flag);
+        complex_t integral_3d(complex_t (*func)(const complex_t, const complex_t, const complex_t, void*), 
+            void *args, const tetrahedral_domain_t tetrahedron, int &flag);
 };
 
 #endif
