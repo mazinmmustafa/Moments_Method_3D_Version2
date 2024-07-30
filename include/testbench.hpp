@@ -4,6 +4,7 @@
 // Libraries
 #include "lib_basic.hpp"
 #include "utilities.hpp"
+#include "math_utilities.hpp"
 #include "file.hpp"
 #include "vector.hpp"
 #include "matrix.hpp"

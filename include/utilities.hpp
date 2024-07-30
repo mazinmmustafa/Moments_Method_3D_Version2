@@ -55,12 +55,5 @@ void print(const complex_t z);
 
 void progress_bar(const size_t i, const size_t N, const char *msg);
 
-real_t deg2rad(const real_t theta);
-real_t rad2deg(const real_t theta);
-
-real_t sinc(const real_t x);
-complex_t sinc(const complex_t z);
-real_t sinc_dx(const real_t x);
-complex_t sinc_dx(const complex_t z);
 
 #endif
