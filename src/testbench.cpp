@@ -37,4 +37,12 @@ void test_utilities(){
 
 }
 
+void test_gmsh(){
+
+    // create_vertical_wire_dipole(0.47, 0.1);
+    create_sphere(0.5);
+    call_gmsh(0.2);
+
+}
+
 

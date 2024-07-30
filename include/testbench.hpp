@@ -9,11 +9,12 @@
 #include "vector.hpp"
 #include "matrix.hpp"
 #include "quadl.hpp"
-//
+#include "shape.hpp"
 
 // Definitions
 
 // Functions
 void test_utilities();
+void test_gmsh();
 
 #endif
