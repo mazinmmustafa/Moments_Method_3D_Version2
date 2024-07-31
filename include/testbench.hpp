@@ -16,5 +16,6 @@
 // Functions
 void test_utilities();
 void test_gmsh();
+void test_shape();
 
 #endif

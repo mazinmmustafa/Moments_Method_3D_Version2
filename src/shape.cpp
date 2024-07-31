@@ -1,22 +1,314 @@
 //
 #include "shape.hpp"
 
+void shape_t::clear(){
+    this->N_0d = 0;
+    this->N_1d = 0;
+    this->N_2d = 0;
+    this->N_3d = 0;
+    this->N_basis_1d = 0;
+    this->N_basis_2d = 0;
+    this->N_basis_3d = 0;
+    this->frequency = 0.0;
+    this->lambda = 0.0;
+    this->mu_b = 0.0;
+    this->eps_b = 0.0;
+    if (this->is_basis_allocated){
+        free(this->basis_1d_list);
+        this->is_basis_allocated = false;
+    }
+}
 
 
+void shape_t::get_basis_functions(const real_t clmax, const real_t metric_unit){
+    assert_error(clmax>0.0, "invalid maximum element size");
+    assert_error(metric_unit>0.0, "invalid mertic unit");
+    call_gmsh(clmax/metric_unit);
+    shape_t::load_mesh(metric_unit);
+}
+
+size_t mod_1d(const size_t a){
+    return a==1 ? 0 : 1;
+}
+
+size_t mod_2d(const size_t a){
+    size_t ans=3-(size_t)(a%3);
+    return ans==3 ? 0 : ans;
+}
+
+size_t mod_3d(const size_t a){
+    size_t ans=6-(size_t)(a%6);
+    return ans==6 ? 0 : ans;
+}
+
+void shape_t::load_mesh(const real_t metric_unit){
+    file_t file;
+    file.open("mesh/mesh/info.txt", 'r');
+    file.read("%zu %zu %zu %zu\n", &this->N_0d, &this->N_1d, &this->N_2d, &this->N_3d);
+    file.read("%d\n", &this->is_physical_specified);
+    file.close();
+    this->basis_1d_list = (basis_1d_t*)calloc(this->N_1d, sizeof(basis_1d_list));
+    assert(this->basis_1d_list!=null);
+    this->is_basis_allocated = true;
+    real_t x, y, z;
+    vector_t<real_t> v1, v2, v3, v4;
+    int_t pg;
+    // 1d bases
+    edge_t *edge_list=(edge_t*)calloc(N_1d, sizeof(edge_t));
+    assert(edge_list!=null);
+    file.open("mesh/mesh/elements_1d.txt", 'r');
+    for (size_t i=0; i<this->N_1d; i++){
+        pg = -1;
+        file.read("%lf %lf %lf", &x, &y, &z); x*=metric_unit; y*=metric_unit; z*=metric_unit;
+        x = round_m(x, -round(log10(this->lambda*this->mesh_tol)));
+        y = round_m(y, -round(log10(this->lambda*this->mesh_tol)));
+        z = round_m(z, -round(log10(this->lambda*this->mesh_tol)));
+        v1 = vector_t<real_t>(x, y, z);
+        file.read("%lf %lf %lf", &x, &y, &z); x*=metric_unit; y*=metric_unit; z*=metric_unit;
+        x = round_m(x, -round(log10(this->lambda*this->mesh_tol)));
+        y = round_m(y, -round(log10(this->lambda*this->mesh_tol)));
+        z = round_m(z, -round(log10(this->lambda*this->mesh_tol)));
+        v2 = vector_t<real_t>(x, y, z);
+        if (is_physical_specified){
+            file.read("%d", &pg);
+        }
+        edge_list[i] = edge_t(v1, v2, pg);
+    }
+    file.close();
+    file.open("mesh/basis/basis_1d.txt", 'w');
+    for (size_t i=0; i<this->N_1d; i++){
+        edge_t edge_s=edge_list[i];
+        for (size_t j=(i+1); j<this->N_1d; j++){
+            edge_t edge_d=edge_list[j];
+            size_t new_edge[1];
+            size_t index_edge_s=0, index_edge_d=0;
+            size_t counter=0;
+            for (size_t ii=0; ii<2; ii++){
+                for (size_t jj=0; jj<2; jj++){
+                    if (is_equal(edge_s.v[ii], edge_d.v[jj], this->mesh_tol*this->lambda)){
+                        new_edge[counter] = ii;
+                        index_edge_s+=ii;
+                        index_edge_d+=jj;
+                        counter++;
+                    }
+                }
+            }
+            assert_error(counter<2, "invlid mesh");
+            if (counter==1){
+                index_edge_s = mod_1d(index_edge_s);
+                index_edge_d = mod_1d(index_edge_d);
+                file.write("%21.14E %21.14E %21.14E ", 
+                    edge_s.v[index_edge_s].x,
+                    edge_s.v[index_edge_s].y,
+                    edge_s.v[index_edge_s].z);
+                file.write("%21.14E %21.14E %21.14E ", 
+                    edge_s.v[new_edge[0]].x,
+                    edge_s.v[new_edge[0]].y,
+                    edge_s.v[new_edge[0]].z);
+                file.write("%21.14E %21.14E %21.14E ", 
+                    edge_d.v[index_edge_d].x,
+                    edge_d.v[index_edge_d].y,
+                    edge_d.v[index_edge_d].z);
+                if (edge_s.physical_group==edge_d.physical_group){
+                    file.write("%d\n", edge_s.physical_group);
+                }else{
+                    file.write("%d\n", -1);
+                }
+                this->N_basis_1d++;
+            }
+        }
+    }
+    file.close();
+    free(edge_list);
+    // 2d bases
+    triangle_t *triangle_list=(triangle_t*)calloc(N_2d, sizeof(triangle_t));
+    assert(triangle_list!=null);
+    file.open("mesh/mesh/elements_2d.txt", 'r');
+    for (size_t i=0; i<this->N_2d; i++){
+        pg = -1;
+        file.read("%lf %lf %lf", &x, &y, &z); x*=metric_unit; y*=metric_unit; z*=metric_unit;
+        x = round_m(x, -round(log10(this->lambda*this->mesh_tol)));
+        y = round_m(y, -round(log10(this->lambda*this->mesh_tol)));
+        z = round_m(z, -round(log10(this->lambda*this->mesh_tol)));
+        v1 = vector_t<real_t>(x, y, z);
+        file.read("%lf %lf %lf", &x, &y, &z); x*=metric_unit; y*=metric_unit; z*=metric_unit;
+        x = round_m(x, -round(log10(this->lambda*this->mesh_tol)));
+        y = round_m(y, -round(log10(this->lambda*this->mesh_tol)));
+        z = round_m(z, -round(log10(this->lambda*this->mesh_tol)));
+        v2 = vector_t<real_t>(x, y, z);
+        file.read("%lf %lf %lf", &x, &y, &z); x*=metric_unit; y*=metric_unit; z*=metric_unit;
+        x = round_m(x, -round(log10(this->lambda*this->mesh_tol)));
+        y = round_m(y, -round(log10(this->lambda*this->mesh_tol)));
+        z = round_m(z, -round(log10(this->lambda*this->mesh_tol)));
+        v3 = vector_t<real_t>(x, y, z);
+        if (is_physical_specified){
+            file.read("%d", &pg);
+        }
+        triangle_list[i] = triangle_t(v1, v2, v3, pg);
+    }
+    file.close();
+    file.open("mesh/basis/basis_2d.txt", 'w');
+    for (size_t i=0; i<this->N_2d; i++){
+        triangle_t triangle_s=triangle_list[i];
+        for (size_t j=(i+1); j<this->N_2d; j++){
+            triangle_t triangle_d=triangle_list[j];
+            size_t new_triangle[2];
+            size_t index_triangle_s=0, index_triangle_d=0;
+            size_t counter=0;
+            for (size_t ii=0; ii<3; ii++){
+                for (size_t jj=0; jj<3; jj++){
+                    if (is_equal(triangle_s.v[ii], triangle_d.v[jj], this->mesh_tol*this->lambda)){
+                        new_triangle[counter] = ii;
+                        index_triangle_s+=ii;
+                        index_triangle_d+=jj;
+                        counter++;
+                    }
+                }
+            }
+            assert_error(counter<3, "invlid mesh");
+            if (counter==2){
+                index_triangle_s = mod_2d(index_triangle_s);
+                index_triangle_d = mod_2d(index_triangle_d);
+                file.write("%21.14E %21.14E %21.14E ", 
+                    triangle_s.v[index_triangle_s].x,
+                    triangle_s.v[index_triangle_s].y,
+                    triangle_s.v[index_triangle_s].z);
+                file.write("%21.14E %21.14E %21.14E ", 
+                    triangle_s.v[new_triangle[0]].x,
+                    triangle_s.v[new_triangle[0]].y,
+                    triangle_s.v[new_triangle[0]].z);
+                file.write("%21.14E %21.14E %21.14E ", 
+                    triangle_s.v[new_triangle[1]].x,
+                    triangle_s.v[new_triangle[1]].y,
+                    triangle_s.v[new_triangle[1]].z);
+                file.write("%21.14E %21.14E %21.14E ", 
+                    triangle_d.v[index_triangle_d].x,
+                    triangle_d.v[index_triangle_d].y,
+                    triangle_d.v[index_triangle_d].z);
+                file.write("%21.14E %21.14E %21.14E ", 
+                    triangle_s.n.x, triangle_s.n.y, triangle_s.n.z);
+                file.write("%21.14E %21.14E %21.14E ", 
+                    triangle_d.n.x, triangle_d.n.y, triangle_d.n.z);
+                if (triangle_s.physical_group==triangle_d.physical_group){
+                    file.write("%d\n", triangle_s.physical_group);
+                }else{
+                    file.write("%d\n", -1);
+                }
+                this->N_basis_2d++;
+            }
+        }
+    }
+    file.close();
+    free(triangle_list);
+    // 3d bases
+    tetrahedron_t *tetrahedron_list=(tetrahedron_t*)calloc(N_3d, sizeof(tetrahedron_t));
+    assert(tetrahedron_list!=null);
+    file.open("mesh/mesh/elements_3d.txt", 'r');
+    for (size_t i=0; i<this->N_3d; i++){
+        pg = -1;
+        file.read("%lf %lf %lf", &x, &y, &z); x*=metric_unit; y*=metric_unit; z*=metric_unit;
+        x = round_m(x, -round(log10(this->lambda*this->mesh_tol)));
+        y = round_m(y, -round(log10(this->lambda*this->mesh_tol)));
+        z = round_m(z, -round(log10(this->lambda*this->mesh_tol)));
+        v1 = vector_t<real_t>(x, y, z);
+        file.read("%lf %lf %lf", &x, &y, &z); x*=metric_unit; y*=metric_unit; z*=metric_unit;
+        x = round_m(x, -round(log10(this->lambda*this->mesh_tol)));
+        y = round_m(y, -round(log10(this->lambda*this->mesh_tol)));
+        z = round_m(z, -round(log10(this->lambda*this->mesh_tol)));
+        v2 = vector_t<real_t>(x, y, z);
+        file.read("%lf %lf %lf", &x, &y, &z); x*=metric_unit; y*=metric_unit; z*=metric_unit;
+        x = round_m(x, -round(log10(this->lambda*this->mesh_tol)));
+        y = round_m(y, -round(log10(this->lambda*this->mesh_tol)));
+        z = round_m(z, -round(log10(this->lambda*this->mesh_tol)));
+        v3 = vector_t<real_t>(x, y, z);
+        file.read("%lf %lf %lf", &x, &y, &z); x*=metric_unit; y*=metric_unit; z*=metric_unit;
+        x = round_m(x, -round(log10(this->lambda*this->mesh_tol)));
+        y = round_m(y, -round(log10(this->lambda*this->mesh_tol)));
+        z = round_m(z, -round(log10(this->lambda*this->mesh_tol)));
+        v4 = vector_t<real_t>(x, y, z);
+        if (is_physical_specified){
+            file.read("%d", &pg);
+        }
+        tetrahedron_list[i] = tetrahedron_t(v1, v2, v3, v4, pg);
+    }
+    file.close();
+    file.open("mesh/basis/basis_3d.txt", 'w');
+    for (size_t i=0; i<this->N_3d; i++){
+        tetrahedron_t tetrahedron_s=tetrahedron_list[i];
+        for (size_t j=(i+1); j<this->N_3d; j++){
+            tetrahedron_t tetrahedron_d=tetrahedron_list[j];
+            size_t new_tetrahedron[3];
+            size_t index_tetrahedron_s=0, index_tetrahedron_d=0;
+            size_t counter=0;
+            for (size_t ii=0; ii<4; ii++){
+                for (size_t jj=0; jj<4; jj++){
+                    if (is_equal(tetrahedron_s.v[ii], tetrahedron_d.v[jj], this->mesh_tol*this->lambda)){
+                        new_tetrahedron[counter] = ii;
+                        index_tetrahedron_s+=ii;
+                        index_tetrahedron_d+=jj;
+                        counter++;
+                    }
+                }
+            }
+            assert_error(counter<4, "invlid mesh");
+            if (counter==3){
+                index_tetrahedron_s = mod_3d(index_tetrahedron_s);
+                index_tetrahedron_d = mod_3d(index_tetrahedron_d);
+                file.write("%21.14E %21.14E %21.14E ", 
+                    tetrahedron_s.v[index_tetrahedron_s].x,
+                    tetrahedron_s.v[index_tetrahedron_s].y,
+                    tetrahedron_s.v[index_tetrahedron_s].z);
+                file.write("%21.14E %21.14E %21.14E ", 
+                    tetrahedron_s.v[new_tetrahedron[0]].x,
+                    tetrahedron_s.v[new_tetrahedron[0]].y,
+                    tetrahedron_s.v[new_tetrahedron[0]].z);
+                file.write("%21.14E %21.14E %21.14E ", 
+                    tetrahedron_s.v[new_tetrahedron[1]].x,
+                    tetrahedron_s.v[new_tetrahedron[1]].y,
+                    tetrahedron_s.v[new_tetrahedron[1]].z);
+                 file.write("%21.14E %21.14E %21.14E ", 
+                    tetrahedron_s.v[new_tetrahedron[2]].x,
+                    tetrahedron_s.v[new_tetrahedron[2]].y,
+                    tetrahedron_s.v[new_tetrahedron[2]].z);
+                file.write("%21.14E %21.14E %21.14E ", 
+                    tetrahedron_d.v[index_tetrahedron_d].x,
+                    tetrahedron_d.v[index_tetrahedron_d].y,
+                    tetrahedron_d.v[index_tetrahedron_d].z);
+
+                // file.write("%21.14E %21.14E %21.14E ", 
+                //     tetrahedron_d.n.x, tetrahedron_d.n.y, tetrahedron_d.n.z);
+                if (tetrahedron_s.physical_group==tetrahedron_d.physical_group){
+                    file.write("%d\n", tetrahedron_s.physical_group);
+                }else{
+                    file.write("%d\n", -1);
+                }
+                this->N_basis_3d++;
+            }
+        }
+    }
+    file.close();
+    free(tetrahedron_list);
+    //
+    print(this->N_basis_1d);
+    print(this->N_basis_2d);
+    print(this->N_basis_3d);
+}
 
 //
 void call_gmsh(const real_t tol){
     int_t max_length=200;
     char *cmd=(char*)calloc(max_length, sizeof(char));
-    sprintf(cmd, "gmsh mesh/shape.geo -3 -clmax %0.4f -format vtk -save_all -o mesh/shape.vtk", tol);
-    assert(!system(cmd));
+    print("calling gmsh...");
+    sprintf(cmd, "gmsh mesh/shape.geo -3 -clmax %0.4f -format vtk -save_all -o mesh/shape.vtk > mesh/shape_log.txt", tol);
+    assert_error(!system(cmd), "unable to mesh geometry");
+    print(", done!\n");
     #ifdef __windows__
     sprintf(cmd, "python mesh/read_vtk.py");
     #endif
     #ifdef __linux__
     sprintf(cmd, "python3 mesh/read_vtk.py");
     #endif
-    assert(!system(cmd));
+    assert_error(!system(cmd), "unable to generate mesh");
     free(cmd);
 }
 

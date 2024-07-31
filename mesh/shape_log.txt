@@ -1,0 +1,58 @@
+Info    : Running 'C:\Users\musta132\AppData\Local\Programs\Python\Python312\Scripts\gmsh.bat\..\gmsh mesh/shape.geo -3 -clmax 59.9585 -format vtk -save_all -o mesh/shape.vtk' [Gmsh 4.13.1, 1 node, max. 1 thread]
+Info    : Started on Wed Jul 31 18:03:34 2024
+Info    : Reading 'mesh/shape.geo'...
+Info    : Done reading 'mesh/shape.geo'
+Info    : Meshing 1D...
+Info    : [ 40%] Meshing curve 2 (Circle)
+Info    : Done meshing 1D (Wall 0.000552893s, CPU 0s)
+Info    : Meshing 2D...
+Info    : Meshing surface 1 (Sphere, Frontal-Delaunay)
+Info    : Done meshing 2D (Wall 0.0147889s, CPU 0s)
+Info    : Meshing 3D...
+Info    : 3D Meshing 1 volume with 1 connected component
+Info    : Tetrahedrizing 161 nodes...
+Info    : Done tetrahedrizing 169 nodes (Wall 0.00163198s, CPU 0s)
+Info    : Reconstructing mesh...
+Info    :  - Creating surface mesh
+Info    :  - Identifying boundary edges
+Info    :  - Recovering boundary
+Info    : Done reconstructing mesh (Wall 0.00336099s, CPU 0.015625s)
+Info    : Found volume 1
+Info    : It. 0 - 0 nodes created - worst tet radius 3.39099 (nodes removed 0 0)
+Info    : 3D refinement terminated (201 nodes total):
+Info    :  - 2 Delaunay cavities modified for star shapeness
+Info    :  - 0 nodes could not be inserted
+Info    :  - 655 tetrahedra created in 0.00198913 sec. (329290 tets/s)
+Info    : 0 node relocations
+Info    : Done meshing 3D (Wall 0.00920415s, CPU 0.015625s)
+Info    : Optimizing mesh...
+Info    : Optimizing volume 1
+Info    : Optimization starts (volume = 6.97801e+06) with worst = 0.113102 / average = 0.746869:
+Info    : 0.00 < quality < 0.10 :         0 elements
+Info    : 0.10 < quality < 0.20 :         3 elements
+Info    : 0.20 < quality < 0.30 :         3 elements
+Info    : 0.30 < quality < 0.40 :        11 elements
+Info    : 0.40 < quality < 0.50 :        17 elements
+Info    : 0.50 < quality < 0.60 :        30 elements
+Info    : 0.60 < quality < 0.70 :       108 elements
+Info    : 0.70 < quality < 0.80 :       260 elements
+Info    : 0.80 < quality < 0.90 :       176 elements
+Info    : 0.90 < quality < 1.00 :        47 elements
+Info    : 6 edge swaps, 2 node relocations (volume = 6.97801e+06): worst = 0.286025 / average = 0.752578 (Wall 0.000215769s, CPU 0s)
+Info    : 7 edge swaps, 2 node relocations (volume = 6.97801e+06): worst = 0.305843 / average = 0.753741 (Wall 0.000272751s, CPU 0s)
+Info    : No ill-shaped tets in the mesh :-)
+Info    : 0.00 < quality < 0.10 :         0 elements
+Info    : 0.10 < quality < 0.20 :         0 elements
+Info    : 0.20 < quality < 0.30 :         0 elements
+Info    : 0.30 < quality < 0.40 :        11 elements
+Info    : 0.40 < quality < 0.50 :        18 elements
+Info    : 0.50 < quality < 0.60 :        27 elements
+Info    : 0.60 < quality < 0.70 :       101 elements
+Info    : 0.70 < quality < 0.80 :       266 elements
+Info    : 0.80 < quality < 0.90 :       177 elements
+Info    : 0.90 < quality < 1.00 :        49 elements
+Info    : Done optimizing mesh (Wall 0.00074482s, CPU 0s)
+Info    : 201 nodes 979 elements
+Info    : Writing 'mesh/shape.vtk'...
+Info    : Done writing 'mesh/shape.vtk'
+Info    : Stopped on Wed Jul 31 18:03:34 2024 (From start: Wall 0.0395441s, CPU 0.015625s)

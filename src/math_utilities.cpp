@@ -26,3 +26,8 @@ real_t deg2rad(const real_t theta){
 real_t rad2deg(const real_t theta){
     return theta*180.0/pi;
 }
+
+real_t round_m(const real_t x, const real_t n){
+    real_t y=x*pow(10.0, n);
+    return round(y)/pow(10.0, n);
+}

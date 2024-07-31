@@ -24,7 +24,8 @@ try:
     pass
 except:
     print("error: unable to open mesh file!")
-    exit(0)
+    exit(1)
+    
 print(f"loading {filename}..., done!")
 print("extracting mesh file elements...")
 
@@ -167,6 +168,10 @@ print(f"total number of 1d elements: {counter_1D}")
 print(f"total number of 2d elements: {counter_2D}")
 print(f"total number of 3d elements: {counter_3D}")
 
+if counter_0D+counter_1D+counter_2D+counter_3D==0:
+    print("error: empty mesh file!")
+    exit(1)
+
 file = open("mesh/mesh/info.txt", "w")
 file.write(f"{counter_0D} {counter_1D} {counter_2D} {counter_3D}\n")
 if len(Entities_list)>0:
@@ -177,3 +182,5 @@ else:
 file.close()
 
 print("extracting mesh file elements was successful!")
+
+exit(0)
