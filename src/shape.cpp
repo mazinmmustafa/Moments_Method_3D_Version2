@@ -8,8 +8,15 @@
 void call_gmsh(const real_t tol){
     int_t max_length=200;
     char *cmd=(char*)calloc(max_length, sizeof(char));
-    sprintf(cmd, "gmsh mesh/shape.geo -3 -clmax %0.4f -format msh -save_all -o mesh/shape.msh", tol);
-    system(cmd);
+    sprintf(cmd, "gmsh mesh/shape.geo -3 -clmax %0.4f -format vtk -save_all -o mesh/shape.vtk", tol);
+    assert(!system(cmd));
+    #ifdef __windows__
+    sprintf(cmd, "python mesh/read_vtk.py");
+    #endif
+    #ifdef __linux__
+    sprintf(cmd, "python3 mesh/read_vtk.py");
+    #endif
+    assert(!system(cmd));
     free(cmd);
 }
 
