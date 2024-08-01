@@ -53,7 +53,7 @@ void shape_t::load_mesh(const real_t metric_unit){
     assert(this->basis_1d_list!=null);
     this->is_basis_allocated = true;
     real_t x, y, z;
-    vector_t<real_t> v1, v2, v3, v4;
+    vector_t<real_t> v1, v2, v3, v4, v5;
     int_t pg;
     // 1d bases
     edge_t *edge_list=(edge_t*)calloc(N_1d, sizeof(edge_t));
@@ -99,18 +99,12 @@ void shape_t::load_mesh(const real_t metric_unit){
             if (counter==1){
                 index_edge_s = mod_1d(index_edge_s);
                 index_edge_d = mod_1d(index_edge_d);
-                file.write("%21.14E %21.14E %21.14E ", 
-                    edge_s.v[index_edge_s].x,
-                    edge_s.v[index_edge_s].y,
-                    edge_s.v[index_edge_s].z);
-                file.write("%21.14E %21.14E %21.14E ", 
-                    edge_s.v[new_edge[0]].x,
-                    edge_s.v[new_edge[0]].y,
-                    edge_s.v[new_edge[0]].z);
-                file.write("%21.14E %21.14E %21.14E ", 
-                    edge_d.v[index_edge_d].x,
-                    edge_d.v[index_edge_d].y,
-                    edge_d.v[index_edge_d].z);
+                v1 = edge_s.v[index_edge_s];
+                v2 = edge_s.v[new_edge[0]];
+                v3 = edge_d.v[index_edge_d];
+                file.write("%21.14E %21.14E %21.14E ", v1.x, v1.y, v1.z);
+                file.write("%21.14E %21.14E %21.14E ", v2.x, v2.y, v2.z);
+                file.write("%21.14E %21.14E %21.14E ", v3.x, v3.y, v3.z);
                 if (edge_s.physical_group==edge_d.physical_group){
                     file.write("%d\n", edge_s.physical_group);
                 }else{
@@ -171,26 +165,25 @@ void shape_t::load_mesh(const real_t metric_unit){
             if (counter==2){
                 index_triangle_s = mod_2d(index_triangle_s);
                 index_triangle_d = mod_2d(index_triangle_d);
-                file.write("%21.14E %21.14E %21.14E ", 
-                    triangle_s.v[index_triangle_s].x,
-                    triangle_s.v[index_triangle_s].y,
-                    triangle_s.v[index_triangle_s].z);
-                file.write("%21.14E %21.14E %21.14E ", 
-                    triangle_s.v[new_triangle[0]].x,
-                    triangle_s.v[new_triangle[0]].y,
-                    triangle_s.v[new_triangle[0]].z);
-                file.write("%21.14E %21.14E %21.14E ", 
-                    triangle_s.v[new_triangle[1]].x,
-                    triangle_s.v[new_triangle[1]].y,
-                    triangle_s.v[new_triangle[1]].z);
-                file.write("%21.14E %21.14E %21.14E ", 
-                    triangle_d.v[index_triangle_d].x,
-                    triangle_d.v[index_triangle_d].y,
-                    triangle_d.v[index_triangle_d].z);
-                file.write("%21.14E %21.14E %21.14E ", 
-                    triangle_s.n.x, triangle_s.n.y, triangle_s.n.z);
-                file.write("%21.14E %21.14E %21.14E ", 
-                    triangle_d.n.x, triangle_d.n.y, triangle_d.n.z);
+                v1 = triangle_s.v[index_triangle_s];
+                v2 = triangle_s.v[new_triangle[0]];
+                v3 = triangle_s.v[new_triangle[1]];
+                v4 = triangle_d.v[index_triangle_d];
+                vector_t<real_t> n;
+                n = unit((v2-v1)^(v3-v1));
+                if (triangle_s.n*n<0.0){
+                    vector_t<real_t> temp=v2;
+                    v2 = v3;
+                    v3 = temp;
+                }
+                file.write("%21.14E %21.14E %21.14E ", v1.x, v1.y, v1.z);
+                file.write("%21.14E %21.14E %21.14E ", v2.x, v2.y, v2.z);
+                file.write("%21.14E %21.14E %21.14E ", v3.x, v3.y, v3.z);
+                file.write("%21.14E %21.14E %21.14E ", v4.x, v4.y, v4.z);
+                n = unit((v2-v1)^(v3-v1));
+                file.write("%21.14E %21.14E %21.14E ", n.x, n.y, n.z);
+                n = unit((v3-v4)^(v2-v4));
+                file.write("%21.14E %21.14E %21.14E ", n.x, n.y, n.z);
                 if (triangle_s.physical_group==triangle_d.physical_group){
                     file.write("%d\n", triangle_s.physical_group);
                 }else{
@@ -256,27 +249,38 @@ void shape_t::load_mesh(const real_t metric_unit){
             if (counter==3){
                 index_tetrahedron_s = mod_3d(index_tetrahedron_s);
                 index_tetrahedron_d = mod_3d(index_tetrahedron_d);
-                file.write("%21.14E %21.14E %21.14E ", 
-                    tetrahedron_s.v[index_tetrahedron_s].x,
-                    tetrahedron_s.v[index_tetrahedron_s].y,
-                    tetrahedron_s.v[index_tetrahedron_s].z);
-                file.write("%21.14E %21.14E %21.14E ", 
-                    tetrahedron_s.v[new_tetrahedron[0]].x,
-                    tetrahedron_s.v[new_tetrahedron[0]].y,
-                    tetrahedron_s.v[new_tetrahedron[0]].z);
-                file.write("%21.14E %21.14E %21.14E ", 
-                    tetrahedron_s.v[new_tetrahedron[1]].x,
-                    tetrahedron_s.v[new_tetrahedron[1]].y,
-                    tetrahedron_s.v[new_tetrahedron[1]].z);
-                 file.write("%21.14E %21.14E %21.14E ", 
-                    tetrahedron_s.v[new_tetrahedron[2]].x,
-                    tetrahedron_s.v[new_tetrahedron[2]].y,
-                    tetrahedron_s.v[new_tetrahedron[2]].z);
-                file.write("%21.14E %21.14E %21.14E ", 
-                    tetrahedron_d.v[index_tetrahedron_d].x,
-                    tetrahedron_d.v[index_tetrahedron_d].y,
-                    tetrahedron_d.v[index_tetrahedron_d].z);
-
+                v1 = tetrahedron_s.v[index_tetrahedron_s];
+                v2 = tetrahedron_s.v[new_tetrahedron[0]];
+                v3 = tetrahedron_s.v[new_tetrahedron[1]];
+                v4 = tetrahedron_s.v[new_tetrahedron[2]];
+                v5 = tetrahedron_d.v[index_tetrahedron_d];
+                vector_t<real_t> n, n_ref;
+                n = unit((v3-v1)^(v2-v1));
+                n_ref = ((v1+v2+v3)/3.0-v4);
+                if (n_ref*n<0.0){
+                    vector_t<real_t> temp=v2;
+                    v2 = v3;
+                    v3 = temp;
+                }
+                file.write("%21.14E %21.14E %21.14E ", v1.x, v1.y, v1.z);
+                file.write("%21.14E %21.14E %21.14E ", v2.x, v2.y, v2.z);
+                file.write("%21.14E %21.14E %21.14E ", v3.x, v3.y, v3.z);
+                file.write("%21.14E %21.14E %21.14E ", v4.x, v4.y, v4.z);
+                file.write("%21.14E %21.14E %21.14E ", v5.x, v5.y, v5.z);
+                n = unit((v3-v1)^(v2-v1));
+                file.write("%21.14E %21.14E %21.14E ", n.x, n.y, n.z);
+                n = unit((v2-v1)^(v4-v1));
+                file.write("%21.14E %21.14E %21.14E ", n.x, n.y, n.z);
+                n = unit((v4-v1)^(v3-v1));
+                file.write("%21.14E %21.14E %21.14E ", n.x, n.y, n.z);
+                n = unit((v2-v5)^(v3-v5));
+                file.write("%21.14E %21.14E %21.14E ", n.x, n.y, n.z);
+                n = unit((v4-v5)^(v2-v5));
+                file.write("%21.14E %21.14E %21.14E ", n.x, n.y, n.z);
+                n = unit((v3-v5)^(v4-v5));
+                file.write("%21.14E %21.14E %21.14E ", n.x, n.y, n.z);
+                n = unit((v4-v3)^(v2-v3));
+                file.write("%21.14E %21.14E %21.14E ", n.x, n.y, n.z);
                 if (tetrahedron_s.physical_group==tetrahedron_d.physical_group){
                     file.write("%d\n", tetrahedron_s.physical_group);
                 }else{

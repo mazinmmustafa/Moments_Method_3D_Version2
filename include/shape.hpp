@@ -126,12 +126,6 @@ struct tetrahedron_t{
     }
     void get_volume(){
         this->volume = ((v[1]-v[0])^(v[2]-v[0]))*(v[3]-v[0])/6.0;
-        if (this->volume<0.0){
-            vector_t<real_t> temp=this->v[1];
-            this->v[1] = this->v[2];
-            this->v[2] = temp;
-            this->volume = ((v[1]-v[0])^(v[2]-v[0]))*(v[3]-v[0])/6.0;
-        }
         assert_error(this->volume>0.0, "invalid tetrahedron");
     }
 };
@@ -154,6 +148,7 @@ struct basis_1d_t{
         this->l_p = mag(this->L_p);
     }
 };
+
 
 class shape_t{
     private:
