@@ -75,78 +75,105 @@ struct tetrahedron_t{
 };
 
 struct basis_1d_t{
-    vector_t<real_t> r_m, e, r_p;
-    vector_t<real_t> L_m, L_p;
-    real_t l_m, l_p;
+    vector_t<real_t> r_m, e[1], r_p;
+    vector_t<real_t> L_m[1], L_p[1];
     int_t pg_m, pg_p;
     basis_1d_t(){}
     basis_1d_t(const vector_t<real_t> r_m, const vector_t<real_t> e_1, const vector_t<real_t> r_p, 
         const int_t pg_m, const int_t pg_p){
         this->r_m = r_m;
-        this->e = e_1;
+        this->e[0] = e_1;
         this->r_p = r_p;
         this->pg_m = pg_m;
         this->pg_p = pg_p;
         basis_1d_t::get_parameters();
     }
     void get_parameters(){
-        this->L_m = +1.0*(this->e-this->r_m);
-        this->L_p = +1.0*(this->e-this->r_p);
-        this->l_m = mag(this->L_m);
-        this->l_p = mag(this->L_p);
-        assert_error(this->l_m>0.0&&this->l_p>0.0, "invalid 1d basis");
+        for (size_t i=0; i<1; i++){
+            this->L_m[i] = this->e[i]-this->r_m;
+            this->L_p[i] = this->e[i]-this->r_p;
+            assert_error(mag(this->L_m[i])>0.0&&mag(this->L_p[i])>0.0, "invalid 1d basis");
+        }
     }
 };
 
 struct basis_2d_t{
-    basis_1d_t b_1, b_2;
-    real_t e;
-    real_t A_m, A_p;
-    vector_t<real_t> n_m, n_p;
+    vector_t<real_t> r_m, e[2], r_p;
+    vector_t<real_t> L_m[2], L_p[2];
+    real_t L;
+    real_t A_m[1], A_p[1];
+    vector_t<real_t> n_m[1], n_p[1];
     int_t pg_m, pg_p;
     basis_2d_t(){}
     basis_2d_t(const vector_t<real_t> r_m, const vector_t<real_t> e_1, const vector_t<real_t> e_2, const vector_t<real_t> r_p,
         const int_t pg_m, const int_t pg_p){
-        this->b_1 = basis_1d_t(r_m, e_1, r_p, pg_m, pg_p);
-        this->b_2 = basis_1d_t(r_m, e_2, r_p, pg_m, pg_p);
+        this->r_m = r_m;
+        this->e[0] = e_1;
+        this->e[1] = e_2;
+        this->r_p = r_p;
         this->pg_m = pg_m;
         this->pg_p = pg_p;
         basis_2d_t::get_parameters();
     }
     void get_parameters(){
-        this->e = mag(this->b_1.e-this->b_2.e);
-        vector_t<real_t> vector_m=(this->b_1.e-this->b_1.r_m)^(this->b_2.e-this->b_2.r_m);
-        vector_t<real_t> vector_p=(this->b_2.e-this->b_2.r_p)^(this->b_1.e-this->b_1.r_p);
-        this->A_m = mag(vector_m)/2.0;
-        this->A_p = mag(vector_p)/2.0;
-        assert_error(this->A_m>0.0&&this->A_p>0.0, "invalid 2d basis");
-        this->n_m = unit(vector_m);
-        this->n_p = unit(vector_p);
+        this->L = mag(this->e[0]-this->e[1]);
+        for (size_t i=0; i<2; i++){
+            this->L_m[i] = this->e[i]-this->r_m;
+            this->L_p[i] = this->e[i]-this->r_p;
+            assert_error(mag(this->L_m[i])>0.0&&mag(this->L_p[i])>0.0, "invalid 1d basis");
+        }
+        vector_t<real_t> vector_m=-1.0*this->L_m[1]^this->L_m[0];
+        vector_t<real_t> vector_p=+1.0*this->L_p[1]^this->L_p[0];
+        this->A_m[0] = mag(vector_m)/2.0;
+        this->A_p[0] = mag(vector_p)/2.0;
+        assert_error(this->A_m[0]>0.0&&this->A_p[0]>0.0, "invalid 2d basis");
+        this->n_m[0] = unit(vector_m);
+        this->n_p[0] = unit(vector_p);
     }
 };
 
 struct basis_3d_t{
-    basis_2d_t b_1, b_2, b_3;
-    real_t a;
+    vector_t<real_t> r_m, e[3], r_p;
+    vector_t<real_t> L_m[3], L_p[3];
+    vector_t<real_t> n_m[3], n_p[3];
+    real_t A_m[3], A_p[3];
+    real_t A;
+    vector_t<real_t> nA_m, nA_p;
     real_t V_m, V_p;
-    vector_t<real_t> n;
     int_t pg_m, pg_p;
     basis_3d_t(){}
     basis_3d_t(const vector_t<real_t> r_m, const vector_t<real_t> e_1, const vector_t<real_t> e_2, 
         const vector_t<real_t> e_3, const vector_t<real_t> r_p, const int_t pg_m, const int_t pg_p){
-        this->b_1 = basis_2d_t(r_m, e_2, e_1, r_p, pg_m, pg_p);
-        this->b_2 = basis_2d_t(r_m, e_3, e_2, r_p, pg_m, pg_p);
-        this->b_3 = basis_2d_t(r_m, e_1, e_3, r_p, pg_m, pg_p);
+        this->r_m = r_m;
+        this->e[0] = e_1;
+        this->e[1] = e_2;
+        this->e[2] = e_3;
+        this->r_p = r_p;
         this->pg_m = pg_m;
         this->pg_p = pg_p;
         basis_3d_t::get_parameters();
     }
     void get_parameters(){
-        vector_t<real_t> vector=(this->b_1.b_1.e-this->b_1.b_2.e)^(this->b_2.b_1.e-this->b_1.b_2.e);
-        this->a = mag(vector)/2.0;
-        this->n = unit(vector);
-        this->V_m = ((this->b_3.b_2.e-this->b_3.b_1.e)^(this->b_1.b_1.e-this->b_1.b_2.e))*(-1.0*this->b_1.b_2.L_m)/6.0;
-        this->V_p = ((this->b_1.b_1.e-this->b_1.b_2.e)^(this->b_3.b_2.e-this->b_3.b_1.e))*(-1.0*this->b_1.b_2.L_p)/6.0;
+        vector_t<real_t> vector=(this->e[2]-this->e[0])^(this->e[1]-this->e[0]);
+        this->A = mag(vector)/2.0;
+        this->nA_m = -1.0*unit(vector);
+        this->nA_p = +1.0*unit(vector);
+        for (size_t i=0; i<3; i++){
+            this->L_m[i] = this->e[i]-this->r_m;
+            this->L_p[i] = this->e[i]-this->r_p;
+            assert_error(mag(this->L_m[i])>0.0&&mag(this->L_p[i])>0.0, "invalid 1d basis");
+        }
+        for (size_t i=0; i<3; i++){
+            vector_t<real_t> vector_m=this->L_m[(i+1)%3]^this->L_m[(i+2)%3];
+            vector_t<real_t> vector_p=this->L_p[(i+1)%3]^this->L_p[(i+2)%3];
+            this->n_m[i] = -1.0*unit(vector_m);
+            this->n_p[i] = +1.0*unit(vector_p);
+            this->A_m[i] = mag(vector_m)/2.0;
+            this->A_p[i] = mag(vector_p)/2.0;
+            assert_error(this->A_m[0]>0.0&&this->A_p[0]>0.0, "invalid 2d basis");
+        }
+        this->V_m = -1.0*((this->L_m[2]-this->L_m[0])^(this->L_m[1]-this->L_m[0]))*this->L_m[0]/6.0;
+        this->V_p = +1.0*((this->L_p[2]-this->L_p[0])^(this->L_p[1]-this->L_p[0]))*this->L_p[0]/6.0;
         assert_error(this->V_m>0.0&&this->V_p>0.0, "invalid 3d basis");
     }
 };

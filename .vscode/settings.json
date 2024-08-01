@@ -3,6 +3,7 @@
         "complex": "cpp",
         "string_view": "cpp",
         "cmath": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "numbers": "cpp"
     }
 }

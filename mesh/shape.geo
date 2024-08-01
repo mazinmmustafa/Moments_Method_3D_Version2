@@ -1,9 +1,9 @@
-Point(1) = { 0.00000000000000E+00,  0.00000000000000E+00, -2.87556031142857E-02, 1.0};
-Point(2) = { 0.00000000000000E+00,  0.00000000000000E+00, -6.11821342857143E-03, 1.0};
-Point(3) = { 0.00000000000000E+00,  0.00000000000000E+00,  6.11821342857143E-03, 1.0};
-Point(4) = { 0.00000000000000E+00,  0.00000000000000E+00,  2.87556031142857E-02, 1.0};
-Line(1) = {1, 2};
-Line(2) = {2, 3};
-Line(3) = {3, 4};
-Physical Curve("Port", 1) = {2};
-Physical Curve("Wire", 2) = {1, 3};
+Merge "cad/patch_antenna.brep";
+MeshSize {27, 28, 29, 30, 31, 32, 21, 22, 23, 24, 25, 26} = 4.0; // Patch;
+MeshSize {6, 8, 5, 7, 2, 4, 1, 3} = 6.0; // Substrate Corners
+MeshSize {15, 16, 17, 18, 19, 20, 9, 10, 11, 12, 13, 14} = 6.0; // GND Patch
+MeshSize {20, 32, 21, 9} = 4.0; // Port
+Physical Surface("Patch", 1) = {9};
+Physical Surface("GND", 2) = {8, 4};
+Physical Surface("Port", 3) = {10};
+Physical Volume("Substrate", 4) = {1};

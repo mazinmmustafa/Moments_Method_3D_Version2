@@ -56,10 +56,10 @@ void test_shape(){
     const real_t clmax=lambda/21.0;
 
     shape_t shape(freq, 1.0, 1.0);
-    create_vertical_wire_dipole(0.47*lambda, 0.1*lambda);
+    // create_vertical_wire_dipole(0.47*lambda, 0.1*lambda);
     // create_sphere(100);
-    // create_patch_antenna();
-    shape.get_basis_functions(clmax, 1.0);
+    create_patch_antenna();
+    shape.get_basis_functions(clmax, 1.0E-3);
 
     shape.clear();
 
