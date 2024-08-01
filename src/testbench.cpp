@@ -55,7 +55,7 @@ void test_shape(){
     const real_t clmax=0.2*c_0/freq;
 
     shape_t shape(freq, 1.0, 1.0);
-    create_sphere(140);
+    create_sphere(400);
     shape.get_basis_functions(clmax, mm);
 
 

@@ -79,6 +79,7 @@ void shape_t::load_mesh(const real_t metric_unit){
     file.close();
     file.open("mesh/basis/basis_1d.txt", 'w');
     for (size_t i=0; i<this->N_1d; i++){
+        progress_bar(i, this->N_1d, "creating 1d basis functions...");
         edge_t edge_s=edge_list[i];
         for (size_t j=(i+1); j<this->N_1d; j++){
             edge_t edge_d=edge_list[j];
@@ -145,6 +146,7 @@ void shape_t::load_mesh(const real_t metric_unit){
     file.close();
     file.open("mesh/basis/basis_2d.txt", 'w');
     for (size_t i=0; i<this->N_2d; i++){
+        progress_bar(i, this->N_2d, "creating 2d basis functions...");
         triangle_t triangle_s=triangle_list[i];
         for (size_t j=(i+1); j<this->N_2d; j++){
             triangle_t triangle_d=triangle_list[j];
@@ -229,6 +231,7 @@ void shape_t::load_mesh(const real_t metric_unit){
     file.close();
     file.open("mesh/basis/basis_3d.txt", 'w');
     for (size_t i=0; i<this->N_3d; i++){
+        progress_bar(i, this->N_3d, "creating 3d basis functions...");
         tetrahedron_t tetrahedron_s=tetrahedron_list[i];
         for (size_t j=(i+1); j<this->N_3d; j++){
             tetrahedron_t tetrahedron_d=tetrahedron_list[j];
@@ -293,9 +296,9 @@ void shape_t::load_mesh(const real_t metric_unit){
     file.close();
     free(tetrahedron_list);
     //
-    print(this->N_basis_1d);
-    print(this->N_basis_2d);
-    print(this->N_basis_3d);
+    print("total number of 1d basis fuctions: %d\n", this->N_basis_1d);
+    print("total number of 2d basis fuctions: %d\n", this->N_basis_2d);
+    print("total number of 3d basis fuctions: %d\n", this->N_basis_3d);
 }
 
 //
