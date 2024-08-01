@@ -15,6 +15,8 @@ void shape_t::clear(){
     this->eps_b = 0.0;
     if (this->is_basis_allocated){
         free(this->basis_1d_list);
+        // free(this->basis_2d_list);
+        // free(this->basis_3d_list);
         this->is_basis_allocated = false;
     }
 }
@@ -275,8 +277,6 @@ void shape_t::load_mesh(const real_t metric_unit){
                     tetrahedron_d.v[index_tetrahedron_d].y,
                     tetrahedron_d.v[index_tetrahedron_d].z);
 
-                // file.write("%21.14E %21.14E %21.14E ", 
-                //     tetrahedron_d.n.x, tetrahedron_d.n.y, tetrahedron_d.n.z);
                 if (tetrahedron_s.physical_group==tetrahedron_d.physical_group){
                     file.write("%d\n", tetrahedron_s.physical_group);
                 }else{
