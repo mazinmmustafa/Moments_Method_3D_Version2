@@ -114,6 +114,8 @@ for element in Elements_list:
         file_1D.write("{:21.14E} ".format(Points_list[element[2]].z))
         if len(Entities_list)>0:
             file_1D.write("{:d} ".format(Entities_list[counter_element]))
+        else:
+            file_1D.write("{:d} ".format(-1))
             pass
         file_1D.write("\n")
         counter_1D+=1
@@ -131,6 +133,8 @@ for element in Elements_list:
         file_2D.write("{:21.14E} ".format(Points_list[element[3]].z))
         if len(Entities_list)>0:
             file_2D.write("{:d} ".format(Entities_list[counter_element]))
+        else:
+            file_2D.write("{:d} ".format(-1))
             pass
         file_2D.write("\n")
         counter_2D+=1
@@ -151,6 +155,8 @@ for element in Elements_list:
         file_3D.write("{:21.14E} ".format(Points_list[element[4]].z))
         if len(Entities_list)>0:
             file_3D.write("{:d} ".format(Entities_list[counter_element]))
+        else:
+            file_3D.write("{:d} ".format(-1))
             pass
         file_3D.write("\n")
         counter_3D+=1

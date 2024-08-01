@@ -15,8 +15,8 @@ void shape_t::clear(){
     this->eps_b = 0.0;
     if (this->is_basis_allocated){
         free(this->basis_1d_list);
-        // free(this->basis_2d_list);
-        // free(this->basis_3d_list);
+        free(this->basis_2d_list);
+        free(this->basis_3d_list);
         this->is_basis_allocated = false;
     }
 }
@@ -45,13 +45,11 @@ size_t mod_3d(const size_t a){
 
 void shape_t::load_mesh(const real_t metric_unit){
     file_t file;
+    binary_file_t binary_file;
     file.open("mesh/mesh/info.txt", 'r');
     file.read("%zu %zu %zu %zu\n", &this->N_0d, &this->N_1d, &this->N_2d, &this->N_3d);
     file.read("%d\n", &this->is_physical_specified);
     file.close();
-    this->basis_1d_list = (basis_1d_t*)calloc(this->N_1d, sizeof(basis_1d_list));
-    assert(this->basis_1d_list!=null);
-    this->is_basis_allocated = true;
     real_t x, y, z;
     vector_t<real_t> v1, v2, v3, v4, v5;
     int_t pg;
@@ -71,13 +69,12 @@ void shape_t::load_mesh(const real_t metric_unit){
         y = round_m(y, -round(log10(this->lambda*this->mesh_tol)));
         z = round_m(z, -round(log10(this->lambda*this->mesh_tol)));
         v2 = vector_t<real_t>(x, y, z);
-        if (is_physical_specified){
-            file.read("%d", &pg);
-        }
+        file.read("%d", &pg);
         edge_list[i] = edge_t(v1, v2, pg);
     }
     file.close();
     file.open("mesh/basis/basis_1d.txt", 'w');
+    binary_file.open("mesh/basis/basis_1d.bin", 'w');
     for (size_t i=0; i<this->N_1d; i++){
         progress_bar(i, this->N_1d, "creating 1d basis functions...");
         edge_t edge_s=edge_list[i];
@@ -98,23 +95,27 @@ void shape_t::load_mesh(const real_t metric_unit){
             }
             assert_error(counter<2, "invlid mesh");
             if (counter==1){
-                index_edge_s = mod_1d(index_edge_s);
-                index_edge_d = mod_1d(index_edge_d);
-                v1 = edge_s.v[index_edge_s];
-                v2 = edge_s.v[new_edge[0]];
-                v3 = edge_d.v[index_edge_d];
-                file.write("%21.14E %21.14E %21.14E ", v1.x, v1.y, v1.z);
-                file.write("%21.14E %21.14E %21.14E ", v2.x, v2.y, v2.z);
-                file.write("%21.14E %21.14E %21.14E ", v3.x, v3.y, v3.z);
-                if (edge_s.physical_group==edge_d.physical_group){
-                    file.write("%d\n", edge_s.physical_group);
-                }else{
-                    file.write("%d\n", -1);
+                if ((this->is_physical_specified&&edge_s.physical_group>0&&edge_d.physical_group>0) || !this->is_physical_specified){
+                    index_edge_s = mod_1d(index_edge_s);
+                    index_edge_d = mod_1d(index_edge_d);
+                    v1 = edge_s.v[index_edge_s];
+                    v2 = edge_s.v[new_edge[0]];
+                    v3 = edge_d.v[index_edge_d];
+                    file.write("%21.14E %21.14E %21.14E ", v1.x, v1.y, v1.z);
+                    file.write("%21.14E %21.14E %21.14E ", v2.x, v2.y, v2.z);
+                    file.write("%21.14E %21.14E %21.14E ", v3.x, v3.y, v3.z);
+                    binary_file.write(&v1);
+                    binary_file.write(&v2);
+                    binary_file.write(&v3);
+                    file.write("%d %d\n", edge_s.physical_group, edge_d.physical_group);
+                    binary_file.write(&edge_s.physical_group);
+                    binary_file.write(&edge_d.physical_group);
+                    this->N_basis_1d++;
                 }
-                this->N_basis_1d++;
             }
         }
     }
+    binary_file.close();
     file.close();
     free(edge_list);
     // 2d bases
@@ -138,13 +139,12 @@ void shape_t::load_mesh(const real_t metric_unit){
         y = round_m(y, -round(log10(this->lambda*this->mesh_tol)));
         z = round_m(z, -round(log10(this->lambda*this->mesh_tol)));
         v3 = vector_t<real_t>(x, y, z);
-        if (is_physical_specified){
-            file.read("%d", &pg);
-        }
+        file.read("%d", &pg);
         triangle_list[i] = triangle_t(v1, v2, v3, pg);
     }
     file.close();
     file.open("mesh/basis/basis_2d.txt", 'w');
+    binary_file.open("mesh/basis/basis_2d.bin", 'w');
     for (size_t i=0; i<this->N_2d; i++){
         progress_bar(i, this->N_2d, "creating 2d basis functions...");
         triangle_t triangle_s=triangle_list[i];
@@ -165,36 +165,41 @@ void shape_t::load_mesh(const real_t metric_unit){
             }
             assert_error(counter<3, "invlid mesh");
             if (counter==2){
-                index_triangle_s = mod_2d(index_triangle_s);
-                index_triangle_d = mod_2d(index_triangle_d);
-                v1 = triangle_s.v[index_triangle_s];
-                v2 = triangle_s.v[new_triangle[0]];
-                v3 = triangle_s.v[new_triangle[1]];
-                v4 = triangle_d.v[index_triangle_d];
-                vector_t<real_t> n;
-                n = unit((v2-v1)^(v3-v1));
-                if (triangle_s.n*n<0.0){
-                    vector_t<real_t> temp=v2;
-                    v2 = v3;
-                    v3 = temp;
+                if ((this->is_physical_specified&&triangle_s.physical_group>0&&triangle_d.physical_group>0) || !this->is_physical_specified){
+                    index_triangle_s = mod_2d(index_triangle_s);
+                    index_triangle_d = mod_2d(index_triangle_d);
+                    v1 = triangle_s.v[index_triangle_s];
+                    v2 = triangle_s.v[new_triangle[0]];
+                    v3 = triangle_s.v[new_triangle[1]];
+                    v4 = triangle_d.v[index_triangle_d];
+                    vector_t<real_t> n;
+                    n = unit((v2-v1)^(v3-v1));
+                    if (triangle_s.n*n<0.0){
+                        vector_t<real_t> temp=v2;
+                        v2 = v3;
+                        v3 = temp;
+                    }
+                    file.write("%21.14E %21.14E %21.14E ", v1.x, v1.y, v1.z);
+                    file.write("%21.14E %21.14E %21.14E ", v2.x, v2.y, v2.z);
+                    file.write("%21.14E %21.14E %21.14E ", v3.x, v3.y, v3.z);
+                    file.write("%21.14E %21.14E %21.14E ", v4.x, v4.y, v4.z);
+                    binary_file.write(&v1);
+                    binary_file.write(&v2);
+                    binary_file.write(&v3);
+                    binary_file.write(&v4);
+                    n = unit((v2-v1)^(v3-v1));
+                    file.write("%21.14E %21.14E %21.14E ", n.x, n.y, n.z);
+                    n = unit((v3-v4)^(v2-v4));
+                    file.write("%21.14E %21.14E %21.14E ", n.x, n.y, n.z);
+                    file.write("%d %d\n", triangle_s.physical_group, triangle_d.physical_group);
+                    binary_file.write(&triangle_s.physical_group);
+                    binary_file.write(&triangle_d.physical_group);
+                    this->N_basis_2d++;
                 }
-                file.write("%21.14E %21.14E %21.14E ", v1.x, v1.y, v1.z);
-                file.write("%21.14E %21.14E %21.14E ", v2.x, v2.y, v2.z);
-                file.write("%21.14E %21.14E %21.14E ", v3.x, v3.y, v3.z);
-                file.write("%21.14E %21.14E %21.14E ", v4.x, v4.y, v4.z);
-                n = unit((v2-v1)^(v3-v1));
-                file.write("%21.14E %21.14E %21.14E ", n.x, n.y, n.z);
-                n = unit((v3-v4)^(v2-v4));
-                file.write("%21.14E %21.14E %21.14E ", n.x, n.y, n.z);
-                if (triangle_s.physical_group==triangle_d.physical_group){
-                    file.write("%d\n", triangle_s.physical_group);
-                }else{
-                    file.write("%d\n", -1);
-                }
-                this->N_basis_2d++;
             }
         }
     }
+    binary_file.close();
     file.close();
     free(triangle_list);
     // 3d bases
@@ -223,13 +228,12 @@ void shape_t::load_mesh(const real_t metric_unit){
         y = round_m(y, -round(log10(this->lambda*this->mesh_tol)));
         z = round_m(z, -round(log10(this->lambda*this->mesh_tol)));
         v4 = vector_t<real_t>(x, y, z);
-        if (is_physical_specified){
-            file.read("%d", &pg);
-        }
+        file.read("%d", &pg);
         tetrahedron_list[i] = tetrahedron_t(v1, v2, v3, v4, pg);
     }
     file.close();
     file.open("mesh/basis/basis_3d.txt", 'w');
+    binary_file.open("mesh/basis/basis_3d.bin", 'w');
     for (size_t i=0; i<this->N_3d; i++){
         progress_bar(i, this->N_3d, "creating 3d basis functions...");
         tetrahedron_t tetrahedron_s=tetrahedron_list[i];
@@ -250,55 +254,105 @@ void shape_t::load_mesh(const real_t metric_unit){
             }
             assert_error(counter<4, "invlid mesh");
             if (counter==3){
-                index_tetrahedron_s = mod_3d(index_tetrahedron_s);
-                index_tetrahedron_d = mod_3d(index_tetrahedron_d);
-                v1 = tetrahedron_s.v[index_tetrahedron_s];
-                v2 = tetrahedron_s.v[new_tetrahedron[0]];
-                v3 = tetrahedron_s.v[new_tetrahedron[1]];
-                v4 = tetrahedron_s.v[new_tetrahedron[2]];
-                v5 = tetrahedron_d.v[index_tetrahedron_d];
-                vector_t<real_t> n, n_ref;
-                n = unit((v3-v1)^(v2-v1));
-                n_ref = ((v1+v2+v3)/3.0-v4);
-                if (n_ref*n<0.0){
-                    vector_t<real_t> temp=v2;
-                    v2 = v3;
-                    v3 = temp;
+                if ((this->is_physical_specified&&tetrahedron_s.physical_group>0&&tetrahedron_d.physical_group>0) || !this->is_physical_specified){
+                    index_tetrahedron_s = mod_3d(index_tetrahedron_s);
+                    index_tetrahedron_d = mod_3d(index_tetrahedron_d);
+                    v1 = tetrahedron_s.v[index_tetrahedron_s];
+                    v2 = tetrahedron_s.v[new_tetrahedron[0]];
+                    v3 = tetrahedron_s.v[new_tetrahedron[1]];
+                    v4 = tetrahedron_s.v[new_tetrahedron[2]];
+                    v5 = tetrahedron_d.v[index_tetrahedron_d];
+                    vector_t<real_t> n, n_ref;
+                    n = unit((v3-v1)^(v2-v1));
+                    n_ref = ((v1+v2+v3)/3.0-v4);
+                    if (n_ref*n<0.0){
+                        vector_t<real_t> temp=v2;
+                        v2 = v3;
+                        v3 = temp;
+                    }
+                    file.write("%21.14E %21.14E %21.14E ", v1.x, v1.y, v1.z);
+                    file.write("%21.14E %21.14E %21.14E ", v2.x, v2.y, v2.z);
+                    file.write("%21.14E %21.14E %21.14E ", v3.x, v3.y, v3.z);
+                    file.write("%21.14E %21.14E %21.14E ", v4.x, v4.y, v4.z);
+                    file.write("%21.14E %21.14E %21.14E ", v5.x, v5.y, v5.z);
+                    binary_file.write(&v1);
+                    binary_file.write(&v2);
+                    binary_file.write(&v3);
+                    binary_file.write(&v4);
+                    binary_file.write(&v5);
+                    n = unit((v3-v1)^(v2-v1));
+                    file.write("%21.14E %21.14E %21.14E ", n.x, n.y, n.z);
+                    n = unit((v2-v1)^(v4-v1));
+                    file.write("%21.14E %21.14E %21.14E ", n.x, n.y, n.z);
+                    n = unit((v4-v1)^(v3-v1));
+                    file.write("%21.14E %21.14E %21.14E ", n.x, n.y, n.z);
+                    n = unit((v2-v5)^(v3-v5));
+                    file.write("%21.14E %21.14E %21.14E ", n.x, n.y, n.z);
+                    n = unit((v4-v5)^(v2-v5));
+                    file.write("%21.14E %21.14E %21.14E ", n.x, n.y, n.z);
+                    n = unit((v3-v5)^(v4-v5));
+                    file.write("%21.14E %21.14E %21.14E ", n.x, n.y, n.z);
+                    n = unit((v4-v3)^(v2-v3));
+                    file.write("%21.14E %21.14E %21.14E ", n.x, n.y, n.z);
+                    file.write("%d %d\n", tetrahedron_s.physical_group, tetrahedron_d.physical_group);
+                    binary_file.write(&tetrahedron_s.physical_group);
+                    binary_file.write(&tetrahedron_d.physical_group);
+                    this->N_basis_3d++;
                 }
-                file.write("%21.14E %21.14E %21.14E ", v1.x, v1.y, v1.z);
-                file.write("%21.14E %21.14E %21.14E ", v2.x, v2.y, v2.z);
-                file.write("%21.14E %21.14E %21.14E ", v3.x, v3.y, v3.z);
-                file.write("%21.14E %21.14E %21.14E ", v4.x, v4.y, v4.z);
-                file.write("%21.14E %21.14E %21.14E ", v5.x, v5.y, v5.z);
-                n = unit((v3-v1)^(v2-v1));
-                file.write("%21.14E %21.14E %21.14E ", n.x, n.y, n.z);
-                n = unit((v2-v1)^(v4-v1));
-                file.write("%21.14E %21.14E %21.14E ", n.x, n.y, n.z);
-                n = unit((v4-v1)^(v3-v1));
-                file.write("%21.14E %21.14E %21.14E ", n.x, n.y, n.z);
-                n = unit((v2-v5)^(v3-v5));
-                file.write("%21.14E %21.14E %21.14E ", n.x, n.y, n.z);
-                n = unit((v4-v5)^(v2-v5));
-                file.write("%21.14E %21.14E %21.14E ", n.x, n.y, n.z);
-                n = unit((v3-v5)^(v4-v5));
-                file.write("%21.14E %21.14E %21.14E ", n.x, n.y, n.z);
-                n = unit((v4-v3)^(v2-v3));
-                file.write("%21.14E %21.14E %21.14E ", n.x, n.y, n.z);
-                if (tetrahedron_s.physical_group==tetrahedron_d.physical_group){
-                    file.write("%d\n", tetrahedron_s.physical_group);
-                }else{
-                    file.write("%d\n", -1);
-                }
-                this->N_basis_3d++;
             }
         }
     }
+    binary_file.close();
     file.close();
     free(tetrahedron_list);
     //
     print("total number of 1d basis fuctions: %d\n", this->N_basis_1d);
     print("total number of 2d basis fuctions: %d\n", this->N_basis_2d);
     print("total number of 3d basis fuctions: %d\n", this->N_basis_3d);
+    shape_t::load_basis_functions();
+}
+
+void shape_t::load_basis_functions(){
+    this->basis_1d_list = (basis_1d_t*)calloc(this->N_basis_1d, sizeof(basis_1d_t)); assert(this->basis_1d_list!=null); 
+    this->basis_2d_list = (basis_2d_t*)calloc(this->N_basis_2d, sizeof(basis_2d_t)); assert(this->basis_2d_list!=null);
+    this->basis_3d_list = (basis_3d_t*)calloc(this->N_basis_3d, sizeof(basis_3d_t)); assert(this->basis_3d_list!=null);
+    this->is_basis_allocated = true;
+    vector_t<real_t> v1, v2, v3, v4, v5;
+    int_t pg_m, pg_p;
+    binary_file_t file;
+    file.open("mesh/basis/basis_1d.bin", 'r');
+    for (size_t i=1; i<this->N_basis_1d; i++){  
+        file.read(&v1);
+        file.read(&v2);
+        file.read(&v3);
+        file.read(&pg_m);
+        file.read(&pg_p);
+        this->basis_1d_list[i] = basis_1d_t(v1, v2, v3, pg_m, pg_p);
+    }
+    file.close();
+    file.open("mesh/basis/basis_2d.bin", 'r');
+    for (size_t i=1; i<this->N_basis_2d; i++){  
+        file.read(&v1);
+        file.read(&v2);
+        file.read(&v3);
+        file.read(&v4);
+        file.read(&pg_m);
+        file.read(&pg_p);
+        this->basis_2d_list[i] = basis_2d_t(v1, v2, v3, v4, pg_m, pg_p);
+    }
+    file.close();
+    file.open("mesh/basis/basis_3d.bin", 'r');
+    for (size_t i=1; i<this->N_basis_3d; i++){  
+        file.read(&v1);
+        file.read(&v2);
+        file.read(&v3);
+        file.read(&v4);
+        file.read(&v5);
+        file.read(&pg_m);
+        file.read(&pg_p);
+        this->basis_3d_list[i] = basis_3d_t(v1, v2, v3, v4, v5, pg_m, pg_p);
+    }
+    file.close();
 }
 
 //
@@ -344,5 +398,20 @@ void create_sphere(const real_t radius){
     file.write("Sphere(1) = {%21.14E, %21.14E, %21.14E, %21.14E, -Pi/2, Pi/2, 2*Pi};\n", 0.0, 0.0, 0.0, radius);
     file.write("Physical Surface(\"Surface\", 1) = {1};\n");
     file.write("Physical Volume(\"Volume\", 1) = {1};\n");
+    file.close();
+}
+
+void create_patch_antenna(){
+    file_t file;
+    file.open("mesh/shape.geo", 'w');
+    file.write("Merge \"cad/patch_antenna.brep\";\n");
+    file.write("MeshSize {27, 28, 29, 30, 31, 32, 21, 22, 23, 24, 25, 26} = 4.0; // Patch;\n");
+    file.write("MeshSize {6, 8, 5, 7, 2, 4, 1, 3} = 6.0; // Substrate Corners\n");
+    file.write("MeshSize {15, 16, 17, 18, 19, 20, 9, 10, 11, 12, 13, 14} = 6.0; // GND Patch\n");
+    file.write("MeshSize {20, 32, 21, 9} = 4.0; // Port\n");
+    file.write("Physical Surface(\"Patch\", 1) = {9};\n");
+    file.write("Physical Surface(\"GND\", 2) = {8, 4};\n");
+    file.write("Physical Surface(\"Port\", 3) = {10};\n");
+    file.write("Physical Volume(\"Substrate\", 4) = {1};\n");
     file.close();
 }

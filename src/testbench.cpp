@@ -51,13 +51,13 @@ void test_shape(){
     const real_t GHz=1.0E+9;
     const real_t mm=1.0E-3;
 
-    const real_t freq=1.0*GHz;
+    const real_t freq=2.45*GHz;
     const real_t clmax=0.2*c_0/freq;
 
     shape_t shape(freq, 1.0, 1.0);
-    create_sphere(400);
+    // create_sphere(100);
+    create_patch_antenna();
     shape.get_basis_functions(clmax, mm);
-
 
     shape.clear();
 
