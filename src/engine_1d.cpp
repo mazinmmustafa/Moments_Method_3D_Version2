@@ -276,3 +276,34 @@ complex_t Z_mn_1d(const basis_1d_t b_m, const basis_1d_t b_n, const complex_t k,
     phi = phi_1d(b_m, b_n, k, lambda, a, quadl, flag);
     return +j*k*eta*psi-j*(eta/k)*phi;
 }
+
+//
+
+void engine_1d_t::set(const real_t freq, const complex_t mu_b, const complex_t eps_b, 
+    const real_t clmax, const real_t unit_metric, const real_t a){
+    if (this->is_engine_set){engine_1d_t::unset();}
+    // check inputs errors
+    this->a = a;
+    this->mu_b = mu_b;
+    this->eps_b = eps_b;
+    this->lambda = (c_0/real(sqrt(mu_b*eps_b)))/freq;
+    this->k_b = 2.0*pi*freq*sqrt(mu_0*eps_0)*sqrt(mu_b*eps_b);
+    this->eta_b = sqrt(mu_0/eps_0)*sqrt(mu_b/eps_b);
+    this->shape.set(freq, mu_b, eps_b);
+    shape.get_basis_functions(clmax, unit_metric);
+
+}
+
+void engine_1d_t::unset(){
+    this->Z_mn.unset();
+    this->V_m.unset();
+    this->I_n.unset();
+    this->is_Z_mn_allocated = false;
+    this->is_V_m_allocated = false;
+    this->is_I_n_allocated = false;
+    this->is_Z_mn_calculated = false;
+    this->is_V_m_calculated = false;
+    this->is_I_n_calculated = false;
+    this->is_engine_set = false;
+    shape.clear();
+}

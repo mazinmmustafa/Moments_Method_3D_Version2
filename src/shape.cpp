@@ -9,7 +9,7 @@ void shape_t::clear(){
     this->N_basis_1d = 0;
     this->N_basis_2d = 0;
     this->N_basis_3d = 0;
-    this->frequency = 0.0;
+    this->freq = 0.0;
     this->lambda = 0.0;
     this->mu_b = 0.0;
     this->eps_b = 0.0;

@@ -103,3 +103,26 @@ void test_engine_1d(){
     
     
 }
+
+void test_engine_1d_vertical_dipole(){
+
+    // units
+    const real_t GHz=1.0E+9;
+    const real_t mm=1.0E-3;
+    // problem defintions
+    const real_t freq=2.45*GHz;
+    const real_t lambda=c_0/freq;
+    const real_t clmax=lambda/21.0;
+    const complex_t mu_b=1.0, eps_b=1.0;
+    const real_t a=1.0E-4*mm;
+    const real_t L=0.47*mm;
+
+    engine_1d_t engine;
+    engine.set(freq, mu_b, eps_b, clmax, mm, a);
+    create_vertical_wire_dipole(L, 0.1*mm);
+    
+    
+
+    engine.unset();
+    
+}

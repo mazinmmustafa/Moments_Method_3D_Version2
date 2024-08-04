@@ -182,7 +182,7 @@ class shape_t{
     private:
         int_t is_physical_specified=false;
         int_t is_basis_allocated=false;
-        real_t frequency=0.0, lambda=0.0;
+        real_t freq=0.0, lambda=0.0;
         complex_t mu_b=1.0, eps_b=1.0;
         size_t N_0d=0, N_1d=0, N_2d=0, N_3d=0;
         size_t N_basis_1d=0, N_basis_2d=0, N_basis_3d=0;
@@ -193,13 +193,19 @@ class shape_t{
         void load_mesh(const real_t metric_unit);
         void load_basis_functions();
     public:
-        shape_t(const real_t frequency, const complex_t mu_b, const complex_t eps_b){
-            assert_error(abs(mu_b)>0.0 && abs(eps_b)>0.0, "invalid background medium parameters");
-            assert_error(frequency>0.0, "invalid frequency");
-            this->frequency = frequency;
-            this->lambda = frequency/c_0;
-        }
+        shape_t(){}
         ~shape_t(){}
+        shape_t(const real_t freq, const complex_t mu_b, const complex_t eps_b){
+            shape_t::set(freq, mu_b, eps_b);
+        }
+        void set(const real_t freq, const complex_t mu_b, const complex_t eps_b){
+            assert_error(abs(mu_b)>0.0 && abs(eps_b)>0.0, "invalid background medium parameters");
+            assert_error(freq>0.0, "invalid freq");
+            this->freq = freq;
+            this->mu_b = mu_b;
+            this->eps_b = eps_b;
+            this->lambda = c_0/(real(sqrt(mu_b*eps_b))*freq);
+        }
         void get_basis_functions(const real_t clmax, const real_t metric_unit);
         void clear();
 };
