@@ -45,7 +45,6 @@ void test_gmsh(){
 
 }
 
-
 void test_shape(){
 
     const real_t GHz=1.0E+9;
@@ -63,4 +62,44 @@ void test_shape(){
 
     shape.clear();
 
+}
+
+
+void test_engine_1d(){
+
+    const complex_t eta=sqrt(mu_0/eps_0);
+    const complex_t k=2.0*pi;
+    const real_t lambda=1.0;
+    
+    const real_t a=1.0E-4;
+    const real_t L=1.0/31.0;
+
+    stopwatch_t T;
+    quadl_domain_t quadl;   
+    const size_t k_max=15;
+    const real_t tol=1.0E-4;
+    quadl.set_1d(k_max, tol);
+    complex_t ans, psi, phi;
+    int_t flag;
+    vector_t<real_t> r_m_m, r_m_p, r_n_m, r_n_p, e_m, e_n;
+    basis_1d_t b_m, b_n;
+
+    r_m_m = vector_t<real_t>(+0.0*L, +0.0*L, +0.0*L);
+    e_m = vector_t<real_t>(+0.2*L, +0.0*L, +0.0*L);
+    r_m_p = vector_t<real_t>(+0.6*L, +0.0*L, +0.0*L);
+
+    r_n_m = vector_t<real_t>(+0.6*L-0.0*L, +0.0*L, +0.0*L);
+    e_n = vector_t<real_t>(+0.2*L-0.0*L, +0.0*L, +0.0*L);
+    r_n_p = vector_t<real_t>(+0.0*L-0.0*L, +0.3*L, +0.4*L);
+
+    b_m = basis_1d_t(r_m_m, e_m, r_m_p, 1, 1);
+    b_n = basis_1d_t(r_n_m, e_n, r_n_p, 1, 1);
+    
+    T.set();
+    ans = Z_mn_1d(b_m, b_n, k, eta, lambda, a, quadl, flag);
+    T.unset();
+    print(ans);
+    print(flag);
+    
+    
 }

@@ -1,5 +1,5 @@
-#ifndef __QUADL_HPP__
-#define __QUADL_HPP__
+#ifndef __MATH_UTILITIES_HPP__
+#define __MATH_UTILITIES_HPP__
 
 // Libraries
 #include "lib_basic.hpp"

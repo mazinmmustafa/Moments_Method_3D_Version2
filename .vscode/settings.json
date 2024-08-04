@@ -4,6 +4,7 @@
         "string_view": "cpp",
         "cmath": "cpp",
         "vector": "cpp",
-        "numbers": "cpp"
+        "numbers": "cpp",
+        "random": "cpp"
     }
 }

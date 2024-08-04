@@ -6,7 +6,8 @@ int main(){
 
     // test_utilities();
     // test_gmsh();
-    test_shape();
+    // test_shape();
+    test_engine_1d();
 
     return 0;
 }

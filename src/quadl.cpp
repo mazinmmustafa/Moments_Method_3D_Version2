@@ -261,7 +261,7 @@ void quadl_domain_t::set_1d(const size_t k_max, const real_t tol){
 }
 
 complex_t quadl_domain_t::quadl_1d(complex_t (*func)(const complex_t, void*), 
-    void *args, line_domain_t line){
+    void *args, edge_domain_t line){
     real_t L=line.length();
     complex_t sum=0.0;
     real_t alpha;
@@ -273,17 +273,17 @@ complex_t quadl_domain_t::quadl_1d(complex_t (*func)(const complex_t, void*),
 }
 
 complex_t quadl_domain_t::quadl_1d_(complex_t (*func)(const complex_t, void*), 
-    void *args, const line_domain_t line, size_t &k, const complex_t I_p){
+    void *args, const edge_domain_t line, size_t &k, const complex_t I_p){
     if (k>this->k_max_1d){return I_p;}
     vector_t<real_t> m=0.5*(line.v1+line.v2);
-    line_domain_t line_1={line.v1, m};
-    line_domain_t line_2={m, line.v2};
+    edge_domain_t line_1={line.v1, m};
+    edge_domain_t line_2={m, line.v2};
     complex_t I1=quadl_domain_t::quadl_1d(func, args, line_1);
     complex_t I2=quadl_domain_t::quadl_1d(func, args, line_2);
     complex_t I_n=I1+I2;
     real_t error=abs(I_n-I_p);
     size_t k1=k, k2=k;
-    if (error>this->tol_1d*abs(I_n)&&k<this->k_max_1d&&error>0.0&&abs(I_n)>eps_zero){
+    if (error>this->tol_1d*abs(I_n)&&error>0.0&&abs(I_n)>eps_zero){
         k++;
         I1 = quadl_domain_t::quadl_1d_(func, args, line_1, ++k1, I1);
         I2 = quadl_domain_t::quadl_1d_(func, args, line_2, ++k2, I2);
@@ -294,7 +294,7 @@ complex_t quadl_domain_t::quadl_1d_(complex_t (*func)(const complex_t, void*),
 }
 
 complex_t quadl_domain_t::integral_1d(complex_t (*func)(const complex_t, void*), 
-    void *args, const line_domain_t line, int &flag){
+    void *args, const edge_domain_t line, int &flag){
     flag = false;
     size_t k=0;
     complex_t ans=quadl_domain_t::quadl_1d_(func, args, line, k, 0.0);
@@ -376,7 +376,7 @@ void quadl_domain_t::set_3d(const size_t k_max, const real_t tol){
 }
 
 complex_t quadl_domain_t::quadl_3d(complex_t (*func)(const complex_t, const complex_t, const complex_t, void*), 
-    void *args, tetrahedral_domain_t tetrahedron){
+    void *args, tetrahedron_domain_t tetrahedron){
     real_t V=tetrahedron.volume();
     complex_t sum=0.0;
     real_t alpha, beta, gamma;
@@ -399,9 +399,9 @@ complex_t quadl_domain_t::quadl_3d(complex_t (*func)(const complex_t, const comp
 }
 
 complex_t quadl_domain_t::quadl_3d_(complex_t (*func)(const complex_t, const complex_t, const complex_t, void*), 
-    void *args, const tetrahedral_domain_t tetrahedron, size_t &k, const complex_t I_p){
+    void *args, const tetrahedron_domain_t tetrahedron, size_t &k, const complex_t I_p){
     if (k>this->k_max_3d){return I_p;}
-    tetrahedral_domain_t tetrahedron_1, tetrahedron_2, tetrahedron_3, tetrahedron_4;
+    tetrahedron_domain_t tetrahedron_1, tetrahedron_2, tetrahedron_3, tetrahedron_4;
     vector_t<real_t> m23=0.5*(tetrahedron.v2+tetrahedron.v3);
     vector_t<real_t> m24=0.5*(tetrahedron.v2+tetrahedron.v4);
     vector_t<real_t> m34=0.5*(tetrahedron.v3+tetrahedron.v4);
@@ -446,7 +446,7 @@ complex_t quadl_domain_t::quadl_3d_(complex_t (*func)(const complex_t, const com
 }
 
 complex_t quadl_domain_t::integral_3d(complex_t (*func)(const complex_t, const complex_t, const complex_t, void*), 
-    void *args, const tetrahedral_domain_t tetrahedron, int &flag){
+    void *args, const tetrahedron_domain_t tetrahedron, int &flag){
     flag = false;
     size_t k=0;
     complex_t ans=quadl_domain_t::quadl_3d_(func, args, tetrahedron, k, 0.0);
