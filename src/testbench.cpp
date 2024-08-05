@@ -115,7 +115,7 @@ void test_engine_1d_vertical_dipole(){
     const complex_t V1=1.0;
     const complex_t Z1=50.0;
     const int_t pg1=1; 
-    const vector_t<real_t> p1=vector_t<real_t>(+1.0, +0.0, +0.0);
+    const vector_t<real_t> p1=vector_t<real_t>(+0.0, +0.0, +1.0);
     const real_t port_length=1.0*clmax;
 
     engine_t engine;
@@ -134,7 +134,7 @@ void test_engine_1d_vertical_dipole(){
     
 }
 
-void test_engine_1d_vertical_dipole_input_admittance(){
+void test_engine_1d_vertical_dipole_input_adminttance(){
 
     // problem defintions
     const real_t freq=c_0;

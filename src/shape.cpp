@@ -380,11 +380,11 @@ void create_vertical_wire_dipole(const real_t length, const real_t port_length, 
     assert_error(port_length<=length, "invalid port legnth");
     file_t file;
     file.open("mesh/shape.geo", 'w');
-    file.write("Point(1) = {%21.14E, %21.14E, %21.14E, 1.0};\n", -length/2, 0.0, 0.0);
-    file.write("Point(2) = {%21.14E, %21.14E, %21.14E, 1.0};\n", -port_length/2, 0.0, 0.0);
+    file.write("Point(1) = {%21.14E, %21.14E, %21.14E, 1.0};\n", 0.0, 0.0, -length/2);
+    file.write("Point(2) = {%21.14E, %21.14E, %21.14E, 1.0};\n", 0.0, 0.0, -port_length/2);
     file.write("Point(3) = {%21.14E, %21.14E, %21.14E, 1.0};\n", 0.0, 0.0, 0.0);
-    file.write("Point(4) = {%21.14E, %21.14E, %21.14E, 1.0};\n", +port_length/2, 0.0, 0.0);
-    file.write("Point(5) = {%21.14E, %21.14E, %21.14E, 1.0};\n", +length/2, 0.0, 0.0);
+    file.write("Point(4) = {%21.14E, %21.14E, %21.14E, 1.0};\n", 0.0, 0.0, +port_length/2);
+    file.write("Point(5) = {%21.14E, %21.14E, %21.14E, 1.0};\n", 0.0, 0.0, +length/2);
     file.write("MeshSize {1, 2, 3, 4, 5} = %21.14E;\n", clmax);
     file.write("Line(1) = {1, 2};\n");
     file.write("Line(2) = {2, 3};\n");
