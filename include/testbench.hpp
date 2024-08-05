@@ -11,7 +11,7 @@
 #include "quadl.hpp"
 #include "shape.hpp"
 #include "projection.hpp"
-#include "engine_1d.hpp"
+#include "engine.hpp"
 
 // Definitions
 
@@ -19,7 +19,8 @@
 void test_utilities();
 void test_gmsh();
 void test_shape();
-void test_engine_1d();
+
+void test_engine_1d_1d();
 void test_engine_1d_vertical_dipole();
 
 #endif

@@ -26,7 +26,7 @@ void print(const complex_t z){
 
 void __assert_error(const int_t condition, const char *error_msg, const char* filename, const size_t line){
     if (condition!=true){
-        print("%s:%zu: error: %s!\n", filename, line, error_msg);
+        print("\n%s:%zu: error: %s!\n", filename, line, error_msg);
         exit(1);
     }
 }

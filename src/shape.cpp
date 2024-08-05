@@ -25,7 +25,7 @@ void shape_t::clear(){
 void shape_t::get_basis_functions(const real_t clmax, const real_t metric_unit){
     assert_error(clmax>0.0, "invalid maximum element size");
     assert_error(metric_unit>0.0, "invalid mertic unit");
-    call_gmsh(clmax/metric_unit);
+    call_gmsh(clmax);
     shape_t::load_mesh(metric_unit);
 }
 
@@ -321,7 +321,7 @@ void shape_t::load_basis_functions(){
     int_t pg_m, pg_p;
     binary_file_t file;
     file.open("mesh/basis/basis_1d.bin", 'r');
-    for (size_t i=1; i<this->N_basis_1d; i++){  
+    for (size_t i=0; i<this->N_basis_1d; i++){  
         file.read(&v1);
         file.read(&v2);
         file.read(&v3);
@@ -331,7 +331,7 @@ void shape_t::load_basis_functions(){
     }
     file.close();
     file.open("mesh/basis/basis_2d.bin", 'r');
-    for (size_t i=1; i<this->N_basis_2d; i++){  
+    for (size_t i=0; i<this->N_basis_2d; i++){  
         file.read(&v1);
         file.read(&v2);
         file.read(&v3);
@@ -342,7 +342,7 @@ void shape_t::load_basis_functions(){
     }
     file.close();
     file.open("mesh/basis/basis_3d.bin", 'r');
-    for (size_t i=1; i<this->N_basis_3d; i++){  
+    for (size_t i=0; i<this->N_basis_3d; i++){  
         file.read(&v1);
         file.read(&v2);
         file.read(&v3);
@@ -357,10 +357,12 @@ void shape_t::load_basis_functions(){
 
 //
 void call_gmsh(const real_t tol){
+    assert_error(tol>0.0, "invalid mesh tolerance");
     int_t max_length=200;
     char *cmd=(char*)calloc(max_length, sizeof(char));
     print("calling gmsh...");
     sprintf(cmd, "gmsh mesh/shape.geo -3 -clmax %0.4f -format vtk -save_all -o mesh/shape.vtk > mesh/shape_log.txt", tol);
+    // sprintf(cmd, "gmsh mesh/shape.geo -3 -format vtk -save_all -o mesh/shape.vtk > mesh/shape_log");
     assert_error(!system(cmd), "unable to mesh geometry");
     print(", done!\n");
     #ifdef __windows__
@@ -373,20 +375,23 @@ void call_gmsh(const real_t tol){
     free(cmd);
 }
 
-void create_vertical_wire_dipole(const real_t length, const real_t port_length){
+void create_vertical_wire_dipole(const real_t length, const real_t port_length, const real_t clmax){
     assert_error(length>0, "invalid legnth");
     assert_error(port_length<=length, "invalid port legnth");
     file_t file;
     file.open("mesh/shape.geo", 'w');
     file.write("Point(1) = {%21.14E, %21.14E, %21.14E, 1.0};\n", 0.0, 0.0, -length/2);
     file.write("Point(2) = {%21.14E, %21.14E, %21.14E, 1.0};\n", 0.0, 0.0, -port_length/2);
-    file.write("Point(3) = {%21.14E, %21.14E, %21.14E, 1.0};\n", 0.0, 0.0, +port_length/2);
-    file.write("Point(4) = {%21.14E, %21.14E, %21.14E, 1.0};\n", 0.0, 0.0, +length/2);
+    file.write("Point(3) = {%21.14E, %21.14E, %21.14E, 1.0};\n", 0.0, 0.0, 0.0);
+    file.write("Point(4) = {%21.14E, %21.14E, %21.14E, 1.0};\n", 0.0, 0.0, +port_length/2);
+    file.write("Point(5) = {%21.14E, %21.14E, %21.14E, 1.0};\n", 0.0, 0.0, +length/2);
+    file.write("MeshSize {1, 2, 3, 4, 5} = %21.14E;\n", clmax);
     file.write("Line(1) = {1, 2};\n");
     file.write("Line(2) = {2, 3};\n");
     file.write("Line(3) = {3, 4};\n");
-    file.write("Physical Curve(\"Port\", 1) = {2};\n");
-    file.write("Physical Curve(\"Wire\", 2) = {1, 3};\n");
+    file.write("Line(4) = {4, 5};\n");
+    file.write("Physical Curve(\"Port\", 1) = {2, 3};\n");
+    file.write("Physical Curve(\"Wire\", 2) = {1, 4};\n");
     file.close();
 }
 

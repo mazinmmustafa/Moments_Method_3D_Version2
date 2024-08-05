@@ -6,6 +6,7 @@
         "vector": "cpp",
         "numbers": "cpp",
         "random": "cpp",
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "chrono": "cpp"
     }
 }

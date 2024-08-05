@@ -208,11 +208,31 @@ class shape_t{
         }
         void get_basis_functions(const real_t clmax, const real_t metric_unit);
         void clear();
+        void get_info(size_t &N_basis_1d, size_t &N_basis_2d, size_t &N_basis_3d){
+            N_basis_1d = this->N_basis_1d;
+            N_basis_2d = this->N_basis_2d;
+            N_basis_3d = this->N_basis_3d;
+        }
+        basis_1d_t get_basis_1d(const size_t i){
+            assert_error(this->is_basis_allocated, "no basis functions available");
+            assert_error(i<this->N_basis_1d, "index is out of range");
+            return this->basis_1d_list[i];
+        }
+        basis_2d_t get_basis_2d(const size_t i){
+            assert_error(this->is_basis_allocated, "no basis functions available");
+            assert_error(i<this->N_basis_2d, "index is out of range");
+            return this->basis_2d_list[i];
+        }
+        basis_3d_t get_basis_3d(const size_t i){
+            assert_error(this->is_basis_allocated, "no basis functions available");
+            assert_error(i<this->N_basis_3d, "index is out of range");
+            return this->basis_3d_list[i];
+        }
 };
 
 // Functions
 void call_gmsh(const real_t tol);
-void create_vertical_wire_dipole(const real_t length, const real_t port_length);
+void create_vertical_wire_dipole(const real_t length, const real_t port_length, const real_t clmax);
 void create_sphere(const real_t radius);
 void create_patch_antenna();
 
