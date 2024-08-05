@@ -140,27 +140,39 @@ void test_engine_1d_vertical_dipole_input_adminttance(){
     const real_t freq=c_0;
     const real_t clmax=1.0/31.0;
     const complex_t mu_b=1.0, eps_b=1.0;
-    const real_t a=5.0E-3;
-    const real_t L=0.47;
+    const real_t a=1.0E-3;
     const size_t N_ports=1;
     const complex_t V1=1.0;
     const complex_t Z1=50.0;
     const int_t pg1=1; 
     const vector_t<real_t> p1=vector_t<real_t>(+0.0, +0.0, +1.0);
-    const real_t port_length=1.0*clmax;
+
+    const size_t Ns=801;
+    const real_t L_min=0.01;
+    const real_t L_max=4.0;
+    const real_t port_length=L_min/2.0;
+    range_t L;
+    L.set(L_min, L_max, Ns);
+    L.linspace();
 
     engine_t engine;
-    create_vertical_wire_dipole(L, port_length, clmax);
-    engine.set(freq, mu_b, eps_b, clmax, 1.0, a, N_ports);
-    engine.assign_port(0, V1, Z1, pg1, p1, port_length, 0.0);
+    file_t file;
+    file.open("data/Y_in.txt", 'w');
+    for (size_t i=0; i<Ns; i++){
+        print("\nstep %zu:\n", i);
+        create_vertical_wire_dipole(L(i), port_length, clmax);
+        engine.set(freq, mu_b, eps_b, clmax, 1.0, a, N_ports);
+        engine.assign_port(0, V1, Z1, pg1, p1, port_length, 0.0);
 
-    engine.compute_Z_mn();
-    engine.compute_V_m_ports();
-    engine.compute_I_n();
-    engine.export_solutions();
+        engine.compute_Z_mn();
+        engine.compute_V_m_ports();
+        engine.compute_I_n();
+        complex_t Y_in=1.0/engine.compute_Z_in(0);
+        file.write("%21.14E %21.14E %21.14E\n", L(i), real(Y_in), imag(Y_in));
+        engine.unset();
+    }
+    file.close();
 
-    print(engine.compute_Z_in(0));
-    
-    engine.unset();
+    L.unset();
     
 }

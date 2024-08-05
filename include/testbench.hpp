@@ -22,5 +22,6 @@ void test_shape();
 
 void test_engine_1d_1d();
 void test_engine_1d_vertical_dipole();
+void test_engine_1d_vertical_dipole_input_adminttance();
 
 #endif

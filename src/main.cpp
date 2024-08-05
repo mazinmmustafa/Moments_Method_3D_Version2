@@ -8,7 +8,8 @@ int main(){
     // test_gmsh();
     // test_shape();
     // test_engine_1d_1d();
-    test_engine_1d_vertical_dipole();
+    // test_engine_1d_vertical_dipole();
+    test_engine_1d_vertical_dipole_input_adminttance();
 
     return 0;
 }
