@@ -57,7 +57,7 @@ class engine_t{
         size_t N=0;
         //
         quadl_domain_t quadl;
-        const size_t k_max_1d=15; const real_t tol_1d=1.0E-4;
+        const size_t k_max_1d=15; const real_t tol_1d=1.0E-2;
         const size_t k_max_2d=15; const real_t tol_2d=1.0E-4;
         const size_t k_max_3d=15; const real_t tol_3d=1.0E-4;
         //
