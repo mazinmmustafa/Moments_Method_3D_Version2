@@ -49,7 +49,10 @@ complex_t phi_1d_1d(const basis_1d_t b_m, const basis_1d_t b_n, const complex_t 
     complex_t I1=0.0, I2=0.0;
     edge_domain_t edge={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(+1.0, 0.0, 0.0)};
     I1 = args.quadl.integral_1d(phi_1d_1d_singular_integrand_outer, &args, edge, flag);
+    assert_error(!flag, "no convergence");
     I2 = args.quadl.integral_1d(phi_1d_1d_integrand_1, &args, edge, flag);
+    assert_error(!flag, "no convergence");
+    // print(I1+I2);
     return I1+I2;
 }
 

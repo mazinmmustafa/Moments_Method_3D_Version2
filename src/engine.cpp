@@ -5,6 +5,8 @@ void engine_t::set(const real_t freq, const complex_t mu_b, const complex_t eps_
     const real_t clmax, const real_t unit_metric, const real_t a, const size_t N_ports){
     if (this->is_engine_set){engine_t::unset();}
     // check inputs errors
+    assert_error(freq>0.0, "invalid frequency");
+    this->freq = freq;
     this->a = a*unit_metric;
     this->mu_b = mu_b;
     this->eps_b = eps_b;
@@ -86,6 +88,22 @@ void engine_t::compute_Z_mn(){
                 sprintf(msg, "LL: Z_mn (%zu, %zu)", m, n);
                 progress_bar(count, this->N_basis_1d*(this->N_basis_1d+1)/2, msg);
                 Z = Z_mn_1d_1d(b_m, b_n, k_b, eta_b, lambda, a, quadl, flag);
+                if (flag){
+                    print(k_b);
+                    print(eta_b);
+                    print(lambda);
+                    print(freq);
+                    print(a);
+                    print(m);
+                    print(n);
+                    print(b_m.r_m);
+                    print(b_m.e[0]);
+                    print(b_m.r_p);
+                    print(b_n.r_m);
+                    print(b_n.e[0]);
+                    print(b_n.r_p);
+                    print(Z);
+                }
                 if (m==n){
                     for (size_t k=0; k<this->N_ports; k++){
                         if ((b_m.pg_m==b_m.pg_p)&&(b_m.pg_m==this->port_list[k].pg)){

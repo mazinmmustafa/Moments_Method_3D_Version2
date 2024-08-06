@@ -13,6 +13,8 @@ complex_t Z_mn_1d_1d(const basis_1d_t b_m, const basis_1d_t b_n, const complex_t
     const complex_t j=complex_t(0.0, 1.0);
     complex_t psi, phi;
     psi = psi_1d_1d(b_m, b_n, k, lambda, a, quadl, flag);
+    if (flag){print("psi\n");}
     phi = phi_1d_1d(b_m, b_n, k, lambda, a, quadl, flag);
+    if (flag){print("phi\n");}
     return +j*k*eta*psi-j*(eta/k)*phi;
 }

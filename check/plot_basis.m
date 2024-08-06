@@ -1,12 +1,12 @@
 close all; clear; clc;
 %%
 data_1d         =   load("../mesh/basis/basis_1d.txt");
-##data_2d         =   load("../mesh/basis/basis_2d.txt");
-##data_3d         =   load("../mesh/basis/basis_3d.txt");
+% data_2d         =   load("../mesh/basis/basis_2d.txt");
+% data_3d         =   load("../mesh/basis/basis_3d.txt");
 %%
 [N1d, ~]        =   size(data_1d);
-##[N2d, ~]        =   size(data_2d);
-##[N3d, ~]        =   size(data_3d);
+% [N2d, ~]        =   size(data_2d);
+% [N3d, ~]        =   size(data_3d);
 %%
 figure()
 axis equal

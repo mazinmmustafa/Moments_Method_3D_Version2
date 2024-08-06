@@ -68,11 +68,11 @@ void test_shape(){
 void test_engine_1d_1d(){
 
     const complex_t eta=sqrt(mu_0/eps_0);
-    const complex_t k=2.0*pi;
-    const real_t lambda=1.0;
+    // const complex_t k=2.0*pi;
+    // const real_t lambda=1.0;
     
-    const real_t a=1.0E-4;
-    const real_t L=1.0/11.0;
+    // const real_t a=1.0E-4;
+    // const real_t L=1.0/11.0;
 
     stopwatch_t T;
     quadl_domain_t quadl;   
@@ -84,22 +84,56 @@ void test_engine_1d_1d(){
     vector_t<real_t> r_m_m, r_m_p, r_n_m, r_n_p, e_m, e_n;
     basis_1d_t b_m, b_n;
 
-    r_m_m = vector_t<real_t>(+0.0*L, +0.0*L, +0.0*L);
-    e_m = vector_t<real_t>(+0.2*L, +0.0*L, +0.0*L);
-    r_m_p = vector_t<real_t>(+0.6*L, +0.0*L, +0.0*L);
+    // r_m_m = vector_t<real_t>(+0.0*L, +0.0*L, +0.0*L);
+    // e_m = vector_t<real_t>(+0.2*L, +0.0*L, +0.0*L);
+    // r_m_p = vector_t<real_t>(+0.6*L, +0.0*L, +0.0*L);
 
-    r_n_m = vector_t<real_t>(+0.0*L, +0.0*L, +0.0*L);
-    e_n = vector_t<real_t>(+0.2*L, +0.0*L, +0.0*L);
-    r_n_p = vector_t<real_t>(+0.6*L, +0.0*L, +0.0*L);
+    // r_n_m = vector_t<real_t>(+0.0*L, +0.0*L, +0.0*L);
+    // e_n = vector_t<real_t>(+0.2*L, +0.0*L, +0.0*L);
+    // r_n_p = vector_t<real_t>(+0.6*L, +0.0*L, +0.0*L);
+    
+    // b_m = basis_1d_t(r_m_m, e_m, r_m_p, 1, 1);
+    // b_n = basis_1d_t(r_n_m, e_n, r_n_p, 1, 1);
+    
+    //
+
+    real_t lambda=c_0/1.0E8;
+    const complex_t k=2.0*pi/lambda;
+    
+    // real_t lambda=1.0;
+    // const complex_t k=2.0*pi;
+
+    const real_t a=1.0E-3;
+
+    r_m_m = vector_t<real_t>(1.25000000000000E+00, -1.50000000000000E-02,  0.00000000000000E+00);
+    e_m   = vector_t<real_t>(1.25000000000000E+00,  0.00000000000000E+00,  0.00000000000000E+00);
+    r_m_p = vector_t<real_t>(1.25000000000000E+00,  1.50000000000000E-02,  0.00000000000000E+00);
+
+    r_n_m = vector_t<real_t>(-1.25000000000000E+00, -1.50000000000000E-02,  0.00000000000000E+00);
+    e_n   = vector_t<real_t>(-1.11111111000000E+00, -1.50000000000000E-02,  0.00000000000000E+00);
+    r_n_p = vector_t<real_t>(-9.72222220000000E-01, -1.50000000000000E-02,  0.00000000000000E+00);
+
+    // r_m_m = vector_t<real_t>(+0.20, -1.6, 0.0);
+    // e_m   = vector_t<real_t>(+0.40, -1.2, 0.0);
+    // r_m_p = vector_t<real_t>(+0.60, -0.0, 0.0);
+
+    // r_n_m = vector_t<real_t>(+0.20, -1.6, 0.0);
+    // e_n   = vector_t<real_t>(+0.40, -1.2, 0.0);
+    // r_n_p = vector_t<real_t>(+0.60, -0.0, 0.0);
 
     b_m = basis_1d_t(r_m_m, e_m, r_m_p, 1, 1);
     b_n = basis_1d_t(r_n_m, e_n, r_n_p, 1, 1);
+    //
+
     
+
     T.set();
-    ans = Z_mn_1d_1d(b_m, b_n, k, eta, lambda, a, quadl, flag);
+    print(psi_1d_1d(b_m, b_n, k, lambda, a, quadl, flag)); print(flag);
+    print(phi_1d_1d(b_m, b_n, k, lambda, a, quadl, flag)); print(flag);
+    print(Z_mn_1d_1d(b_m, b_n, k, eta, lambda, a, quadl, flag)); print(flag);
     T.unset();
-    print(ans);
-    print(flag);
+
+    exit(0);
     
 }
 
@@ -232,7 +266,7 @@ void test_engine_1d_vertical_dipole_mutual_impedance(){
 
 void test_engine_1d_transmission_line_S_parameters(){
 
-    const real_t MHz=1.0E6;
+    const real_t MHz=1.0E+6;
     const real_t cm=1.0E-2;
     const real_t mm=1.0E-3;
 
@@ -249,12 +283,12 @@ void test_engine_1d_transmission_line_S_parameters(){
     const vector_t<real_t> p2=vector_t<real_t>(+0.0, +1.0, +0.0);
     const complex_t Z_0=50.0;
 
-    const size_t Ns=101;
-    const real_t freq_min=1.0*MHz;
+    const size_t Ns=31;
+    const real_t freq_min=100.0*MHz;
     const real_t freq_max=200.0*MHz;
     range_t freq;
     freq.set(freq_min, freq_max, Ns);
-    freq.logspace();
+    freq.linspace();
 
     engine_t engine;
     file_t file;

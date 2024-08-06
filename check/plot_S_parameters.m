@@ -25,4 +25,3 @@ hold on
 plot(data(:, 1), 20*log10(abs(S(:, 1, 1))))
 plot(data(:, 1), 20*log10(abs(S(:, 2, 1))))
 hold off
-set(gca, 'XScale', 'log')
