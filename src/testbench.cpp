@@ -147,10 +147,10 @@ void test_engine_1d_vertical_dipole_input_adminttance(){
     const int_t pg1=1; 
     const vector_t<real_t> p1=vector_t<real_t>(+0.0, +0.0, +1.0);
 
-    const size_t Ns=801;
-    const real_t L_min=0.01;
-    const real_t L_max=4.0;
-    const real_t port_length=L_min/2.0;
+    const size_t Ns=101;
+    const real_t L_min=0.05;
+    const real_t L_max=2.0;
+    const real_t port_length=clmax;
     range_t L;
     L.set(L_min, L_max, Ns);
     L.linspace();
@@ -174,5 +174,116 @@ void test_engine_1d_vertical_dipole_input_adminttance(){
     file.close();
 
     L.unset();
+    
+}
+
+void test_engine_1d_vertical_dipole_mutual_impedance(){
+
+    // problem defintions
+    const real_t freq=c_0;
+    const real_t clmax=1.0/21.0;
+    const complex_t mu_b=1.0, eps_b=1.0;
+    const real_t L=0.5;
+    const real_t a=1.0E-5;
+    const size_t N_ports=2;
+    const int_t pg1=1; 
+    const int_t pg2=2; 
+    const vector_t<real_t> p1=vector_t<real_t>(+0.0, +0.0, +1.0);
+    const vector_t<real_t> p2=vector_t<real_t>(+0.0, +0.0, +1.0);
+    const complex_t Z_0=50.0;
+
+    const size_t Ns=101;
+    const real_t d_min=0.01;
+    const real_t d_max=3.0;
+    const real_t port_length=clmax;
+    range_t d;
+    d.set(d_min, d_max, Ns);
+    d.linspace();
+
+    engine_t engine;
+    file_t file;
+    file.open("data/S_matrix.txt", 'w');
+    matrix_t<complex_t> S_matrix;
+    S_matrix.set(N_ports, N_ports);
+    for (size_t i=0; i<Ns; i++){
+        print("\nstep %zu:\n", i);
+        create_two_vertical_wire_dipole(L, port_length, d(i), clmax);
+        engine.set(freq, mu_b, eps_b, clmax, 1.0, a, N_ports);
+        engine.assign_port(0, +0.0, +0.0, pg1, p1, port_length, 0.0);
+        engine.assign_port(1, +0.0, +0.0, pg2, p2, port_length, 0.0);
+
+        engine.compute_Z_mn();
+        engine.compute_S_matrix(S_matrix, Z_0);
+        file.write("%21.14E ", d(i));
+        for (size_t m=0; m<N_ports; m++){
+            for (size_t n=0; n<N_ports; n++){
+                file.write("%21.14E %21.14E ", real(S_matrix(m, n)), imag(S_matrix(m, n)));
+            }
+        }
+        file.write("\n");
+        engine.unset();
+    }
+    S_matrix.unset();
+    file.close();
+
+    d.unset();
+    
+}
+
+void test_engine_1d_transmission_line_S_parameters(){
+
+    const real_t MHz=1.0E6;
+    const real_t cm=1.0E-2;
+    const real_t mm=1.0E-3;
+
+    // problem defintions
+    real_t clmax, lambda;
+    const complex_t mu_b=1.0, eps_b=1.0;
+    const real_t L=250.0*cm;
+    const real_t S=3.0*cm;
+    const real_t a=1.0*mm;
+    const size_t N_ports=2;
+    const int_t pg1=1; 
+    const int_t pg2=2; 
+    const vector_t<real_t> p1=vector_t<real_t>(+0.0, +1.0, +0.0);
+    const vector_t<real_t> p2=vector_t<real_t>(+0.0, +1.0, +0.0);
+    const complex_t Z_0=50.0;
+
+    const size_t Ns=101;
+    const real_t freq_min=1.0*MHz;
+    const real_t freq_max=200.0*MHz;
+    range_t freq;
+    freq.set(freq_min, freq_max, Ns);
+    freq.logspace();
+
+    engine_t engine;
+    file_t file;
+    file.open("data/S_matrix.txt", 'w');
+    matrix_t<complex_t> S_matrix;
+    S_matrix.set(N_ports, N_ports);
+    for (size_t i=0; i<Ns; i++){
+        print("\nstep %zu:\n", i);
+        lambda = c_0/freq(i);
+        clmax = lambda/21.0;
+        create_transmission_line(L, S, clmax);
+        engine.set(freq(i), mu_b, eps_b, clmax, 1.0, a, N_ports);
+        engine.assign_port(0, +0.0, +0.0, pg1, p1, 0.0, 0.0);
+        engine.assign_port(1, +0.0, +0.0, pg2, p2, 0.0, 0.0);
+
+        engine.compute_Z_mn();
+        engine.compute_S_matrix(S_matrix, Z_0);
+        file.write("%21.14E ", freq(i));
+        for (size_t m=0; m<N_ports; m++){
+            for (size_t n=0; n<N_ports; n++){
+                file.write("%21.14E %21.14E ", real(S_matrix(m, n)), imag(S_matrix(m, n)));
+            }
+        }
+        file.write("\n");
+        engine.unset();
+    }
+    S_matrix.unset();
+    file.close();
+
+    freq.unset();
     
 }

@@ -74,8 +74,6 @@ void range_t::logspace(){
     assert_error(this->is_allocated, "range info are not set");
     assert_error(this->x_min>0.0, "invalid range");
     const real_t dx=(log10(this->x_max)-log10(this->x_min))/(this->Ns-1.0);
-    print(this->x_min);
-    print(this->x_max);
     for (size_t i=0; i<this->Ns; i++){
         this->data[i] = pow(10.0, log10(this->x_min)+i*dx);
     }

@@ -61,7 +61,7 @@ void engine_t::assign_port(const size_t index, const complex_t V, const complex_
     port.Z = Z;
     port.pg = pg;
     port.p = p;
-    assert_error(L>0.0&&W>=0.0, "invalid port description");
+    // assert_error(L>0.0&&W>=0.0, "invalid port description");
     port.L = L;
     port.W = W;
     this->port_list[index] = port;
@@ -122,6 +122,8 @@ void engine_t::compute_I_n(){
 complex_t engine_t::compute_Z_in(const size_t port_index){
     assert_error(this->is_engine_set, "egnine is not set yet");
     complex_t Z_in=0.0;
+    complex_t V=0.0;
+    complex_t I=0.0;
     // 1d
     {   
         basis_1d_t b_m;
@@ -129,12 +131,63 @@ complex_t engine_t::compute_Z_in(const size_t port_index){
         for (size_t m=0; m<this->N_basis_1d; m++){
             b_m = this->shape.get_basis_1d(m);
             if ((b_m.pg_m==b_m.pg_p)&&(b_m.pg_m==this->port_list[port_index].pg)){
-                Z_in+=this->V_m(i+m, 0)/this->I_n(i+m, 0);
-                Z_in-=this->port_list[port_index].Z;
+                V = this->V_m(i+m, 0);
+                I = this->I_n(i+m, 0);
+                Z_in = V/I-this->port_list[port_index].Z;
+                return Z_in;
             }
         }
     }
     return Z_in;
+}
+
+complex_t engine_t::compute_Z_mutual(const size_t port_index){
+    assert_error(this->is_engine_set, "egnine is not set yet");
+    complex_t V=0.0;
+    // 1d
+    {   
+        basis_1d_t b_m;
+        size_t i=this->N_basis_3d+this->N_basis_2d;
+        for (size_t m=0; m<this->N_basis_1d; m++){
+            b_m = this->shape.get_basis_1d(m);
+            if ((b_m.pg_m==b_m.pg_p)&&(b_m.pg_m==this->port_list[port_index].pg)){
+                V = -2.0*this->I_n(i+m, 0)*this->port_list[port_index].Z;
+                V = V*(this->port_list[port_index].p*((unit(b_m.L_m[0])-unit(b_m.L_p[0]))/2.0));
+                return V;
+            }
+        }
+    }
+    return V;
+}
+
+void engine_t::compute_S_matrix(matrix_t<complex_t> &S_matrix, const complex_t Z_0){
+    assert_error(this->is_engine_set, "egnine is not set yet");
+    // 1d
+    {
+        for (size_t n=0; n<this->N_ports; n++){
+            for (size_t k=0; k<this->N_ports; k++){
+                if (k==n){
+                    engine_t::assign_port(k, +1.0, Z_0, 
+                    this->port_list[k].pg, this->port_list[k].p, 
+                    this->port_list[k].L, this->port_list[k].W);
+                }else{
+                    engine_t::assign_port(k, +0.0, Z_0, 
+                    this->port_list[k].pg, this->port_list[k].p, 
+                    this->port_list[k].L, this->port_list[k].W);
+                }
+            }
+            engine_t::compute_V_m_ports();
+            engine_t::compute_I_n();
+            for (size_t m=0; m<this->N_ports; m++){
+                if (m==n){
+                    complex_t Z=engine_t::compute_Z_in(n);
+                    S_matrix(m, n) = (Z-Z_0)/(Z+Z_0);
+                }else{
+                    S_matrix(m, n) = engine_t::compute_Z_mutual(m);
+                }
+            }
+        }  
+    }
 }
 
 void engine_t::compute_V_m_ports(){
@@ -146,13 +199,12 @@ void engine_t::compute_V_m_ports(){
         size_t i=this->N_basis_3d+this->N_basis_2d;
         for (size_t m=0; m<this->N_basis_1d; m++){
             b_m = this->shape.get_basis_1d(m);
+            this->V_m(i+m, 0) = 0.0;
             for (size_t k=0; k<this->N_ports; k++){
-                this->V_m(i+m, 0) = 0.0;
                 if ((b_m.pg_m==b_m.pg_p)&&(b_m.pg_m==this->port_list[k].pg)){
                     const complex_t V=this->port_list[k].V;
                     const vector_t<real_t> p=this->port_list[k].p;
-                    const real_t L=this->port_list[k].L;
-                    this->V_m(i+m, 0) = (b_m.L_m[0]-b_m.L_p[0])*p*(V/L)/2.0;
+                    this->V_m(i+m, 0) = (unit(b_m.L_m[0])-unit(b_m.L_p[0]))*p*V/2.0;
                 }
             }
         }
