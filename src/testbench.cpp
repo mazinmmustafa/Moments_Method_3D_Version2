@@ -189,6 +189,49 @@ void test_engine_1d_vertical_dipole_input_adminttance(){
     
 }
 
+void test_engine_1d_loop_input_impedance(){
+
+    // problem defintions
+    const real_t freq=c_0;
+    const real_t clmax=1.0/21.0;
+    const complex_t mu_b=1.0, eps_b=1.0;
+    const real_t a=1.0E-4;
+    const size_t N_ports=1;
+    const complex_t V1=1.0;
+    const complex_t Z1=50.0;
+    const int_t pg1=1; 
+    const vector_t<real_t> p1=vector_t<real_t>(+0.0, +1.0, +0.0);
+
+    const size_t Ns=401;
+    const real_t S_min=0.05;
+    const real_t S_max=4.0;
+    const real_t port_length=clmax;
+    range_t S;
+    S.set(S_min, S_max, Ns);
+    S.linspace();
+
+    engine_t engine;
+    file_t file;
+    file.open("data/Z_in.txt", 'w');
+    for (size_t i=0; i<Ns; i++){
+        print("\nstep %zu:\n", i);
+        create_loop(S(i)/(2.0*pi), clmax);
+        engine.set(freq, mu_b, eps_b, clmax, 1.0, a, N_ports);
+        engine.assign_port(0, V1, Z1, pg1, p1, port_length, 0.0);
+
+        engine.compute_Z_mn();
+        engine.compute_V_m_ports();
+        engine.compute_I_n();
+        complex_t Z_in=engine.compute_Z_in(0);
+        file.write("%21.14E %21.14E %21.14E\n", S(i), real(Z_in), imag(Z_in));
+        engine.unset();
+    }
+    file.close();
+
+    S.unset();
+    
+}
+
 void test_engine_1d_vertical_dipole_mutual_impedance(){
 
     // problem defintions

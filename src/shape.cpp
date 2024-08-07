@@ -428,6 +428,32 @@ void create_two_vertical_wire_dipole(const real_t length, const real_t port_leng
     file.close();
 }
 
+void create_loop(const real_t radius, const real_t clmax){
+    assert_error(radius>0, "invalid radius");
+    const real_t port_length= radius/10.0 < clmax ? radius/10.0 : clmax;
+    const real_t theta=asin(port_length/(2.0*radius));
+    file_t file;
+    file.open("mesh/shape.geo", 'w');
+    file.write("SetFactory(\"OpenCASCADE\");\n");
+    file.write("Circle(1) = {%21.14E, %21.14E, %21.14E, %21.14E, %21.14E, %21.14E};\n", 0.0, 0.0, 0.0, radius,
+        0.0+theta, pi/2.0);
+    file.write("Circle(2) = {%21.14E, %21.14E, %21.14E, %21.14E, %21.14E, %21.14E};\n", 0.0, 0.0, 0.0, radius,
+        pi/2.0, pi);
+    file.write("Circle(3) = {%21.14E, %21.14E, %21.14E, %21.14E, %21.14E, %21.14E};\n", 0.0, 0.0, 0.0, radius,
+        pi, (3.0/2.0)*pi);
+    file.write("Circle(4) = {%21.14E, %21.14E, %21.14E, %21.14E, %21.14E, %21.14E};\n", 0.0, 0.0, 0.0, radius,
+        (3.0/2.0)*pi, 2.0*pi-theta);
+    file.write("Point(9) = {%21.14E, %21.14E, %21.14E, 1.0};\n", radius*cos(theta), -port_length/2, 0.0);
+    file.write("Point(10) = {%21.14E, %21.14E, %21.14E, 1.0};\n", radius*cos(theta), 0.0, 0.0);
+    file.write("Point(11) = {%21.14E, %21.14E, %21.14E, 1.0};\n", radius*cos(theta), +port_length/2, 0.0);
+    file.write("MeshSize {1, 3, 5, 7} = %21.14E;\n", clmax);
+    file.write("Line(5) = {9, 10};\n");
+    file.write("Line(6) = {10, 11};\n");
+    file.write("Physical Curve(\"Port\", 1) = {5, 6};\n");
+    file.write("Physical Curve(\"Wire\", 2) = {1, 2, 3, 4};\n");
+    file.close();
+}
+
 void create_transmission_line(const real_t L, const real_t S, const real_t clmax){
     assert_error(L>0, "invalid legnth");
     assert_error(S>0, "invalid legnth");

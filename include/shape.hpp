@@ -233,6 +233,7 @@ class shape_t{
 // Functions
 void call_gmsh(const real_t tol);
 void create_vertical_wire_dipole(const real_t length, const real_t port_length, const real_t clmax);
+void create_loop(const real_t radius, const real_t clmax);
 void create_two_vertical_wire_dipole(const real_t length, const real_t port_length, const real_t d, 
     const real_t clmax);
 void create_transmission_line(const real_t L, const real_t S, const real_t clmax);
