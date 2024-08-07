@@ -195,7 +195,7 @@ void test_engine_1d_loop_input_impedance(){
     const real_t freq=c_0;
     const real_t clmax=1.0/21.0;
     const complex_t mu_b=1.0, eps_b=1.0;
-    const real_t a=1.0E-4;
+    const real_t a=1.0E-3;
     const size_t N_ports=1;
     const complex_t V1=1.0;
     const complex_t Z1=50.0;
