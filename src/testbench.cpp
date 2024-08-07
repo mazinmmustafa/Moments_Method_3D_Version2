@@ -72,7 +72,7 @@ void test_engine_1d_1d(){
     stopwatch_t T;
     quadl_domain_t quadl;   
     const size_t k_max=15;
-    const real_t tol=1.0E-2;
+    const real_t tol=1.0E-4;
     quadl.set_1d(k_max, tol);
     complex_t ans, psi, phi;
     int_t flag;
@@ -84,15 +84,15 @@ void test_engine_1d_1d(){
 
     const complex_t k=2.0*pi/lambda;
 
-    const real_t a=1.0E-3;
+    const real_t a=1.0E-4;
 
-    r_m_m = vector_t<real_t>(+0.1, +0.1, +0.0);
-    e_m   = vector_t<real_t>(+0.2, +0.1, +0.0);
-    r_m_p = vector_t<real_t>(+0.2, +0.0, +0.0);
+    r_m_m = vector_t<real_t>(+0.5, +0.5, +0.0);
+    e_m   = vector_t<real_t>(+0.0, +0.0, +0.0);
+    r_m_p = vector_t<real_t>(+0.0, -0.5, +0.0);
 
-    r_n_m = vector_t<real_t>(+0.1, +0.1, +0.0);
-    e_n   = vector_t<real_t>(+0.2, +0.1, +0.0);
-    r_n_p = vector_t<real_t>(+0.2, +0.0, +0.0);
+    r_n_m = vector_t<real_t>(-0.5, -0.5, +0.0);
+    e_n   = vector_t<real_t>(+0.0, -0.5, +0.0);
+    r_n_p = vector_t<real_t>(-0.0, +0.0, +0.0);
 
     // r_m_m = vector_t<real_t>(+0.20, -1.6, 0.0);
     // e_m   = vector_t<real_t>(+0.40, -1.2, 0.0);
@@ -159,9 +159,9 @@ void test_engine_1d_vertical_dipole_input_adminttance(){
     const int_t pg1=1; 
     const vector_t<real_t> p1=vector_t<real_t>(+0.0, +0.0, +1.0);
 
-    const size_t Ns=101;
+    const size_t Ns=401;
     const real_t L_min=0.05;
-    const real_t L_max=2.0;
+    const real_t L_max=4.0;
     const real_t port_length=clmax;
     range_t L;
     L.set(L_min, L_max, Ns);
@@ -179,7 +179,7 @@ void test_engine_1d_vertical_dipole_input_adminttance(){
         engine.compute_Z_mn();
         engine.compute_V_m_ports();
         engine.compute_I_n();
-        complex_t Y_in=1.0/(engine.compute_Z_in(0)-Z1);
+        complex_t Y_in=1.0/engine.compute_Z_in(0);
         file.write("%21.14E %21.14E %21.14E\n", L(i), real(Y_in), imag(Y_in));
         engine.unset();
     }
@@ -204,9 +204,9 @@ void test_engine_1d_vertical_dipole_mutual_impedance(){
     const vector_t<real_t> p2=vector_t<real_t>(+0.0, +0.0, +1.0);
     const complex_t Z_0=50.0;
 
-    const size_t Ns=101;
+    const size_t Ns=401;
     const real_t d_min=0.01;
-    const real_t d_max=3.0;
+    const real_t d_max=4.0;
     const real_t port_length=clmax;
     range_t d;
     d.set(d_min, d_max, Ns);
@@ -261,8 +261,8 @@ void test_engine_1d_transmission_line_S_parameters(){
     const vector_t<real_t> p2=vector_t<real_t>(+0.0, +1.0, +0.0);
     const complex_t Z_0=50.0;
 
-    const size_t Ns=51;
-    const real_t freq_min=150.0*MHz;
+    const size_t Ns=401;
+    const real_t freq_min=1.0*MHz;
     const real_t freq_max=200.0*MHz;
     range_t freq;
     freq.set(freq_min, freq_max, Ns);
@@ -279,8 +279,8 @@ void test_engine_1d_transmission_line_S_parameters(){
         clmax = lambda/21.0;
         create_transmission_line(L, S, clmax);
         engine.set(freq(i), mu_b, eps_b, clmax, 1.0, a, N_ports);
-        engine.assign_port(0, +0.0, +0.0, pg1, p1, 0.0, 0.0);
-        engine.assign_port(1, +0.0, +0.0, pg2, p2, 0.0, 0.0);
+        engine.assign_port(0, +0.0, Z_0, pg1, p1, 0.0, 0.0);
+        engine.assign_port(1, +0.0, Z_0, pg2, p2, 0.0, 0.0);
 
         engine.compute_Z_mn();
         engine.compute_S_matrix(S_matrix, Z_0);
@@ -293,8 +293,6 @@ void test_engine_1d_transmission_line_S_parameters(){
         file.write("\n");
         engine.unset(); 
 
-        print(abs(S_matrix(0, 0)));
-        exit(0);
     }
     S_matrix.unset();
     file.close();

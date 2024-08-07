@@ -88,22 +88,6 @@ void engine_t::compute_Z_mn(){
                 sprintf(msg, "LL: Z_mn (%zu, %zu)", m, n);
                 progress_bar(count, this->N_basis_1d*(this->N_basis_1d+1)/2, msg);
                 Z = Z_mn_1d_1d(b_m, b_n, k_b, eta_b, lambda, a, quadl, flag);
-                if (flag){
-                    print(k_b);
-                    print(eta_b);
-                    print(lambda);
-                    print(freq);
-                    print(a);
-                    print(m);
-                    print(n);
-                    print(b_m.r_m);
-                    print(b_m.e[0]);
-                    print(b_m.r_p);
-                    print(b_n.r_m);
-                    print(b_n.e[0]);
-                    print(b_n.r_p);
-                    print(Z);
-                }
                 if (m==n){
                     for (size_t k=0; k<this->N_ports; k++){
                         if ((b_m.pg_m==b_m.pg_p)&&(b_m.pg_m==this->port_list[k].pg)){
@@ -194,24 +178,20 @@ void engine_t::compute_S_matrix(matrix_t<complex_t> &S_matrix, const complex_t Z
                     this->port_list[k].L, this->port_list[k].W);
                 }
             }
-            for (size_t k=0; k<this->N_ports; k++){
-                print(this->port_list[k].V);
-            }
+            // for (size_t k=0; k<this->N_ports; k++){
+            //     print(this->port_list[k].V);
+            //     print(this->port_list[k].Z);
+            // }
             engine_t::compute_V_m_ports();
             engine_t::compute_I_n();
-            // engine_t::export_solutions();
             for (size_t m=0; m<this->N_ports; m++){
                 if (m==n){
                     complex_t Z=engine_t::compute_Z_in(m);
-                    // print(Z);
-                    
                     S_matrix(m, n) = (Z-Z_0)/(Z+Z_0);
                 }else{
                     S_matrix(m, n) = engine_t::compute_S_mutual(m);
                 }
-                // print(abs(S_matrix(m, n)));
             }
-            // exit(0);
         }  
     }
 }
