@@ -33,6 +33,10 @@ struct port_t{
     port_t(){}
 };
 
+struct sigma_t{
+    real_t theta=0.0, phi=0.0;
+};
+
 class engine_t{
     private:
         const size_t max_line_length=200;
@@ -82,6 +86,8 @@ class engine_t{
         complex_t compute_Z_in(const size_t port_index);
         complex_t compute_S_mutual(const size_t port_index);
         void compute_S_matrix(matrix_t<complex_t> &S_matrix, const complex_t Z_0);
+        //
+        sigma_t compute_RCS(const real_t theta_i, const real_t phi_i);
 };
 
 // Functions

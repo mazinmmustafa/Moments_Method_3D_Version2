@@ -350,24 +350,40 @@ void test_engine_1d_RCS_vertical_wire(){
     const real_t freq=c_0;
     const real_t clmax=1.0/21.0;
     const complex_t mu_b=1.0, eps_b=1.0;
-    const real_t L=0.5;
-    const real_t a=L/200.0;
     const complex_t E_TM=1.0;
     const complex_t E_TE=0.0;
     
-    real_t theta_i=deg2rad(30.0);
-    real_t phi_i=deg2rad(0.0);
+    const real_t theta_i=deg2rad(30.0);
+    const real_t phi_i=deg2rad(0.0);
+    const real_t theta_s=deg2rad(30.0);
+    const real_t phi_s=deg2rad(0.0);
+
+    const size_t Ns=101;
+    const real_t L_min=0.05;
+    const real_t L_max=4.0;
+    range_t L;
+    L.set(L_min, L_max, Ns);
+    L.linspace();
 
     engine_t engine;
+    sigma_t sigma;
+    file_t file;
+    file.open("data/RCS.txt", 'w');
+    for (size_t i=0; i<Ns; i++){
+        print("\nstep %zu:\n", i);
+        const real_t a=L(i)/200.0;
+        create_vertical_wire(L(i), clmax);
 
-    create_vertical_wire(L, clmax);
+        engine.set(freq, mu_b, eps_b, clmax, 1.0, a, 0);
+        engine.compute_Z_mn();
+        engine.compute_V_m_incident(E_TM, E_TE, theta_i, phi_i);
+        engine.compute_I_n();
 
-    engine.set(freq, mu_b, eps_b, clmax, 1.0, a, 0);
-    engine.compute_Z_mn();
-    engine.compute_V_m_incident(E_TM, E_TE, theta_i, phi_i);
-    engine.compute_I_n();
-    engine.export_solutions();
+        sigma = engine.compute_RCS(theta_s, phi_s);
+        file.write("%21.14E %21.14E %21.14E\n", L(i), sigma.theta, sigma.phi);
+        engine.unset();
+    }
+    file.close();
     
-    engine.unset();
-    
+    L.unset();
 }

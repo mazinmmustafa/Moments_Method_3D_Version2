@@ -247,7 +247,7 @@ void engine_t::compute_V_m_incident(const complex_t E_TM, const complex_t E_TE, 
             args.k = real(this->k_b);
             args.eta = real(this->eta_b);
             int_t flag;
-            this->V_m(i+m, 0) =  this->quadl.integral_1d(compute_incident_E_integrand_1d, &args, edge, flag) ;
+            this->V_m(i+m, 0) =  this->quadl.integral_1d(compute_incident_E_integrand_1d, &args, edge, flag);
         }
     }
     // Vm_S
@@ -320,4 +320,31 @@ void engine_t::export_solutions(){
         file.write("%zu: %21.14E, %21.14E\n", n, real(this->I_n(n, 0)), imag(this->I_n(n, 0)));
     }
     file.close();
+}
+
+//
+
+sigma_t engine_t::compute_RCS(const real_t theta_i, const real_t phi_i){
+    sigma_t sigma;
+    incident_field_args_t args;
+    args.theta_i = theta_i;
+    args.phi_i = phi_i;
+    args.k = real(this->k_b);
+    args.eta = real(this->eta_b);
+    args.N_basis_1d = this->N_basis_1d;
+    args.I_n = &this->I_n;
+    args.shape = &this->shape;
+    complex_t sum_theta=0.0, sum_phi=0.0;
+    //
+    int_t flag;
+    edge_domain_t edge={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(1.0, 0.0, 0.0)};
+    for (size_t m=0; m<this->N_basis_1d; m++){
+        basis_1d_t b_m=this->shape.get_basis_1d(m);
+        args.b_m = b_m;
+        sum_theta+=this->quadl.integral_1d(compute_scattered_far_field_E_theta_integrand_1d, &args, edge, flag)*this->I_n(m, 0);
+        sum_phi+=this->quadl.integral_1d(compute_scattered_far_field_E_phi_integrand_1d, &args, edge, flag)*this->I_n(m, 0);
+    }
+    sigma.theta = 4.0*pi*abs(sum_theta)*abs(sum_theta);
+    sigma.phi = 4.0*pi*abs(sum_phi)*abs(sum_phi);
+    return sigma;
 }

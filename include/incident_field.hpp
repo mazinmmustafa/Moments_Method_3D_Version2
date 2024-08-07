@@ -26,12 +26,19 @@ struct incident_field_args_t{
     real_t phi_i=0.0; 
     real_t k=0.0; 
     real_t eta=0.0;
-    vector_t<real_t> r, u, n;
+    vector_t<real_t> r;
+    //
+    vector_t<real_t> unit_vector;
+    matrix_t<complex_t> *I_n=null;
+    shape_t *shape=null;
+    size_t N_basis_1d=0;
 };
 
 // Functions
 incident_field_t compute_incident_field(const complex_t E_TM, const complex_t E_TE, const real_t theta_i, const real_t phi_i, 
     const real_t k, const real_t eta, const vector_t<real_t> r);
 complex_t compute_incident_E_integrand_1d(const complex_t alpha, void *args_);
+complex_t compute_scattered_far_field_E_theta_integrand_1d(const complex_t alpha, void *args_);
+complex_t compute_scattered_far_field_E_phi_integrand_1d(const complex_t alpha, void *args_);
 
 #endif
