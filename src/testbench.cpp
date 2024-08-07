@@ -343,3 +343,31 @@ void test_engine_1d_transmission_line_S_parameters(){
     freq.unset();
     
 }
+
+void test_engine_1d_RCS_vertical_wire(){
+
+    // problem defintions
+    const real_t freq=c_0;
+    const real_t clmax=1.0/21.0;
+    const complex_t mu_b=1.0, eps_b=1.0;
+    const real_t L=0.5;
+    const real_t a=L/200.0;
+    const complex_t E_TM=1.0;
+    const complex_t E_TE=0.0;
+    
+    real_t theta_i=deg2rad(30.0);
+    real_t phi_i=deg2rad(0.0);
+
+    engine_t engine;
+
+    create_vertical_wire(L, clmax);
+
+    engine.set(freq, mu_b, eps_b, clmax, 1.0, a, 0);
+    engine.compute_Z_mn();
+    engine.compute_V_m_incident(E_TM, E_TE, theta_i, phi_i);
+    engine.compute_I_n();
+    engine.export_solutions();
+    
+    engine.unset();
+    
+}

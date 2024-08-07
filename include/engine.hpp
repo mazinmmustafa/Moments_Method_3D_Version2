@@ -20,6 +20,7 @@
 #include "psi_integrand.hpp"
 #include "phi_integrand.hpp"
 #include "Z_mn.hpp"
+#include "incident_field.hpp"
 
 // Definitions
 struct port_t{
@@ -76,6 +77,7 @@ class engine_t{
         void assign_port(const size_t index, const complex_t V, const complex_t Z, const int_t pg, 
             const vector_t<real_t> p, const real_t L, const real_t W);
         void compute_V_m_ports();
+        void compute_V_m_incident(const complex_t E_TM, const complex_t E_TE, const real_t theta_i, const real_t phi_i);
         void compute_I_n();
         complex_t compute_Z_in(const size_t port_index);
         complex_t compute_S_mutual(const size_t port_index);

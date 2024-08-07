@@ -376,8 +376,8 @@ void call_gmsh(const real_t tol){
 }
 
 void create_vertical_wire_dipole(const real_t length, const real_t port_length, const real_t clmax){
-    assert_error(length>0, "invalid legnth");
-    assert_error(port_length<=clmax, "invalid port legnth");
+    assert_error(length>0, "invalid length");
+    assert_error(port_length<=clmax, "invalid port length");
     file_t file;
     file.open("mesh/shape.geo", 'w');
     file.write("Point(1) = {%21.14E, %21.14E, %21.14E, 1.0};\n", 0.0, 0.0, -length/2);
@@ -397,8 +397,8 @@ void create_vertical_wire_dipole(const real_t length, const real_t port_length, 
 
 void create_two_vertical_wire_dipole(const real_t length, const real_t port_length, const real_t d, 
     const real_t clmax){
-    assert_error(length>0, "invalid legnth");
-    assert_error(port_length<=length, "invalid port legnth");
+    assert_error(length>0, "invalid length");
+    assert_error(port_length<=length, "invalid port length");
     file_t file;
     file.open("mesh/shape.geo", 'w');
     file.write("Point(1) = {%21.14E, %21.14E, %21.14E, 1.0};\n", -d/2.0, 0.0, -length/2);
@@ -454,9 +454,22 @@ void create_loop(const real_t radius, const real_t clmax){
     file.close();
 }
 
+void create_vertical_wire(const real_t length, const real_t clmax){
+    assert_error(length>0, "invalid length");
+    file_t file;
+    file.open("mesh/shape.geo", 'w');
+    file.write("Point(1) = {%21.14E, %21.14E, %21.14E, 1.0};\n", 0.0, 0.0, -length/2);
+    file.write("Point(2) = {%21.14E, %21.14E, %21.14E, 1.0};\n", 0.0, 0.0, 0.0);
+    file.write("Point(3) = {%21.14E, %21.14E, %21.14E, 1.0};\n", 0.0, 0.0, +length/2);
+    file.write("MeshSize {1, 2, 3} = %21.14E;\n", clmax);
+    file.write("Line(1) = {1, 2};\n");
+    file.write("Line(2) = {2, 3};\n");
+    file.close();
+}
+
 void create_transmission_line(const real_t L, const real_t S, const real_t clmax){
-    assert_error(L>0, "invalid legnth");
-    assert_error(S>0, "invalid legnth");
+    assert_error(L>0, "invalid length");
+    assert_error(S>0, "invalid length");
     file_t file;
     file.open("mesh/shape.geo", 'w');
     file.write("Point(1) = {%21.14E, %21.14E, %21.14E, 1.0};\n", -L/2.0, -S/2, 0.0);

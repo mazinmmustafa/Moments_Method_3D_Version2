@@ -26,5 +26,6 @@ void test_engine_1d_vertical_dipole_input_adminttance();
 void test_engine_1d_loop_input_impedance();
 void test_engine_1d_vertical_dipole_mutual_impedance();
 void test_engine_1d_transmission_line_S_parameters();
+void test_engine_1d_RCS_vertical_wire();
 
 #endif

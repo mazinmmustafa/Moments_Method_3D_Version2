@@ -178,10 +178,6 @@ void engine_t::compute_S_matrix(matrix_t<complex_t> &S_matrix, const complex_t Z
                     this->port_list[k].L, this->port_list[k].W);
                 }
             }
-            // for (size_t k=0; k<this->N_ports; k++){
-            //     print(this->port_list[k].V);
-            //     print(this->port_list[k].Z);
-            // }
             engine_t::compute_V_m_ports();
             engine_t::compute_I_n();
             for (size_t m=0; m<this->N_ports; m++){
@@ -213,6 +209,45 @@ void engine_t::compute_V_m_ports(){
                     this->V_m(i+m, 0) = (unit(b_m.L_m[0])-unit(b_m.L_p[0]))*p*V/2.0;
                 }
             }
+        }
+    }
+    // Vm_S
+    {
+        size_t i=this->N_basis_3d;
+        for (size_t m=0; m<this->N_basis_2d; m++){
+            this->V_m(i+m, 0) = 0.0;
+        }
+    }
+    // Vm_V
+    {
+        size_t i=0;
+        for (size_t m=0; m<this->N_basis_3d; m++){
+            this->V_m(i+m, 0) = 0.0;
+        }
+    }
+    print(", done!\n");
+}
+
+void engine_t::compute_V_m_incident(const complex_t E_TM, const complex_t E_TE, const real_t theta_i, const real_t phi_i){
+    assert_error(this->is_engine_set, "egnine is not set yet");
+    print("computing V_m...");
+    // Vm_L
+    {
+        basis_1d_t b_m;
+        size_t i=this->N_basis_3d+this->N_basis_2d;
+        for (size_t m=0; m<this->N_basis_1d; m++){
+            b_m = this->shape.get_basis_1d(m);
+            edge_domain_t edge={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(1.0, 0.0, 0.0)};
+            incident_field_args_t args;
+            args.b_m = b_m;
+            args.E_TM = E_TM;
+            args.E_TE = E_TE;
+            args.theta_i = theta_i;
+            args.phi_i = phi_i;
+            args.k = real(this->k_b);
+            args.eta = real(this->eta_b);
+            int_t flag;
+            this->V_m(i+m, 0) =  this->quadl.integral_1d(compute_incident_E_integrand_1d, &args, edge, flag) ;
         }
     }
     // Vm_S
