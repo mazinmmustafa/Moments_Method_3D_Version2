@@ -44,14 +44,10 @@ complex_t psi_1d_1d_integrand_1(const complex_t alpha, void *args_){
     projection_1d_para para_p_m = prjection_1d(b_n.r_m, b_n.e[0], b_m.r_p+real(alpha)*b_m.L_p[0]);
     projection_1d_para para_p_p = prjection_1d(b_n.e[0], b_n.r_p, b_m.r_p+real(alpha)*b_m.L_p[0]);
     complex_t ans=0.0;
-    // ans+= -1.0*para_m_m.l_m*(rho_m*unit(b_n.L_m[0]))*I_mm/mag(b_n.L_m[0]);
-    // ans+= -1.0*para_m_p.l_p*(rho_m*unit(b_n.L_p[0]))*I_mp/mag(b_n.L_p[0]);
-    // ans+= -1.0*para_p_m.l_m*(rho_p*unit(b_n.L_m[0]))*I_pm/mag(b_n.L_m[0]);
-    // ans+= -1.0*para_p_p.l_p*(rho_p*unit(b_n.L_p[0]))*I_pp/mag(b_n.L_p[0]);
-    ans+= -1.0*para_m_m.l_m*(rho_m*unit(b_n.L_m[0]))*I_mm/mag(b_n.L_m[0]);
-    ans+= -1.0*para_m_p.l_p*(rho_m*unit(b_n.L_p[0]))*I_mp/mag(b_n.L_p[0]);
-    ans+= -1.0*para_p_m.l_m*(rho_p*unit(b_n.L_m[0]))*I_pm/mag(b_n.L_m[0]);
-    ans+= -1.0*para_p_p.l_p*(rho_p*unit(b_n.L_p[0]))*I_pp/mag(b_n.L_p[0]);
+    ans+= -1.0*(rho_m*(para_m_m.l_m*para_m_m.l_unit))*I_mm/mag(b_n.L_m[0]);
+    ans+= +1.0*(rho_m*(para_m_p.l_p*para_m_p.l_unit))*I_mp/mag(b_n.L_p[0]);
+    ans+= -1.0*(rho_p*(para_p_m.l_m*para_p_m.l_unit))*I_pm/mag(b_n.L_m[0]);
+    ans+= +1.0*(rho_p*(para_p_p.l_p*para_p_p.l_unit))*I_pp/mag(b_n.L_p[0]);
     return ans/(4.0*pi);
 }
 
