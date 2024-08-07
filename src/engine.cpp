@@ -159,7 +159,7 @@ complex_t engine_t::compute_Z_in(const size_t port_index){
     return Z_in;
 }
 
-complex_t engine_t::compute_Z_mutual(const size_t port_index){
+complex_t engine_t::compute_S_mutual(const size_t port_index){
     assert_error(this->is_engine_set, "egnine is not set yet");
     complex_t V=0.0;
     // 1d
@@ -185,25 +185,33 @@ void engine_t::compute_S_matrix(matrix_t<complex_t> &S_matrix, const complex_t Z
         for (size_t n=0; n<this->N_ports; n++){
             for (size_t k=0; k<this->N_ports; k++){
                 if (k==n){
-                    engine_t::assign_port(k, +1.0, 0.0, 
+                    engine_t::assign_port(k, +1.0, Z_0, 
                     this->port_list[k].pg, this->port_list[k].p, 
                     this->port_list[k].L, this->port_list[k].W);
                 }else{
-                    engine_t::assign_port(k, +0.0, 0.0, 
+                    engine_t::assign_port(k, +0.0, Z_0, 
                     this->port_list[k].pg, this->port_list[k].p, 
                     this->port_list[k].L, this->port_list[k].W);
                 }
+            }
+            for (size_t k=0; k<this->N_ports; k++){
+                print(this->port_list[k].V);
             }
             engine_t::compute_V_m_ports();
             engine_t::compute_I_n();
+            // engine_t::export_solutions();
             for (size_t m=0; m<this->N_ports; m++){
                 if (m==n){
-                    complex_t Z=engine_t::compute_Z_in(n);
+                    complex_t Z=engine_t::compute_Z_in(m);
+                    // print(Z);
+                    
                     S_matrix(m, n) = (Z-Z_0)/(Z+Z_0);
                 }else{
-                    S_matrix(m, n) = engine_t::compute_Z_mutual(m);
+                    S_matrix(m, n) = engine_t::compute_S_mutual(m);
                 }
+                // print(abs(S_matrix(m, n)));
             }
+            // exit(0);
         }  
     }
 }

@@ -433,28 +433,40 @@ void create_transmission_line(const real_t L, const real_t S, const real_t clmax
     assert_error(S>0, "invalid legnth");
     file_t file;
     file.open("mesh/shape.geo", 'w');
-    file.write("Point(1) = {%21.14E, %21.14E, %21.14E};\n", -L/2.0, -S/2, 0.0);
-    file.write("Point(3) = {%21.14E, %21.14E, %21.14E};\n", -L/2.0, 0.0, 0.0);
-    file.write("Point(5) = {%21.14E, %21.14E, %21.14E};\n", -L/2.0, +S/2, 0.0);
-    file.write("Point(6) = {%21.14E, %21.14E, %21.14E};\n", +L/2.0, -S/2, 0.0);
-    file.write("Point(8) = {%21.14E, %21.14E, %21.14E};\n", +L/2.0, 0.0, 0.0);
-    file.write("Point(10) = {%21.14E, %21.14E, %21.14E};\n", +L/2.0, +S/2, 0.0);
-    file.write("Point(11) = {%21.14E, %21.14E, %21.14E};\n", +0.0, -S/2, 0.0);
-    file.write("Point(12) = {%21.14E, %21.14E, %21.14E};\n", +0.0, +S/2, 0.0);
+    file.write("Point(1) = {%21.14E, %21.14E, %21.14E, 1.0};\n", -L/2.0, -S/2, 0.0);
+    file.write("Point(2) = {%21.14E, %21.14E, %21.14E, 1.0};\n", -L/2.0, -S/4, 0.0);
+    file.write("Point(3) = {%21.14E, %21.14E, %21.14E, 1.0};\n", -L/2.0, 0.0, 0.0);
+    file.write("Point(4) = {%21.14E, %21.14E, %21.14E, 1.0};\n", -L/2.0, +S/4, 0.0);
+    file.write("Point(5) = {%21.14E, %21.14E, %21.14E, 1.0};\n", -L/2.0, +S/2, 0.0);
+    file.write("Point(6) = {%21.14E, %21.14E, %21.14E, 1.0};\n", +L/2.0, -S/2, 0.0);
+    file.write("Point(7) = {%21.14E, %21.14E, %21.14E, 1.0};\n", +L/2.0, -S/4, 0.0);
+    file.write("Point(8) = {%21.14E, %21.14E, %21.14E, 1.0};\n", +L/2.0, 0.0, 0.0);
+    file.write("Point(9) = {%21.14E, %21.14E, %21.14E, 1.0};\n", +L/2.0, +S/4, 0.0);
+    file.write("Point(10) = {%21.14E, %21.14E, %21.14E, 1.0};\n", +L/2.0, +S/2, 0.0);
+    file.write("Point(11) = {%21.14E, %21.14E, %21.14E, 1.0};\n", +0.0, -S/2, 0.0);
+    file.write("Point(12) = {%21.14E, %21.14E, %21.14E, 1.0};\n", +0.0, +S/2, 0.0);
     //
     // file.write("MeshSize {11, 12} = %21.14E;\n", clmax<S ? clmax : S);
-    file.write("MeshSize {11, 12} = %21.14E;\n", clmax);
-    file.write("Line(1) = {1, 3};\n");
-    file.write("Line(3) = {3, 5};\n");
-    file.write("Line(6) = {6, 8};\n");
-    file.write("Line(8) = {8, 10};\n");
+    file.write("MeshSize {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12} = %21.14E;\n", clmax);
+
+    file.write("Line(1) = {1, 2};\n");
+    file.write("Line(2) = {2, 3};\n");
+    file.write("Line(3) = {3, 4};\n");
+    file.write("Line(4) = {4, 5};\n");
+
+    file.write("Line(5) = {7, 6};\n");
+    file.write("Line(6) = {7, 8};\n");
+    file.write("Line(7) = {8, 9};\n");
+    file.write("Line(8) = {9 , 10};\n");
+
     file.write("Line(9) = {1, 11};\n");
     file.write("Line(10) = {11, 6};\n");
     file.write("Line(11) = {5, 12};\n");
     file.write("Line(12) = {12, 10};\n");
-    file.write("Physical Curve(\"Port1\", 1) = {1, 3};\n");
-    file.write("Physical Curve(\"Port2\", 2) = {6, 8};\n");
-    file.write("Physical Curve(\"TL\", 3) = {9, 10, 11, 12};\n");
+
+    file.write("Physical Curve(\"Port1\", 1) = {2, 3};\n");
+    file.write("Physical Curve(\"Port2\", 2) = {6, 7};\n");
+    file.write("Physical Curve(\"TL\", 3) = {1, 4, 5, 8, 9, 10, 11, 12};\n");
     file.close();
 }
 

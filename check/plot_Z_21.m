@@ -33,6 +33,8 @@ plot(data(:, 1), real(Z(:, 2, 1)), '-')
 plot(data(:, 1), imag(Z(:, 2, 1)), '-')
 plot([0 max(data(:, 1))], [0 0], '-k')
 hold off
+grid on
+grid minor
 
 ##figure()
 ##hold on

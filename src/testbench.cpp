@@ -179,7 +179,7 @@ void test_engine_1d_vertical_dipole_input_adminttance(){
         engine.compute_Z_mn();
         engine.compute_V_m_ports();
         engine.compute_I_n();
-        complex_t Y_in=1.0/engine.compute_Z_in(0);
+        complex_t Y_in=1.0/(engine.compute_Z_in(0)-Z1);
         file.write("%21.14E %21.14E %21.14E\n", L(i), real(Y_in), imag(Y_in));
         engine.unset();
     }
@@ -261,8 +261,8 @@ void test_engine_1d_transmission_line_S_parameters(){
     const vector_t<real_t> p2=vector_t<real_t>(+0.0, +1.0, +0.0);
     const complex_t Z_0=50.0;
 
-    const size_t Ns=31;
-    const real_t freq_min=100.0*MHz;
+    const size_t Ns=51;
+    const real_t freq_min=150.0*MHz;
     const real_t freq_max=200.0*MHz;
     range_t freq;
     freq.set(freq_min, freq_max, Ns);
@@ -291,7 +291,10 @@ void test_engine_1d_transmission_line_S_parameters(){
             }
         }
         file.write("\n");
-        engine.unset();
+        engine.unset(); 
+
+        print(abs(S_matrix(0, 0)));
+        exit(0);
     }
     S_matrix.unset();
     file.close();

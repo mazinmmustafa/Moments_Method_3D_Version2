@@ -78,7 +78,7 @@ class engine_t{
         void compute_V_m_ports();
         void compute_I_n();
         complex_t compute_Z_in(const size_t port_index);
-        complex_t compute_Z_mutual(const size_t port_index);
+        complex_t compute_S_mutual(const size_t port_index);
         void compute_S_matrix(matrix_t<complex_t> &S_matrix, const complex_t Z_0);
 };
 
