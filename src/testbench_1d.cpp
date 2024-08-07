@@ -1,5 +1,5 @@
 //
-#include "testbench.hpp"
+#include "testbench_1d.hpp"
 
 void test_utilities(){
 
@@ -355,10 +355,10 @@ void test_engine_1d_RCS_vertical_wire(){
     
     const real_t theta_i=deg2rad(30.0);
     const real_t phi_i=deg2rad(0.0);
-    const real_t theta_s=deg2rad(30.0);
+    const real_t theta_s=deg2rad(60.0);
     const real_t phi_s=deg2rad(0.0);
 
-    const size_t Ns=101;
+    const size_t Ns=201;
     const real_t L_min=0.05;
     const real_t L_max=4.0;
     range_t L;

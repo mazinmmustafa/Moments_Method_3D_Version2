@@ -1,1 +1,16 @@
-Terminate batch job (Y/N)? Terminate batch job (Y/N)? 
+Info    : Running 'gmsh mesh/shape.geo -3 -clmax 0.0476 -format vtk -save_all -o mesh/shape.vtk' [Gmsh 4.13.1, 1 node, max. 1 thread]
+Info    : Started on Wed Aug  7 17:47:28 2024
+Info    : Reading 'mesh/shape.geo'...
+Info    : Done reading 'mesh/shape.geo'
+Info    : Meshing 1D...
+Info    : [  0%] Meshing curve 1 (Line)
+Info    : [ 60%] Meshing curve 2 (Line)
+Info    : Done meshing 1D (Wall 0.000268461s, CPU 0.000324s)
+Info    : Meshing 2D...
+Info    : Done meshing 2D (Wall 1.37389e-05s, CPU 1.6e-05s)
+Info    : Meshing 3D...
+Info    : Done meshing 3D (Wall 4.83533e-05s, CPU 5.8e-05s)
+Info    : 87 nodes 89 elements
+Info    : Writing 'mesh/shape.vtk'...
+Info    : Done writing 'mesh/shape.vtk'
+Info    : Stopped on Wed Aug  7 17:47:28 2024 (From start: Wall 0.00238743s, CPU 0.007022s)

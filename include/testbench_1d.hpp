@@ -1,5 +1,5 @@
-#ifndef __TESTBENCH_HPP__
-#define __TESTBENCH_HPP__
+#ifndef __TESTBENCH_1D_HPP__
+#define __TESTBENCH_1D_HPP__
 
 // Libraries
 #include "lib_basic.hpp"
