@@ -26,6 +26,6 @@ void integrand_L2_1d_1d(const real_t alpha, basis_1d_t b_m,basis_1d_t b_n,
     const real_t a);
 void integrand_L3_1d_1d(const real_t alpha, basis_1d_t b_m,basis_1d_t b_n, 
     vector_t<real_t> &I_mm, vector_t<real_t> &I_mp, vector_t<real_t> &I_pm, vector_t<real_t> &I_pp, 
-    const real_t lambda);
+    const real_t a, const real_t lambda);
 
 #endif

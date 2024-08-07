@@ -91,7 +91,7 @@ clean:
 clean_mesh:
 	@$(RM) -rv mesh/basis/* mesh/mesh/* mesh/shape.vtk
 
-clean_all: clean clean_mesh clean_data
+clean_all: clean clean_mesh
 	@$(RM) -rv $(BDIR) $(ODIR) $(DDIR)
 
 clean_data:
@@ -114,7 +114,7 @@ valgrind: build
 
 .PHONY: git_push git_pull gmsh
 
-git_push: clean_all
+git_push: clean_all clean_data
 	git add .
 	git commit -m 'update' 
 	git push --force --set-upstream $(GIT_URL)
