@@ -38,7 +38,7 @@ complex_t psi_1d_1d_integrand_1(const complex_t alpha, void *args_){
     vector_t<real_t> rho_m, rho_p;
     rho_m = +1.0*real(alpha)*b_m.L_m[0];
     rho_p = -1.0*real(alpha)*b_m.L_p[0];
-    integrand_L1_1d_1d(real(alpha), b_m, b_n, I_mm, I_mp, I_pm, I_pp, a, args->lambda);
+    integrand_L1_1d_1d(real(alpha), b_m, b_n, I_mm, I_mp, I_pm, I_pp, a);
     projection_1d_para para_m_m = prjection_1d(b_n.r_m, b_n.e[0], b_m.r_m+real(alpha)*b_m.L_m[0]);
     projection_1d_para para_m_p = prjection_1d(b_n.e[0], b_n.r_p, b_m.r_m+real(alpha)*b_m.L_m[0]);
     projection_1d_para para_p_m = prjection_1d(b_n.r_m, b_n.e[0], b_m.r_p+real(alpha)*b_m.L_p[0]);

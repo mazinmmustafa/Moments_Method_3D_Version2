@@ -98,6 +98,7 @@ class engine_t{
         //
         sigma_t compute_RCS(const real_t theta_i, const real_t phi_i);
         far_field_t compute_far_field(const real_t theta_i, const real_t phi_i);
+        near_field_t compute_near_field_E(const vector_t<real_t> r);
 };
 
 // Functions

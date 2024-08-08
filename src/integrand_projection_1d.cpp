@@ -13,8 +13,7 @@ real_t sign_function(const real_t l_m, const real_t l_p){
 
 // 1d
 void integrand_L1_1d_1d(const real_t alpha, basis_1d_t b_m, basis_1d_t b_n, 
-    real_t &I_mm, real_t &I_mp, real_t &I_pm, real_t &I_pp, const real_t a, const real_t lambda){
-    assert(lambda>0.0);
+    real_t &I_mm, real_t &I_mp, real_t &I_pm, real_t &I_pp, const real_t a){
     projection_1d_para para;
     vector_t<real_t> p;
     real_t ans;
@@ -48,7 +47,7 @@ void integrand_L1_1d_1d(const real_t alpha, basis_1d_t b_m, basis_1d_t b_n,
     I_pp = ans;
 }
 
-void integrand_L2_1d_1d(const real_t alpha, basis_1d_t b_m,basis_1d_t b_n, 
+void integrand_L2_1d_1d(const real_t alpha, basis_1d_t b_m, basis_1d_t b_n, 
     vector_t<real_t> &I_mm, vector_t<real_t> &I_mp, vector_t<real_t> &I_pm, vector_t<real_t> &I_pp, 
     const real_t a){
     projection_1d_para para;
@@ -84,7 +83,7 @@ void integrand_L2_1d_1d(const real_t alpha, basis_1d_t b_m,basis_1d_t b_n,
     I_pp = ans;
 }
 
-void integrand_L3_1d_1d(const real_t alpha, basis_1d_t b_m,basis_1d_t b_n, 
+void integrand_L3_1d_1d(const real_t alpha, basis_1d_t b_m, basis_1d_t b_n, 
     vector_t<real_t> &I_mm, vector_t<real_t> &I_mp, vector_t<real_t> &I_pm, vector_t<real_t> &I_pp, 
     const real_t a){
     projection_1d_para para;

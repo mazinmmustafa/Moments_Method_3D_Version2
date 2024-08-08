@@ -16,17 +16,16 @@
 // Definitions
 struct scattered_field_args_t{
     basis_1d_t b_m;
-    complex_t E_TM=0.0; 
-    complex_t E_TE=0.0;
-    real_t theta_i=0.0;
-    real_t phi_i=0.0; 
-    real_t k=0.0; 
-    real_t eta=0.0;
+    complex_t k=0.0; 
+    complex_t eta=0.0;
+    real_t a=0.0;
     vector_t<real_t> r;
-    //
     vector_t<real_t> unit_vector;
 };
 
 // Functions
+complex_t compute_E_1d(const basis_1d_t b_m, const vector_t<real_t> r, const vector_t<real_t> unit_vector, 
+    const complex_t k, const complex_t eta, 
+    const real_t a, quadl_domain_t quadl);
 
 #endif

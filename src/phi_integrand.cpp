@@ -35,7 +35,7 @@ complex_t phi_1d_1d_integrand_1(const complex_t alpha, void *args_){
     basis_1d_t b_n=args->b_n;
     real_t a=args->a;
     real_t I_mm, I_mp, I_pm, I_pp;
-    integrand_L1_1d_1d(real(alpha), b_m, b_n, I_mm, I_mp, I_pm, I_pp, a, args->lambda);
+    integrand_L1_1d_1d(real(alpha), b_m, b_n, I_mm, I_mp, I_pm, I_pp, a);
     complex_t ans=I_mm/mag(b_n.L_m[0])-I_mp/mag(b_n.L_p[0])-I_pm/mag(b_n.L_m[0])+I_pp/mag(b_n.L_p[0]);
     return ans/(4.0*pi);
 }

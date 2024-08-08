@@ -332,7 +332,7 @@ sigma_t engine_t::compute_RCS(const real_t theta_i, const real_t phi_i){
     args.k = real(this->k_b);
     args.eta = real(this->eta_b);
     complex_t sum_theta=0.0, sum_phi=0.0;
-    //
+    // 1d
     int_t flag;
     edge_domain_t edge={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(1.0, 0.0, 0.0)};
     for (size_t m=0; m<this->N_basis_1d; m++){
@@ -354,7 +354,7 @@ far_field_t engine_t::compute_far_field(const real_t theta_i, const real_t phi_i
     args.k = real(this->k_b);
     args.eta = real(this->eta_b);
     complex_t sum_theta=0.0, sum_phi=0.0;
-    //
+    // 1d
     int_t flag;
     edge_domain_t edge={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(1.0, 0.0, 0.0)};
     for (size_t m=0; m<this->N_basis_1d; m++){
@@ -366,4 +366,19 @@ far_field_t engine_t::compute_far_field(const real_t theta_i, const real_t phi_i
     far_field.theta = sum_theta;
     far_field.phi = sum_phi;
     return far_field;
+}
+
+near_field_t engine_t::compute_near_field_E(const vector_t<real_t> r){
+    near_field_t near_field;
+    vector_t<real_t> x=vector_t<real_t>(1.0, 0.0, 0.0);
+    vector_t<real_t> y=vector_t<real_t>(0.0, 1.0, 0.0);
+    vector_t<real_t> z=vector_t<real_t>(0.0, 0.0, 1.0);
+    // 1d
+    for (size_t m=0; m<this->N_basis_1d; m++){
+        basis_1d_t b_m=this->shape.get_basis_1d(m);
+        near_field.x+= compute_E_1d(b_m, r, x, k_b, eta_b, a, quadl);
+        near_field.y+= compute_E_1d(b_m, r, y, k_b, eta_b, a, quadl);
+        near_field.z+= compute_E_1d(b_m, r, z, k_b, eta_b, a, quadl);
+    }
+    return near_field;
 }
