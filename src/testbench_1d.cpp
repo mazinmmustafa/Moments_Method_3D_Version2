@@ -387,3 +387,57 @@ void test_engine_1d_RCS_vertical_wire(){
     
     L.unset();
 }
+
+void test_engine_1d_far_field_transmission_line(){
+
+    // problem defintions
+    const real_t cm=1.0E-2;
+    const real_t mm=1.0E-3;
+    const real_t GHz=1.0E+9;
+
+    const real_t freq=1.0*GHz;
+    const real_t lambda=c_0/freq;
+    const real_t clmax=lambda/21.0;
+    const complex_t mu_b=1.0, eps_b=1.0;
+    const real_t L=150.0*cm;
+    const real_t h=25.0*cm;
+    const real_t a=0.8*mm;
+
+    const size_t N_ports=2;
+    const int_t pg1=1; 
+    const int_t pg2=2; 
+    const vector_t<real_t> p1=vector_t<real_t>(+0.0, +1.0, +0.0);
+    const vector_t<real_t> p2=vector_t<real_t>(+0.0, +1.0, +0.0);
+    const complex_t Z_0=50.0;
+
+    const real_t theta=deg2rad(90.0);
+    const size_t Ns=401;
+    const real_t phi_min=deg2rad(-180.0);
+    const real_t phi_max=deg2rad(+180.0);
+    range_t phi;
+    phi.set(phi_min, phi_max, Ns);
+    phi.linspace();
+
+    engine_t engine;
+    create_transmission_line(L, 2.0*h, clmax);
+    engine.set(freq, mu_b, eps_b, clmax, 1.0, a, N_ports);
+    engine.assign_port(0, +2.0, 2.0*Z_0, pg1, p1, 0.0, 0.0);
+    engine.assign_port(1, +0.0, 0.0, pg2, p2, 0.0, 0.0);
+
+    engine.compute_Z_mn();
+    engine.compute_V_m_ports();
+    engine.compute_I_n();
+    engine.export_solutions();
+
+    far_field_t far_field;
+    file_t file;
+    file.open("data/far_field.txt", 'w');
+    for (size_t i=0; i<Ns; i++){
+        far_field = engine.compute_far_field(theta, phi(i));
+        file.write("%21.14E %21.14E %21.14E\n", rad2deg(phi(i)), abs(far_field.theta), abs(far_field.phi));
+    }
+    engine.unset();
+    file.close();
+    
+    phi.unset();
+}

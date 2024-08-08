@@ -1,7 +1,5 @@
 close all; clear; clc;
 
-N = 2;
-Z0 = 50;
 data  =   load("../data/RCS.txt");
 
 figure()

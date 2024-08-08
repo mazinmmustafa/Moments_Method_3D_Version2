@@ -57,9 +57,9 @@ complex_t compute_scattered_far_field_E_theta_integrand_1d(const complex_t alpha
     rho_p = -1.0*real(alpha)*b_m.L_p[0];
     incident_field_t incident_field;
     r = b_m.r_m+rho_m;
-    I_m = (k*eta/(4.0*pi))*(theta_i_u*rho_m)*exp(+j*(k_i*r));
+    I_m = (-j*k*eta/(4.0*pi))*(theta_i_u*rho_m)*exp(+j*(k_i*r));
     r = b_m.r_p-rho_p;
-    I_p = (k*eta/(4.0*pi))*(theta_i_u*rho_p)*exp(+j*(k_i*r));
+    I_p = (-j*k*eta/(4.0*pi))*(theta_i_u*rho_p)*exp(+j*(k_i*r));
     return I_m+I_p;
 }
 
@@ -82,9 +82,9 @@ complex_t compute_scattered_far_field_E_phi_integrand_1d(const complex_t alpha, 
     rho_p = -1.0*real(alpha)*b_m.L_p[0];
     incident_field_t incident_field;
     r = b_m.r_m+rho_m;
-    I_m = (k*eta/(4.0*pi))*(phi_i_u*rho_m)*exp(+j*(k_i*r));
+    I_m = (-j*k*eta/(4.0*pi))*(phi_i_u*rho_m)*exp(+j*(k_i*r));
     r = b_m.r_p-rho_p;
-    I_p = (k*eta/(4.0*pi))*(phi_i_u*rho_p)*exp(+j*(k_i*r));
+    I_p = (-j*k*eta/(4.0*pi))*(phi_i_u*rho_p)*exp(+j*(k_i*r));
     return I_m+I_p;
 }
 

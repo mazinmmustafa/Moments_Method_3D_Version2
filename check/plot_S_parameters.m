@@ -6,10 +6,6 @@ data  =   load("../data/S_matrix.txt");
 
 [Ns, ~] = size(data);
 
-for i=1:Ns
-  fprintf("%f\n", abs(data(i, 4)+1j*data(i, 5)));
-  
-  end
 S = zeros(Ns, N, N);
 for i=1:Ns
   counter = 1;
