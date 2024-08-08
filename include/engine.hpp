@@ -21,6 +21,7 @@
 #include "phi_integrand.hpp"
 #include "Z_mn.hpp"
 #include "incident_field.hpp"
+#include "scattered_field.hpp"
 
 // Definitions
 struct port_t{

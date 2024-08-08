@@ -331,9 +331,6 @@ sigma_t engine_t::compute_RCS(const real_t theta_i, const real_t phi_i){
     args.phi_i = phi_i;
     args.k = real(this->k_b);
     args.eta = real(this->eta_b);
-    args.N_basis_1d = this->N_basis_1d;
-    args.I_n = &this->I_n;
-    args.shape = &this->shape;
     complex_t sum_theta=0.0, sum_phi=0.0;
     //
     int_t flag;
@@ -356,9 +353,6 @@ far_field_t engine_t::compute_far_field(const real_t theta_i, const real_t phi_i
     args.phi_i = phi_i;
     args.k = real(this->k_b);
     args.eta = real(this->eta_b);
-    args.N_basis_1d = this->N_basis_1d;
-    args.I_n = &this->I_n;
-    args.shape = &this->shape;
     complex_t sum_theta=0.0, sum_phi=0.0;
     //
     int_t flag;

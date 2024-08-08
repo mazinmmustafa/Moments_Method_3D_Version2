@@ -28,10 +28,6 @@ struct incident_field_args_t{
     real_t eta=0.0;
     vector_t<real_t> r;
     //
-    vector_t<real_t> unit_vector;
-    matrix_t<complex_t> *I_n=null;
-    shape_t *shape=null;
-    size_t N_basis_1d=0;
 };
 
 // Functions
