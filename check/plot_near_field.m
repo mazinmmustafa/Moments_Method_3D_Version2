@@ -9,5 +9,19 @@ figure()
 hold on
 plot(data(:, 1), abs(Ex))
 plot(data(:, 1), abs(Ey), '--')
-plot(data(:, 1), abs(Ez))
+plot(data(:, 1), abs(Ez), '-k')
 hold off
+
+% figure()
+% hold on
+% plot(data(:, 1), real(Ex))
+% plot(data(:, 1), real(Ey), '--')
+% plot(data(:, 1), real(Ez), '-k')
+% hold off
+% 
+% figure()
+% hold on
+% plot(data(:, 1), imag(Ex))
+% plot(data(:, 1), imag(Ey), '--')
+% plot(data(:, 1), imag(Ez), '-k')
+% hold off

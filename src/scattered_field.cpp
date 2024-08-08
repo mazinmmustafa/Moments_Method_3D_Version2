@@ -58,8 +58,8 @@ complex_t E_1d_singular_integrand_1(const complex_t alpha, void *args_){
     R_p = mag(R_p_vector-r);
     R_m = sqrt(R_m*R_m+a*a);
     R_p = sqrt(R_p*R_p+a*a);
-    I_m = (-j*k*exp(-j*k*R_m/2.0)*sinc(k*R_m/2.0))*(+1.0*alpha*b_m.L_m[0]*args->unit_vector);
-    I_p = (-j*k*exp(-j*k*R_p/2.0)*sinc(k*R_p/2.0))*(-1.0*alpha*b_m.L_p[0]*args->unit_vector);
+    I_m = -j*k*exp(-j*k*R_m/2.0)*sinc(k*R_m/2.0)*(+1.0*alpha*b_m.L_m[0]*args->unit_vector);
+    I_p = -j*k*exp(-j*k*R_p/2.0)*sinc(k*R_p/2.0)*(-1.0*alpha*b_m.L_p[0]*args->unit_vector);
     return (I_m+I_p)/(4.0*pi);
 }
 
@@ -78,8 +78,8 @@ complex_t E_1d_singular_integrand_2(const complex_t alpha, void *args_){
     R_p = mag(R_p_vector-r);
     R_m = sqrt(R_m*R_m+a*a);
     R_p = sqrt(R_p*R_p+a*a);
-    I_m = (-0.5*k*k*exp(-j*k*R_m/2.0)*(sinc(k*R_m/2.0)+j*sinc_dx(k*R_m/2.0)))*(unit(R_m_vector-r)*args->unit_vector);
-    I_p = (-0.5*k*k*exp(-j*k*R_p/2.0)*(sinc(k*R_p/2.0)+j*sinc_dx(k*R_p/2.0)))*(unit(R_p_vector-r)*args->unit_vector);
+    I_m = -0.5*k*k*exp(-j*k*R_m/2.0)*(sinc(k*R_m/2.0)+j*sinc_dx(k*R_m/2.0))*(unit(R_m_vector-r)*args->unit_vector);
+    I_p = -0.5*k*k*exp(-j*k*R_p/2.0)*(sinc(k*R_p/2.0)+j*sinc_dx(k*R_p/2.0))*(unit(R_p_vector-r)*args->unit_vector);
     return (I_m-I_p)/(4.0*pi);
 }
 
@@ -123,13 +123,14 @@ complex_t compute_E_1d(const basis_1d_t b_m, const vector_t<real_t> r, const vec
     complex_t I1, I2, I3, I4;
     int_t flag;
     edge_domain_t edge={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(+1.0, 0.0, 0.0)};
+    //
     I1 = quadl.integral_1d(E_1d_singular_integrand_1, &args, edge, flag);
     assert_error(!flag, "no convergence");
     I2 = E_1d_integral_1(&args);
     I3 = quadl.integral_1d(E_1d_singular_integrand_2, &args, edge, flag);
     assert_error(!flag, "no convergence");
     I4 = E_1d_integral_2(&args);
-    return -j*k*eta*((I1+I2)-(I3+I4/(k*k)));
+    return -j*k*eta*((1.0*I1+1.0*I2)-(0.0*I3+0.0*I4)/(k*k));
 }
 
 // 1d 2d

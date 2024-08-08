@@ -373,12 +373,15 @@ near_field_t engine_t::compute_near_field_E(const vector_t<real_t> r){
     vector_t<real_t> x=vector_t<real_t>(1.0, 0.0, 0.0);
     vector_t<real_t> y=vector_t<real_t>(0.0, 1.0, 0.0);
     vector_t<real_t> z=vector_t<real_t>(0.0, 0.0, 1.0);
+    near_field.x = 0.0;
+    near_field.y = 0.0;
+    near_field.z = 0.0;
     // 1d
     for (size_t m=0; m<this->N_basis_1d; m++){
         basis_1d_t b_m=this->shape.get_basis_1d(m);
-        near_field.x+= compute_E_1d(b_m, r, x, k_b, eta_b, a, quadl);
-        near_field.y+= compute_E_1d(b_m, r, y, k_b, eta_b, a, quadl);
-        near_field.z+= compute_E_1d(b_m, r, z, k_b, eta_b, a, quadl);
+        near_field.x+= compute_E_1d(b_m, r, x, k_b, eta_b, a, quadl)*this->I_n(m, 0);
+        near_field.y+= compute_E_1d(b_m, r, y, k_b, eta_b, a, quadl)*this->I_n(m, 0);
+        near_field.z+= compute_E_1d(b_m, r, z, k_b, eta_b, a, quadl)*this->I_n(m, 0);
     }
     return near_field;
 }
