@@ -8,6 +8,6 @@ Ez = data(:, 6)+1j*data(:, 7);
 figure()
 hold on
 plot(data(:, 1), abs(Ex))
-plot(data(:, 1), abs(Ey))
+plot(data(:, 1), abs(Ey), '--')
 plot(data(:, 1), abs(Ez))
 hold off
