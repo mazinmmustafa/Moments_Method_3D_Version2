@@ -27,5 +27,8 @@ struct scattered_field_args_t{
 complex_t compute_E_1d(const basis_1d_t b_m, const vector_t<real_t> r, const vector_t<real_t> unit_vector, 
     const complex_t k, const complex_t eta, 
     const real_t a, quadl_domain_t quadl);
+complex_t compute_H_1d(const basis_1d_t b_m, const vector_t<real_t> r, const vector_t<real_t> unit_vector, 
+    const complex_t k, const complex_t eta, 
+    const real_t a, quadl_domain_t quadl);
 
 #endif

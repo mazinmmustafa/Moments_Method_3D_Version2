@@ -462,8 +462,8 @@ void test_engine_1d_near_field_vertical_dipole(){
     const complex_t Z_0=50.0;
 
     const size_t Ns=401;
-    const real_t z_min=-400.0*mm;
-    const real_t z_max=+400.0*mm;
+    const real_t z_min=-500.0*mm;
+    const real_t z_max=+500.0*mm;
     const real_t x=+200.0*mm;
     const real_t y=+200.0*mm;
 
@@ -474,23 +474,38 @@ void test_engine_1d_near_field_vertical_dipole(){
     engine_t engine;
     create_vertical_wire_dipole(L, clmax, clmax);
     engine.set(freq, mu_b, eps_b, clmax, 1.0, a, N_ports);
-    engine.assign_port(0, +sqrt(8.0*Z_0), Z_0, pg, p, 0.0, 0.0);
+    engine.assign_port(0, 1.0, Z_0, pg, p, 0.0, 0.0);
 
     engine.compute_Z_mn();
     engine.compute_V_m_ports();
     engine.compute_I_n();
+    engine.export_solutions();
 
     vector_t<real_t> r;
-    near_field_t E;
+    near_field_t E, H;
     file_t file;
     file.open("data/near_field.txt", 'w');
     for (size_t i=0; i<Ns; i++){
-        r = vector_t<real_t>(x, y, z(i));
+        r = vector_t<real_t>(0*x, y, z(i));
         E = engine.compute_near_field_E(r);
-        file.write("%21.14E %21.14E %21.14E %21.14E %21.14E %21.14E %21.14E\n", z(i), 
+        print(E.x);
+        print(E.y);
+        print(E.z);
+        H = engine.compute_near_field_H(r);
+        print(H.x);
+        print(H.y);
+        print(H.z);
+        exit(0);
+        file.write("%21.14E ", z(i));
+        file.write("%21.14E %21.14E %21.14E %21.14E %21.14E %21.14E ", 
             real(E.x), imag(E.x),
             real(E.y), imag(E.y),
             real(E.z), imag(E.z));
+        file.write("%21.14E %21.14E %21.14E %21.14E %21.14E %21.14E ", 
+            real(H.x), imag(H.x),
+            real(H.y), imag(H.y),
+            real(H.z), imag(H.z));
+        file.write("\n");
     }
     engine.unset();
     file.close();
