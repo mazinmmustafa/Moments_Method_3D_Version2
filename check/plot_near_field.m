@@ -12,16 +12,14 @@ plot(data(:, 1), abs(Ey), '--')
 plot(data(:, 1), abs(Ez), '-k')
 hold off
 
-% figure()
-% hold on
-% plot(data(:, 1), real(Ex))
-% plot(data(:, 1), real(Ey), '--')
-% plot(data(:, 1), real(Ez), '-k')
-% hold off
-% 
-% figure()
-% hold on
-% plot(data(:, 1), imag(Ex))
-% plot(data(:, 1), imag(Ey), '--')
-% plot(data(:, 1), imag(Ez), '-k')
-% hold off
+Hx = data(:, 8)+1j*data(:, 9);
+Hy = data(:, 10)+1j*data(:, 11);
+Hz = data(:, 12)+1j*data(:, 13);
+
+
+figure()
+hold on
+plot(data(:, 1), abs(Hx)*1E3)
+plot(data(:, 1), abs(Hy)*1E3, '--')
+plot(data(:, 1), abs(Hz)*1E3, '-k')
+hold off

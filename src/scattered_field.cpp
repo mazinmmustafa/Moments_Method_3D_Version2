@@ -3,6 +3,24 @@
 
 // 1d
 
+void integrand_L1_1d(basis_1d_t b_m, const vector_t<real_t> p, 
+    real_t &I_m, real_t &I_p, const real_t a){
+    projection_1d_para para;
+    real_t ans;
+    // m
+    para = prjection_1d(b_m.r_m, b_m.e[0], p);
+    para.P_p = sqrt(para.P_p*para.P_p+a*a);
+    para.P_m = sqrt(para.P_m*para.P_m+a*a);
+    ans = log((para.P_p+para.l_p)/(para.P_m+para.l_m));
+    I_m = ans;
+    // p
+    para = prjection_1d(b_m.e[0], b_m.r_p, p);
+    para.P_p = sqrt(para.P_p*para.P_p+a*a);
+    para.P_m = sqrt(para.P_m*para.P_m+a*a);
+    ans = log((para.P_p+para.l_p)/(para.P_m+para.l_m));
+    I_p = ans;
+}
+
 void integrand_L2_1d(basis_1d_t b_m, const vector_t<real_t> p, 
     vector_t<real_t> &I_m, vector_t<real_t> &I_p,const real_t a){
     projection_1d_para para;
@@ -88,15 +106,30 @@ complex_t E_1d_integral_1(void *args_){
     basis_1d_t b_m=args->b_m;
     real_t a=args->a;
     const vector_t<real_t> r=args->r;
-    vector_t<real_t> I_m, I_p;
-    integrand_L2_1d(b_m, r, I_m, I_p, a);
+    real_t I_m, I_p;
+    integrand_L1_1d(b_m, r, I_m, I_p, a);
+    projection_1d_para para_m = prjection_1d(b_m.r_m, b_m.e[0], r);
+    projection_1d_para para_p = prjection_1d(b_m.e[0], b_m.r_p, r);
     complex_t ans=0.0;
-    ans+= +1.0*args->unit_vector*I_m;
-    ans+= +1.0*args->unit_vector*I_p;
+    ans+= -1.0*args->unit_vector*(para_m.l_m*para_m.l_unit)*I_m/mag(b_m.L_m[0]);
+    ans+= +1.0*args->unit_vector*(para_p.l_p*para_p.l_unit)*I_p/mag(b_m.L_p[0]);
     return ans/(4.0*pi);
 }
 
 complex_t E_1d_integral_2(void *args_){
+    scattered_field_args_t *args=(scattered_field_args_t*)args_;
+    basis_1d_t b_m=args->b_m;
+    real_t a=args->a;
+    const vector_t<real_t> r=args->r;
+    vector_t<real_t> I_m, I_p;
+    integrand_L2_1d(b_m, r, I_m, I_p, a);
+    complex_t ans=0.0;
+    ans+= +1.0*args->unit_vector*I_m/mag(b_m.L_m[0]);
+    ans+= -1.0*args->unit_vector*I_p/mag(b_m.L_p[0]);
+    return ans/(4.0*pi);
+}
+
+complex_t E_1d_integral_3(void *args_){
     scattered_field_args_t *args=(scattered_field_args_t*)args_;
     basis_1d_t b_m=args->b_m;
     real_t a=args->a;
@@ -120,17 +153,18 @@ complex_t compute_E_1d(const basis_1d_t b_m, const vector_t<real_t> r, const vec
     args.a = a;
     args.k = k;
     args.eta = eta;
-    complex_t I1, I2, I3, I4;
+    complex_t I1, I2, I3, I4, I5;
     int_t flag;
     edge_domain_t edge={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(+1.0, 0.0, 0.0)};
     //
     I1 = quadl.integral_1d(E_1d_singular_integrand_1, &args, edge, flag);
     assert_error(!flag, "no convergence");
     I2 = E_1d_integral_1(&args);
-    I3 = quadl.integral_1d(E_1d_singular_integrand_2, &args, edge, flag);
+    I3 = E_1d_integral_2(&args);
+    I4 = quadl.integral_1d(E_1d_singular_integrand_2, &args, edge, flag);
     assert_error(!flag, "no convergence");
-    I4 = E_1d_integral_2(&args);
-    return -j*k*eta*((I1+I2)-(I3+I4)/(k*k));
+    I5 = E_1d_integral_3(&args);
+    return -j*k*eta*((I1+I2+I3)-(I4+I5)/(k*k));
 }
 
 complex_t H_1d_singular_integrand_1(const complex_t alpha, void *args_){

@@ -52,7 +52,6 @@ complex_t phi_1d_1d(const basis_1d_t b_m, const basis_1d_t b_n, const complex_t 
     assert_error(!flag, "no convergence");
     I2 = args.quadl.integral_1d(phi_1d_1d_integrand_1, &args, edge, flag);
     assert_error(!flag, "no convergence");
-    // print(I1+I2);
     return I1+I2;
 }
 
