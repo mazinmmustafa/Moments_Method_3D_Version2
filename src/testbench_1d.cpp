@@ -486,9 +486,14 @@ void test_engine_1d_near_field_vertical_dipole(){
     file_t file;
     file.open("data/near_field.txt", 'w');
     for (size_t i=0; i<Ns; i++){
-        r = vector_t<real_t>(x, y, z(i));
+        // r = vector_t<real_t>(x, y, z(i));
+        r = vector_t<real_t>(200.0*mm, 200.0*mm, 200.0*mm);
         E = engine.compute_near_field_E(r);
         H = engine.compute_near_field_H(r);
+        print(H.x);
+        print(H.y);
+        print(H.z);
+        exit(0);
         file.write("%21.14E ", z(i));
         file.write("%21.14E %21.14E %21.14E %21.14E %21.14E %21.14E ", 
             real(E.x), imag(E.x),
