@@ -183,10 +183,10 @@ complex_t H_1d_singular_integrand_1(const complex_t alpha, void *args_){
     R_m = sqrt(R_m*R_m+a*a);
     R_p = sqrt(R_p*R_p+a*a);
     I_m = -0.5*k*k*exp(-j*k*R_m/2.0)*(sinc(k*R_m/2.0)+j*sinc_dx(k*R_m/2.0))*
-        (alpha*(b_m.L_m[0]^unit(R_m_vector-r))*args->unit_vector);
+        (alpha*(+1.0*b_m.L_m[0]^unit(R_m_vector-r))*args->unit_vector);
     I_p = -0.5*k*k*exp(-j*k*R_p/2.0)*(sinc(k*R_p/2.0)+j*sinc_dx(k*R_p/2.0))*
-        (alpha*(b_m.L_p[0]^unit(R_m_vector-r))*args->unit_vector);
-    return (I_m-I_p)/(4.0*pi);
+        (alpha*(-1.0*b_m.L_p[0]^unit(R_p_vector-r))*args->unit_vector);
+    return (I_m+I_p)/(4.0*pi);
 }
 
 complex_t H_1d_integral_1(void *args_){

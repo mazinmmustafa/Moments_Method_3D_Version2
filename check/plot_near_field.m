@@ -19,7 +19,7 @@ Hz = data(:, 12)+1j*data(:, 13);
 
 figure()
 hold on
-plot(data(:, 1), abs(Hx)*1E3)
-plot(data(:, 1), abs(Hy)*1E3, '--')
-plot(data(:, 1), abs(Hz)*1E3, '-k')
+plot(data(:, 1), abs(Hx))
+plot(data(:, 1), abs(Hy), '--')
+plot(data(:, 1), abs(Hz), '-k')
 hold off

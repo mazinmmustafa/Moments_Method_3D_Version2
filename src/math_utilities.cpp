@@ -1,7 +1,7 @@
 //
 #include "math_utilities.hpp"
 
-const real_t eps_sinc=1.0E-4;
+const real_t eps_sinc=1.0E-5;
 
 complex_t sinc(const complex_t z){
     return abs(z)<eps_sinc ? 1.0-z*z/6.0+z*z*z*z/120.0 : sin(z)/z;
