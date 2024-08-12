@@ -13,12 +13,12 @@
 
 // Definitions
 
-struct edge_t{
+struct line_t{
     vector_t<real_t> v[2];
     int_t physical_group=-1;
     real_t length=0.0;
-    edge_t(){}
-    edge_t(const vector_t<real_t> v1, const vector_t<real_t> v2, const int_t physical_group){
+    line_t(){}
+    line_t(const vector_t<real_t> v1, const vector_t<real_t> v2, const int_t physical_group){
         this->v[0] = v1;
         this->v[1] = v2;
         get_length();
@@ -26,7 +26,7 @@ struct edge_t{
     }   
     void get_length(){
         this->length = mag(v[0]-v[1]);
-        assert_error(this->length>0.0, "invalid edge");
+        assert_error(this->length>0.0, "invalid line");
     }
 };
 

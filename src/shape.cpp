@@ -54,8 +54,8 @@ void shape_t::load_mesh(const real_t metric_unit){
     vector_t<real_t> v1, v2, v3, v4, v5;
     int_t pg;
     // 1d bases
-    edge_t *edge_list=(edge_t*)calloc(N_1d, sizeof(edge_t));
-    assert(edge_list!=null);
+    line_t *line_list=(line_t*)calloc(N_1d, sizeof(line_t));
+    assert(line_list!=null);
     file.open("mesh/mesh/elements_1d.txt", 'r');
     for (size_t i=0; i<this->N_1d; i++){
         pg = -1;
@@ -70,46 +70,46 @@ void shape_t::load_mesh(const real_t metric_unit){
         z = round_m(z, -round(log10(this->mesh_tol)));
         v2 = vector_t<real_t>(x, y, z);
         file.read("%d", &pg);
-        edge_list[i] = edge_t(v1, v2, pg);
+        line_list[i] = line_t(v1, v2, pg);
     }
     file.close();
     file.open("mesh/basis/basis_1d.txt", 'w');
     binary_file.open("mesh/basis/basis_1d.bin", 'w');
     for (size_t i=0; i<this->N_1d; i++){
         progress_bar(i, this->N_1d, "creating 1d basis functions...");
-        edge_t edge_s=edge_list[i];
+        line_t line_s=line_list[i];
         for (size_t j=(i+1); j<this->N_1d; j++){
-            edge_t edge_d=edge_list[j];
-            size_t new_edge[1];
-            size_t index_edge_s=0, index_edge_d=0;
+            line_t line_d=line_list[j];
+            size_t new_line[1];
+            size_t index_line_s=0, index_line_d=0;
             size_t counter=0;
             for (size_t ii=0; ii<2; ii++){
                 for (size_t jj=0; jj<2; jj++){
-                    if (is_equal(edge_s.v[ii], edge_d.v[jj], this->mesh_tol*this->lambda)){
-                        new_edge[counter] = ii;
-                        index_edge_s+=ii;
-                        index_edge_d+=jj;
+                    if (is_equal(line_s.v[ii], line_d.v[jj], this->mesh_tol*this->lambda)){
+                        new_line[counter] = ii;
+                        index_line_s+=ii;
+                        index_line_d+=jj;
                         counter++;
                     }
                 }
             }
             assert_error(counter<2, "invlid mesh");
             if (counter==1){
-                if ((this->is_physical_specified&&edge_s.physical_group>0&&edge_d.physical_group>0) || !this->is_physical_specified){
-                    index_edge_s = mod_1d(index_edge_s);
-                    index_edge_d = mod_1d(index_edge_d);
-                    v1 = edge_s.v[index_edge_s];
-                    v2 = edge_s.v[new_edge[0]];
-                    v3 = edge_d.v[index_edge_d];
+                if ((this->is_physical_specified&&line_s.physical_group>0&&line_d.physical_group>0) || !this->is_physical_specified){
+                    index_line_s = mod_1d(index_line_s);
+                    index_line_d = mod_1d(index_line_d);
+                    v1 = line_s.v[index_line_s];
+                    v2 = line_s.v[new_line[0]];
+                    v3 = line_d.v[index_line_d];
                     file.write("%21.14E %21.14E %21.14E ", v1.x, v1.y, v1.z);
                     file.write("%21.14E %21.14E %21.14E ", v2.x, v2.y, v2.z);
                     file.write("%21.14E %21.14E %21.14E ", v3.x, v3.y, v3.z);
                     binary_file.write(&v1);
                     binary_file.write(&v2);
                     binary_file.write(&v3);
-                    file.write("%d %d\n", edge_s.physical_group, edge_d.physical_group);
-                    binary_file.write(&edge_s.physical_group);
-                    binary_file.write(&edge_d.physical_group);
+                    file.write("%d %d\n", line_s.physical_group, line_d.physical_group);
+                    binary_file.write(&line_s.physical_group);
+                    binary_file.write(&line_d.physical_group);
                     this->N_basis_1d++;
                 }
             }
@@ -117,7 +117,7 @@ void shape_t::load_mesh(const real_t metric_unit){
     }
     binary_file.close();
     file.close();
-    free(edge_list);
+    free(line_list);
     // 2d bases
     triangle_t *triangle_list=(triangle_t*)calloc(N_2d, sizeof(triangle_t));
     assert(triangle_list!=null);

@@ -237,7 +237,7 @@ void engine_t::compute_V_m_incident(const complex_t E_TM, const complex_t E_TE, 
         size_t i=this->N_basis_3d+this->N_basis_2d;
         for (size_t m=0; m<this->N_basis_1d; m++){
             b_m = this->shape.get_basis_1d(m);
-            edge_domain_t edge={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(1.0, 0.0, 0.0)};
+            line_domain_t line={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(1.0, 0.0, 0.0)};
             incident_field_args_t args;
             args.b_m = b_m;
             args.E_TM = E_TM;
@@ -247,7 +247,7 @@ void engine_t::compute_V_m_incident(const complex_t E_TM, const complex_t E_TE, 
             args.k = real(this->k_b);
             args.eta = real(this->eta_b);
             int_t flag;
-            this->V_m(i+m, 0) =  this->quadl.integral_1d(compute_incident_E_integrand_1d, &args, edge, flag);
+            this->V_m(i+m, 0) =  this->quadl.integral_1d(compute_incident_E_integrand_1d, &args, line, flag);
         }
     }
     // Vm_S
@@ -334,12 +334,12 @@ sigma_t engine_t::compute_RCS(const real_t theta_i, const real_t phi_i){
     complex_t sum_theta=0.0, sum_phi=0.0;
     // 1d
     int_t flag;
-    edge_domain_t edge={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(1.0, 0.0, 0.0)};
+    line_domain_t line={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(1.0, 0.0, 0.0)};
     for (size_t m=0; m<this->N_basis_1d; m++){
         basis_1d_t b_m=this->shape.get_basis_1d(m);
         args.b_m = b_m;
-        sum_theta+=this->quadl.integral_1d(compute_scattered_far_field_E_theta_integrand_1d, &args, edge, flag)*this->I_n(m, 0);
-        sum_phi+=this->quadl.integral_1d(compute_scattered_far_field_E_phi_integrand_1d, &args, edge, flag)*this->I_n(m, 0);
+        sum_theta+=this->quadl.integral_1d(compute_scattered_far_field_E_theta_integrand_1d, &args, line, flag)*this->I_n(m, 0);
+        sum_phi+=this->quadl.integral_1d(compute_scattered_far_field_E_phi_integrand_1d, &args, line, flag)*this->I_n(m, 0);
     }
     sigma.theta = 4.0*pi*abs(sum_theta)*abs(sum_theta);
     sigma.phi = 4.0*pi*abs(sum_phi)*abs(sum_phi);
@@ -356,12 +356,12 @@ far_field_t engine_t::compute_far_field(const real_t theta_i, const real_t phi_i
     complex_t sum_theta=0.0, sum_phi=0.0;
     // 1d
     int_t flag;
-    edge_domain_t edge={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(1.0, 0.0, 0.0)};
+    line_domain_t line={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(1.0, 0.0, 0.0)};
     for (size_t m=0; m<this->N_basis_1d; m++){
         basis_1d_t b_m=this->shape.get_basis_1d(m);
         args.b_m = b_m;
-        sum_theta+=this->quadl.integral_1d(compute_scattered_far_field_E_theta_integrand_1d, &args, edge, flag)*this->I_n(m, 0);
-        sum_phi+=this->quadl.integral_1d(compute_scattered_far_field_E_phi_integrand_1d, &args, edge, flag)*this->I_n(m, 0);
+        sum_theta+=this->quadl.integral_1d(compute_scattered_far_field_E_theta_integrand_1d, &args, line, flag)*this->I_n(m, 0);
+        sum_phi+=this->quadl.integral_1d(compute_scattered_far_field_E_phi_integrand_1d, &args, line, flag)*this->I_n(m, 0);
     }
     far_field.theta = sum_theta;
     far_field.phi = sum_phi;

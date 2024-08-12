@@ -23,9 +23,9 @@ complex_t phi_1d_1d_singular_integrand_inner(const complex_t alpha_, void *args_
 complex_t phi_1d_1d_singular_integrand_outer(const complex_t alpha, void *args_){
     integrand_1d_1d_args *args=(integrand_1d_1d_args*)args_;
     args->alpha = alpha;
-    edge_domain_t edge={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(1.0, 0.0, 0.0)};
+    line_domain_t line={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(1.0, 0.0, 0.0)};
     int flag;
-    complex_t ans=args->quadl.integral_1d(phi_1d_1d_singular_integrand_inner, args, edge, flag);
+    complex_t ans=args->quadl.integral_1d(phi_1d_1d_singular_integrand_inner, args, line, flag);
     return ans;
 }
 
@@ -47,10 +47,10 @@ complex_t phi_1d_1d(const basis_1d_t b_m, const basis_1d_t b_n, const complex_t 
     args.k = k;
     args.lambda = lambda;
     complex_t I1=0.0, I2=0.0;
-    edge_domain_t edge={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(+1.0, 0.0, 0.0)};
-    I1 = args.quadl.integral_1d(phi_1d_1d_singular_integrand_outer, &args, edge, flag);
+    line_domain_t line={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(+1.0, 0.0, 0.0)};
+    I1 = args.quadl.integral_1d(phi_1d_1d_singular_integrand_outer, &args, line, flag);
     assert_error(!flag, "no convergence");
-    I2 = args.quadl.integral_1d(phi_1d_1d_integrand_1, &args, edge, flag);
+    I2 = args.quadl.integral_1d(phi_1d_1d_integrand_1, &args, line, flag);
     assert_error(!flag, "no convergence");
     return I1+I2;
 }

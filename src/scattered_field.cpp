@@ -155,13 +155,13 @@ complex_t compute_E_1d(const basis_1d_t b_m, const vector_t<real_t> r, const vec
     args.eta = eta;
     complex_t I1, I2, I3, I4, I5;
     int_t flag;
-    edge_domain_t edge={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(+1.0, 0.0, 0.0)};
+    line_domain_t line={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(+1.0, 0.0, 0.0)};
     //
-    I1 = quadl.integral_1d(E_1d_singular_integrand_1, &args, edge, flag);
+    I1 = quadl.integral_1d(E_1d_singular_integrand_1, &args, line, flag);
     assert_error(!flag, "no convergence");
     I2 = E_1d_integral_1(&args);
     I3 = E_1d_integral_2(&args);
-    I4 = quadl.integral_1d(E_1d_singular_integrand_2, &args, edge, flag);
+    I4 = quadl.integral_1d(E_1d_singular_integrand_2, &args, line, flag);
     assert_error(!flag, "no convergence");
     I5 = E_1d_integral_3(&args);
     return -j*k*eta*((I1+I2+I3)-(I4+I5)/(k*k));
@@ -216,9 +216,9 @@ complex_t compute_H_1d(const basis_1d_t b_m, const vector_t<real_t> r, const vec
     args.eta = eta;
     complex_t I1, I2;
     int_t flag;
-    edge_domain_t edge={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(+1.0, 0.0, 0.0)};
+    line_domain_t line={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(+1.0, 0.0, 0.0)};
     //
-    I1 = quadl.integral_1d(H_1d_singular_integrand_1, &args, edge, flag);
+    I1 = quadl.integral_1d(H_1d_singular_integrand_1, &args, line, flag);
     assert_error(!flag, "no convergence");
     I2 = H_1d_integral_1(&args);
     return I1+I2;

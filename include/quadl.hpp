@@ -46,7 +46,7 @@ class quadl_t{
             const real_t a_z, const real_t b_z, int &flag);
 };
 
-struct edge_domain_t{ // domain x
+struct line_domain_t{ // domain x
     vector_t<real_t> v1, v2;
     real_t length(){
         return abs(v2.x-v1.x);
@@ -92,9 +92,9 @@ class quadl_domain_t{
         const real_t w_3d[5]={-4.0/5.0, 9.0/20.0, 9.0/20.0, 9.0/20.0, 9.0/20.0};
         //
         complex_t quadl_1d(complex_t (*func)(const complex_t, void*), 
-            void *args, const edge_domain_t line);
+            void *args, const line_domain_t line);
         complex_t quadl_1d_(complex_t (*func)(const complex_t, void*), 
-            void *args, edge_domain_t line, size_t &k, const complex_t I_p);
+            void *args, line_domain_t line, size_t &k, const complex_t I_p);
         complex_t quadl_2d(complex_t (*func)(const complex_t, const complex_t, void*), 
             void *args, triangle_domain_t triangle);
         complex_t quadl_2d_(complex_t (*func)(const complex_t, const complex_t, void*), 
@@ -110,7 +110,7 @@ class quadl_domain_t{
         void set_2d(const size_t k_max, const real_t tol);
         void set_3d(const size_t k_max, const real_t tol);
         complex_t integral_1d(complex_t (*func)(const complex_t, void*), 
-            void *args, const edge_domain_t line, int &flag);
+            void *args, const line_domain_t line, int &flag);
         complex_t integral_2d(complex_t (*func)(const complex_t, const complex_t, void*), 
             void *args, const triangle_domain_t triangle, int &flag);
         complex_t integral_3d(complex_t (*func)(const complex_t, const complex_t, const complex_t, void*), 
