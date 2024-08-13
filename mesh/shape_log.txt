@@ -1,18 +1,26 @@
 Info    : Running 'C:\Users\musta132\AppData\Local\Programs\Python\Python312\Scripts\gmsh.bat\..\gmsh mesh/shape.geo -3 -clmax 0.0143 -format vtk -save_all -o mesh/shape.vtk' [Gmsh 4.13.1, 1 node, max. 1 thread]
-Info    : Started on Mon Aug 12 09:03:26 2024
+Info    : Started on Mon Aug 12 17:14:31 2024
 Info    : Reading 'mesh/shape.geo'...
 Info    : Done reading 'mesh/shape.geo'
 Info    : Meshing 1D...
 Info    : [  0%] Meshing curve 1 (Line)
-Info    : [ 30%] Meshing curve 2 (Line)
-Info    : [ 60%] Meshing curve 3 (Line)
-Info    : [ 80%] Meshing curve 4 (Line)
-Info    : Done meshing 1D (Wall 0.00107098s, CPU 0s)
+Info    : [ 10%] Meshing curve 2 (Line)
+Info    : [ 20%] Meshing curve 3 (Line)
+Info    : [ 30%] Meshing curve 4 (Line)
+Info    : [ 40%] Meshing curve 5 (Line)
+Info    : [ 50%] Meshing curve 6 (Line)
+Info    : [ 60%] Meshing curve 7 (Line)
+Info    : [ 60%] Meshing curve 8 (Line)
+Info    : [ 70%] Meshing curve 9 (Line)
+Info    : [ 80%] Meshing curve 10 (Line)
+Info    : [ 90%] Meshing curve 11 (Line)
+Info    : [100%] Meshing curve 12 (Line)
+Info    : Done meshing 1D (Wall 0.000885963s, CPU 0s)
 Info    : Meshing 2D...
-Info    : Done meshing 2D (Wall 6.10352e-05s, CPU 0s)
+Info    : Done meshing 2D (Wall 1.97887e-05s, CPU 0s)
 Info    : Meshing 3D...
-Info    : Done meshing 3D (Wall 8.51154e-05s, CPU 0s)
-Info    : 13 nodes 17 elements
+Info    : Done meshing 3D (Wall 3.09944e-05s, CPU 0s)
+Info    : 288 nodes 300 elements
 Info    : Writing 'mesh/shape.vtk'...
 Info    : Done writing 'mesh/shape.vtk'
-Info    : Stopped on Mon Aug 12 09:03:26 2024 (From start: Wall 0.0450671s, CPU 0.046875s)
+Info    : Stopped on Mon Aug 12 17:14:31 2024 (From start: Wall 0.0062871s, CPU 0.015625s)
