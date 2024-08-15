@@ -355,7 +355,7 @@ void test_engine_1d_RCS_vertical_wire(){
     
     const real_t theta_i=deg2rad(30.0);
     const real_t phi_i=deg2rad(0.0);
-    const real_t theta_s=deg2rad(60.0);
+    const real_t theta_s=deg2rad(30.0);
     const real_t phi_s=deg2rad(0.0);
 
     const size_t Ns=201;

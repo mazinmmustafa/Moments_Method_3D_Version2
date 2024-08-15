@@ -15,7 +15,7 @@ int main(){
     // test_engine_1d_transmission_line_S_parameters();
     // test_engine_1d_RCS_vertical_wire();
     // test_engine_1d_far_field_transmission_line();
-    test_engine_1d_near_field_vertical_dipole();
+    // test_engine_1d_near_field_vertical_dipole();
 
     return 0;
 }
