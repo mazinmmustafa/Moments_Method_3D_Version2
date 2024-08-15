@@ -35,19 +35,16 @@ complex_t psi_1d_1d_integrand_1(const complex_t alpha, void *args_){
     basis_1d_t b_n=args->b_n;
     real_t a=args->a;
     real_t I_mm, I_mp, I_pm, I_pp;
-    vector_t<real_t> rho_m, rho_p;
-    rho_m = +1.0*real(alpha)*b_m.L_m[0];
-    rho_p = -1.0*real(alpha)*b_m.L_p[0];
     integrand_L1_1d_1d(real(alpha), b_m, b_n, I_mm, I_mp, I_pm, I_pp, a);
     projection_1d_para para_m_m = prjection_1d(b_n.r_m, b_n.e[0], b_m.r_m+real(alpha)*b_m.L_m[0]);
     projection_1d_para para_m_p = prjection_1d(b_n.e[0], b_n.r_p, b_m.r_m+real(alpha)*b_m.L_m[0]);
     projection_1d_para para_p_m = prjection_1d(b_n.r_m, b_n.e[0], b_m.r_p+real(alpha)*b_m.L_p[0]);
     projection_1d_para para_p_p = prjection_1d(b_n.e[0], b_n.r_p, b_m.r_p+real(alpha)*b_m.L_p[0]);
     complex_t ans=0.0;
-    ans+= -1.0*(rho_m*(para_m_m.l_m*para_m_m.l_unit))*I_mm/mag(b_n.L_m[0]);
-    ans+= +1.0*(rho_m*(para_m_p.l_p*para_m_p.l_unit))*I_mp/mag(b_n.L_p[0]);
-    ans+= -1.0*(rho_p*(para_p_m.l_m*para_p_m.l_unit))*I_pm/mag(b_n.L_m[0]);
-    ans+= +1.0*(rho_p*(para_p_p.l_p*para_p_p.l_unit))*I_pp/mag(b_n.L_p[0]);
+    ans+= -1.0*(alpha*b_m.L_m[0]*(para_m_m.l_m*para_m_m.l_unit))*I_mm/mag(b_n.L_m[0]);
+    ans+= +1.0*(alpha*b_m.L_m[0]*(para_m_p.l_p*para_m_p.l_unit))*I_mp/mag(b_n.L_p[0]);
+    ans+= +1.0*(alpha*b_m.L_p[0]*(para_p_m.l_m*para_p_m.l_unit))*I_pm/mag(b_n.L_m[0]);
+    ans+= -1.0*(alpha*b_m.L_p[0]*(para_p_p.l_p*para_p_p.l_unit))*I_pp/mag(b_n.L_p[0]);
     return ans/(4.0*pi);
 }
 
@@ -57,15 +54,12 @@ complex_t psi_1d_1d_integrand_2(const complex_t alpha, void *args_){
     basis_1d_t b_n=args->b_n;
     real_t a=args->a;
     vector_t<real_t> I_mm, I_mp, I_pm, I_pp;
-    vector_t<real_t> rho_m, rho_p;
-    rho_m = +1.0*real(alpha)*b_m.L_m[0];
-    rho_p = -1.0*real(alpha)*b_m.L_p[0];
     integrand_L2_1d_1d(real(alpha), b_m, b_n, I_mm, I_mp, I_pm, I_pp, a);
     complex_t ans=0.0;
-    ans+= +1.0*rho_m*I_mm/mag(b_n.L_m[0]);
-    ans+= -1.0*rho_m*I_mp/mag(b_n.L_p[0]);
-    ans+= +1.0*rho_p*I_pm/mag(b_n.L_m[0]);
-    ans+= -1.0*rho_p*I_pp/mag(b_n.L_p[0]);
+    ans+= +1.0*alpha*b_m.L_m[0]*I_mm/mag(b_n.L_m[0]);
+    ans+= -1.0*alpha*b_m.L_m[0]*I_mp/mag(b_n.L_p[0]);
+    ans+= -1.0*alpha*b_m.L_p[0]*I_pm/mag(b_n.L_m[0]);
+    ans+= +1.0*alpha*b_m.L_p[0]*I_pp/mag(b_n.L_p[0]);
     return ans/(4.0*pi);
 }
 
