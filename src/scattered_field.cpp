@@ -140,6 +140,7 @@ complex_t E_1d_integral_3(void *args_){
     ans+= +1.0*args->unit_vector*I_m/mag(b_m.L_m[0]);
     ans+= -1.0*args->unit_vector*I_p/mag(b_m.L_p[0]);
     return ans/(4.0*pi);
+
 }
 
 complex_t compute_E_1d(const basis_1d_t b_m, const vector_t<real_t> r, const vector_t<real_t> unit_vector, 
@@ -164,7 +165,7 @@ complex_t compute_E_1d(const basis_1d_t b_m, const vector_t<real_t> r, const vec
     I4 = quadl.integral_1d(E_1d_singular_integrand_2, &args, line, flag);
     assert_error(!flag, "no convergence");
     I5 = E_1d_integral_3(&args);
-    return -j*k*eta*((I1+I2+I3)-(I4+I5)/(k*k));
+    return -j*k*eta*(I1+I2+I3)+j*(eta/k)*(I4+I5);
 }
 
 complex_t H_1d_singular_integrand_1(const complex_t alpha, void *args_){
