@@ -25,6 +25,7 @@ void shape_t::clear(){
 void shape_t::get_basis_functions(const real_t clmax, const real_t metric_unit){
     assert_error(clmax>0.0, "invalid maximum element size");
     assert_error(metric_unit>0.0, "invalid mertic unit");
+    this->metric_unit = metric_unit;
     call_gmsh(clmax);
     shape_t::load_mesh(metric_unit);
 }
@@ -93,7 +94,7 @@ void shape_t::load_mesh(const real_t metric_unit){
                     }
                 }
             }
-            assert_error(counter<2, "invlid mesh");
+            assert_error(counter<2, "invalid mesh");
             if (counter==1){
                 if ((this->is_physical_specified&&line_s.physical_group>0&&line_d.physical_group>0) || !this->is_physical_specified){
                     index_line_s = mod_1d(index_line_s);
@@ -163,7 +164,7 @@ void shape_t::load_mesh(const real_t metric_unit){
                     }
                 }
             }
-            assert_error(counter<3, "invlid mesh");
+            assert_error(counter<3, "invalid mesh");
             if (counter==2){
                 if ((this->is_physical_specified&&triangle_s.physical_group>0&&triangle_d.physical_group>0) || !this->is_physical_specified){
                     index_triangle_s = mod_2d(index_triangle_s);
@@ -252,7 +253,7 @@ void shape_t::load_mesh(const real_t metric_unit){
                     }
                 }
             }
-            assert_error(counter<4, "invlid mesh");
+            assert_error(counter<4, "invalid mesh");
             if (counter==3){
                 if ((this->is_physical_specified&&tetrahedron_s.physical_group>0&&tetrahedron_d.physical_group>0) || !this->is_physical_specified){
                     index_tetrahedron_s = mod_3d(index_tetrahedron_s);

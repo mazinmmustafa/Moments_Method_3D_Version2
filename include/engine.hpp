@@ -79,7 +79,12 @@ class engine_t{
         port_t *port_list=null;
         void save_Z_mn(const char *filename);
         void load_Z_mn(const char *filename);
-    public:         
+    public:        
+        void get_basis_info(size_t &N_1d, size_t &N_2d, size_t &N_3d){
+            N_1d = this->N_basis_1d;
+            N_2d = this->N_basis_2d;
+            N_3d = this->N_basis_3d;
+        }
         engine_t(){}
         ~engine_t(){}
         void set(const real_t freq, const complex_t mu_b, const complex_t eps_b, 
@@ -100,6 +105,7 @@ class engine_t{
         far_field_t compute_far_field(const real_t theta_i, const real_t phi_i);
         near_field_t compute_near_field_E(const vector_t<real_t> r);
         near_field_t compute_near_field_H(const vector_t<real_t> r);
+        void export_currents(const char *filename, const size_t resolution);
 };
 
 // Functions

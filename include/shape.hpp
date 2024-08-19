@@ -192,6 +192,7 @@ class shape_t{
         const real_t mesh_tol=1.0E-8;
         void load_mesh(const real_t metric_unit);
         void load_basis_functions();
+        real_t metric_unit=1.0;
     public:
         shape_t(){}
         ~shape_t(){}
@@ -227,6 +228,13 @@ class shape_t{
             assert_error(this->is_basis_allocated, "no basis functions available");
             assert_error(i<this->N_basis_3d, "index is out of range");
             return this->basis_3d_list[i];
+        }
+        //
+        real_t get_metric_unit(){
+            return this->metric_unit;
+        }
+        real_t get_mesh_tol(){
+            return this->mesh_tol;
         }
 };
 

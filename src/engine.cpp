@@ -403,3 +403,83 @@ near_field_t engine_t::compute_near_field_H(const vector_t<real_t> r){
     }
     return near_field;
 }
+
+//
+
+void engine_t::export_currents(const char *filename, const size_t resolution){
+    file_t file;
+    binary_file_t binary_file;
+    size_t N_0d, N_1d, N_2d, N_3d;
+    int_t is_physical_specified;
+    const real_t metric_unit=this->shape.get_metric_unit();
+    const real_t mesh_tol=this->shape.get_mesh_tol();
+    file.open("mesh/mesh/info.txt", 'r');
+    file.read("%zu %zu %zu %zu\n", &N_0d, &N_1d, &N_2d, &N_3d);
+    file.read("%d\n", &is_physical_specified);
+    file.close();
+    real_t x, y, z;
+    vector_t<real_t> v1, v2, v3, v4, v5;
+    int_t pg;
+    // 1d bases
+    line_t *line_list=(line_t*)calloc(N_1d, sizeof(line_t));
+    assert(line_list!=null);
+    file.open("mesh/mesh/elements_1d.txt", 'r');
+    for (size_t i=0; i<N_1d; i++){
+        pg = -1;
+        file.read("%lf %lf %lf", &x, &y, &z); x*=metric_unit; y*=metric_unit; z*=metric_unit;
+        x = round_m(x, -round(log10(mesh_tol)));
+        y = round_m(y, -round(log10(mesh_tol)));
+        z = round_m(z, -round(log10(mesh_tol)));
+        v1 = vector_t<real_t>(x, y, z);
+        file.read("%lf %lf %lf", &x, &y, &z); x*=metric_unit; y*=metric_unit; z*=metric_unit;
+        x = round_m(x, -round(log10(mesh_tol)));
+        y = round_m(y, -round(log10(mesh_tol)));
+        z = round_m(z, -round(log10(mesh_tol)));
+        v2 = vector_t<real_t>(x, y, z);
+        file.read("%d", &pg);
+        line_list[i] = line_t(v1, v2, pg);
+    }
+    file.close();
+    //
+    file.open(filename, 'w');
+    for (size_t i=0; i<N_1d; i++){
+        progress_bar(i, N_1d, "exporting currents");
+        line_t line=line_list[i];
+        vector_t<complex_t> J1=vector_t<complex_t>(0.0, 0.0, 0.0);
+        vector_t<complex_t> J2=vector_t<complex_t>(0.0, 0.0, 0.0);
+        for (size_t j=0; j<this->N_basis_1d; j++){
+            basis_1d_t b=this->shape.get_basis_1d(j);
+            // Scenario 1
+            if (is_equal(line.v[0], b.r_m, mesh_tol*this->lambda) &&
+                is_equal(line.v[1], b.e[0], mesh_tol*this->lambda)){
+                J2 = J2 + this->I_n(j, 0)*unit(+1.0*b.L_m[0]);
+            }
+            // Scenario 2
+            if (is_equal(line.v[0], b.r_p, mesh_tol*this->lambda) &&
+                is_equal(line.v[1], b.e[0], mesh_tol*this->lambda)){
+                J2 = J2 + this->I_n(j, 0)*unit(-1.0*b.L_p[0]);
+            }
+            // Scenario 3
+            if (is_equal(line.v[0], b.e[0], mesh_tol*this->lambda) &&
+                is_equal(line.v[1], b.r_m, mesh_tol*this->lambda)){
+                J1 = J1 + this->I_n(j, 0)*unit(+1.0*b.L_m[0]);
+            }
+            // Scenario 4
+            if (is_equal(line.v[0], b.e[0], mesh_tol*this->lambda) &&
+                is_equal(line.v[1], b.r_p, mesh_tol*this->lambda)){
+                J1 = J1 + this->I_n(j, 0)*unit(-1.0*b.L_p[0]);
+            }
+        }
+        real_t I1=mag(J1);
+        real_t I2=mag(J2);
+        const real_t d_alpha=1.0/(resolution+1.0);
+        for (size_t k=0; k<resolution+2; k++){
+            real_t alpha=k*d_alpha;
+            real_t I= I1+alpha*(I2-I1);
+            vector_t<real_t> r=line.v[0]+alpha*(line.v[1]-line.v[0]);
+            file.write("%21.14E %21.14E %21.14E %21.14E\n", r.x, r.y, r.z, I);
+        }
+    }
+    file.close();
+    free(line_list);
+}
