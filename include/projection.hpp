@@ -24,7 +24,7 @@ struct projection_2d_para{
     projection_1d_para para_1d[3];
     real_t R_0[3], R_m[3], R_p[3];
     real_t d;
-    vector_t<real_t> u[3], n;
+    vector_t<real_t> u[3], n, p_0;
     projection_2d_para(){}
 };
 

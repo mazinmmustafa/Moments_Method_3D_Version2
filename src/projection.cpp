@@ -51,5 +51,6 @@ projection_2d_para prjection_2d(const vector_t<real_t> v1, const vector_t<real_t
     para.u[1] = unit((v1-v3)^n);
     para.u[2] = unit((v2-v1)^n);
     para.n = n;
+    para.p_0 = p_0;
     return para;
 }
