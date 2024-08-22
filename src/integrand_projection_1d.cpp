@@ -3,14 +3,6 @@
 
 const real_t projection_tol=1.0E-4;
 
-real_t sign_function(const real_t l_m, const real_t l_p){
-    if ((l_m*l_p)>0.0){
-        return 0.0;
-    }else{
-        return 1.0;
-    }
-}
-
 // 1d
 void integrand_L1_1d_1d(const real_t alpha, basis_1d_t b_m, basis_1d_t b_n, 
     real_t &I_mm, real_t &I_mp, real_t &I_pm, real_t &I_pp, const real_t a){

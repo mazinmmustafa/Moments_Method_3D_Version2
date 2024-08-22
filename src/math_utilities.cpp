@@ -31,3 +31,11 @@ real_t round_m(const real_t x, const real_t n){
     real_t y=x*pow(10.0, n);
     return round(y)/pow(10.0, n);
 }
+
+real_t sign_function(const real_t x, const real_t y){
+    return x*y>0.0 ? 0.0 : 1.0;
+}
+
+real_t sign(const real_t x){
+    return x<0.0 ? -1.0 : (x>0.0 ? +1.0 : 0.0);
+}

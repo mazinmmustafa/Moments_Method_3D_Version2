@@ -106,6 +106,37 @@ void engine_t::compute_Z_mn(){
             }
         }
     }
+    // Zmn_SS
+    {   
+        size_t i=this->N_basis_3d;
+        size_t j=this->N_basis_3d;
+        basis_2d_t b_m;
+        basis_2d_t b_n;
+        for (size_t m=0; m<this->N_basis_2d; m++){
+            b_m = this->shape.get_basis_2d(m);
+            for (size_t n=m; n<this->N_basis_2d; n++){
+                b_n = this->shape.get_basis_2d(n);
+                sprintf(msg, "SS: Z_mn (%zu, %zu)", m, n);
+                progress_bar(count, this->N_basis_2d*(this->N_basis_2d+1)/2, msg);
+                Z = Z_mn_2d_2d(b_m, b_n, k_b, eta_b, lambda, quadl, flag);
+                if (m==n){
+                    for (size_t k=0; k<this->N_ports; k++){
+                        if ((b_m.pg_m==b_m.pg_p)&&(b_m.pg_m==this->port_list[k].pg)){
+                            Z+=this->port_list[k].Z;
+                        }
+                    }
+                }
+                assert_error(flag==false, "no convergence");
+                assert_error(!isinf(abs(Z)), "inf value for Z_mn");
+                assert_error(!isnan(abs(Z)), "nan value for Z_mn");
+                this->Z_mn(i+m, j+n) = Z;
+                count++;
+            }
+            for (size_t n=m+1; n<N; n++){
+                this->Z_mn(j+n, i+m) = this->Z_mn(i+m, j+n);
+            }
+        }
+    }
     free(msg);
     engine_t::save_Z_mn("data/Z_mn.bin");
     this->is_Z_mn_calculated = true;

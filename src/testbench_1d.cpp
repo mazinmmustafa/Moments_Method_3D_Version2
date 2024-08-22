@@ -110,8 +110,6 @@ void test_engine_1d_1d(){
     print(phi_1d_1d(b_m, b_n, k, lambda, a, quadl, flag)); print(flag);
     print(Z_mn_1d_1d(b_m, b_n, k, eta, lambda, a, quadl, flag)); print(flag);
     T.unset();
-
-    exit(0);
     
 }
 
