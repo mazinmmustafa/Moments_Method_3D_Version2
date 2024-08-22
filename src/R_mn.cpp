@@ -5,10 +5,10 @@
 void R_mn_1d_1d(const real_t alpha, const real_t alpha_, 
     const basis_1d_t b_m, const basis_1d_t b_n,  
     real_t &R_mm, real_t &R_mp, real_t &R_pm, real_t &R_pp, const real_t a){  
-    vector_t<real_t> r_m_m = b_m.r_m+alpha *(b_m.e[0]-b_m.r_m);
-    vector_t<real_t> r_m_p = b_m.r_p+alpha *(b_m.e[0]-b_m.r_p);
-    vector_t<real_t> r_n_m = b_n.r_m+alpha_*(b_n.e[0]-b_n.r_m);
-    vector_t<real_t> r_n_p = b_n.r_p+alpha_*(b_n.e[0]-b_n.r_p);
+    vector_t<real_t> r_m_m = b_m.r_m+alpha *b_m.L_m[0];
+    vector_t<real_t> r_m_p = b_m.r_p+alpha *b_m.L_p[0];
+    vector_t<real_t> r_n_m = b_n.r_m+alpha_*b_n.L_m[0];
+    vector_t<real_t> r_n_p = b_n.r_p+alpha_*b_n.L_p[0];
     R_mm = mag(r_m_m-r_n_m); 
     R_mp = mag(r_m_m-r_n_p);
     R_pm = mag(r_m_p-r_n_m);
@@ -23,10 +23,10 @@ void R_mn_1d_1d(const real_t alpha, const real_t alpha_,
 void R_mn_2d_2d(const real_t alpha, const real_t beta, const real_t alpha_, 
     const real_t beta_, const basis_2d_t b_m, const basis_2d_t b_n,  
     real_t &R_mm, real_t &R_mp, real_t &R_pm, real_t &R_pp){  
-    vector_t<real_t> r_m_m = b_m.r_m+alpha *(b_m.e[0]-b_m.r_m)+beta *(b_m.e[1]-b_m.r_m);
-    vector_t<real_t> r_m_p = b_m.r_p+alpha *(b_m.e[1]-b_m.r_p)+beta *(b_m.e[0]-b_m.r_p);
-    vector_t<real_t> r_n_m = b_n.r_m+alpha_*(b_n.e[0]-b_n.r_m)+beta_*(b_n.e[1]-b_n.r_m);
-    vector_t<real_t> r_n_p = b_n.r_p+alpha_*(b_n.e[1]-b_n.r_p)+beta_*(b_n.e[0]-b_n.r_p);
+    vector_t<real_t> r_m_m = b_m.r_m+alpha *b_m.L_m[0]+beta *b_m.L_m[1];
+    vector_t<real_t> r_m_p = b_m.r_p+alpha *b_m.L_p[1]+beta *b_m.L_p[0];
+    vector_t<real_t> r_n_m = b_n.r_m+alpha_*b_n.L_m[0]+beta_*b_n.L_m[1];
+    vector_t<real_t> r_n_p = b_n.r_p+alpha_*b_n.L_p[1]+beta_*b_n.L_p[0];
     R_mm = mag(r_m_m-r_n_m); 
     R_mp = mag(r_m_m-r_n_p);
     R_pm = mag(r_m_p-r_n_m);

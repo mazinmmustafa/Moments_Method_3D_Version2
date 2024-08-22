@@ -95,8 +95,8 @@ complex_t phi_2d_2d_integrand_1(const complex_t alpha, const complex_t beta, voi
     basis_2d_t b_n=args->b_n;
     real_t I_mm, I_mp, I_pm, I_pp;
     integrand_L1_2d_2d(real(alpha), real(beta), b_m, b_n, I_mm, I_mp, I_pm, I_pp);
-    complex_t ans=I_mm/(2.0*b_n.A_m[0])-I_mp/(2.0*b_n.A_p[0])-I_pm/(2.0*b_n.A_m[0])+I_pp/(2.0*b_n.A_p[0]);
-    return b_m.L*b_n.L*ans/(4.0*pi);
+    complex_t ans=I_mm/b_n.A_m[0]-I_mp/b_n.A_p[0]-I_pm/b_n.A_m[0]+I_pp/b_n.A_p[0];
+    return 2.0*b_m.L*b_n.L*ans/(4.0*pi);
 }
 
 complex_t phi_2d_2d(const basis_2d_t b_m, const basis_2d_t b_n, const complex_t k, const real_t lambda, 

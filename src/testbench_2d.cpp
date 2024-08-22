@@ -26,17 +26,17 @@ void test_engine_2d_2d(){
     e_m_2 = vector_t<real_t>(-0.3, +0.0, +0.0);
     r_m_p = vector_t<real_t>(+0.0, +0.2, +0.0);
 
-    r_n_m = vector_t<real_t>(+0.3, -0.4, +0.3);
+    r_n_m = vector_t<real_t>(-0.3, +0.0, +0.0);
     e_n_1 = vector_t<real_t>(+0.1, +0.0, -0.7);
-    e_n_2 = vector_t<real_t>(-0.3, +0.0, +0.0);
-    r_n_p = vector_t<real_t>(+0.0, +0.2, +0.0);
+    e_n_2 = vector_t<real_t>(+0.0, +0.2, +0.0);
+    r_n_p = vector_t<real_t>(+0.6, +0.2, +0.8);
 
     b_m = basis_2d_t(r_m_m, e_m_1, e_m_2, r_m_p, 1, 1);
     b_n = basis_2d_t(r_n_m, e_n_1, e_n_2, r_n_p, 1, 1);
 
     T.set();
-    print(psi_2d_2d(b_m, b_n, k, lambda, quadl, flag)); print(flag);
     print(phi_2d_2d(b_m, b_n, k, lambda, quadl, flag)); print(flag);
+    print(psi_2d_2d(b_m, b_n, k, lambda, quadl, flag)); print(flag);
     print(Z_mn_2d_2d(b_m, b_n, k, eta, lambda, quadl, flag)); print(flag);
     T.unset();
     

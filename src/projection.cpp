@@ -30,12 +30,12 @@ projection_2d_para prjection_2d(const vector_t<real_t> v1, const vector_t<real_t
     real_t b2=v31*v21;
     real_t b3=v31*(v1-p);
     const real_t alpha=(a2*b3-b1*a3)/(a1*b1-a2*b2);
-    const real_t beta =(b2*a3-a1*b3)/(b1*a1-b2*a2);
+    const real_t beta =(b2*a3-a1*b3)/(a1*b1-a2*b2);
     vector_t<real_t> p_0=v1+alpha*v21+beta*v31;
     projection_2d_para para;
-    para.para_1d[0] = prjection_1d(v2, v3, p);
-    para.para_1d[1] = prjection_1d(v3, v1, p);
-    para.para_1d[2] = prjection_1d(v1, v2, p);
+    para.para_1d[0] = prjection_1d(v2, v3, p_0);
+    para.para_1d[1] = prjection_1d(v3, v1, p_0);
+    para.para_1d[2] = prjection_1d(v1, v2, p_0);
     const vector_t<real_t> n=unit(v21^v31);
     para.d = (p-p_0)*n;
     para.R_0[0] = mag(p-para.para_1d[0].p_0);
