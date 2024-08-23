@@ -581,46 +581,53 @@ void engine_t::export_currents(const char *filename){
     for (size_t i=0; i<N_2d; i++){
         progress_bar(i, N_2d, "exporting currents");
         triangle_t triangle=triangle_list[i];
-        vector_t<complex_t> J1=vector_t<complex_t>(0.0, 0.0, 0.0);
-        vector_t<complex_t> J2=vector_t<complex_t>(0.0, 0.0, 0.0);
-        vector_t<complex_t> J3=vector_t<complex_t>(0.0, 0.0, 0.0);
+        vector_t<complex_t> J_c=vector_t<complex_t>(0.0, 0.0, 0.0);
         for (size_t j=0; j<this->N_basis_2d; j++){
             basis_2d_t b=this->shape.get_basis_2d(j);
-            vector_t<real_t> n=unit((b.e[1]-b.e[0])^b.n_m[0]);
             // Scenario 1
-            if (is_equal(triangle.v[0], b.e[0], mesh_tol*this->lambda)){
-                J1 = J1 + this->I_n(j, 0)*b.L_m[0]*n*n*b.L/(2.0*b.A_m[0]);
+            if (is_equal(triangle.v[0], b.r_m, mesh_tol*this->lambda) &&
+                is_equal(triangle.v[1], b.e[0], mesh_tol*this->lambda) &&
+                is_equal(triangle.v[2], b.e[1], mesh_tol*this->lambda)){
+                J_c = J_c + this->I_n(j, 0)*(1.0/3.0)*(b.L_m[0]+b.L_m[1])*b.L/(2.0*b.A_m[0]);
             }
             // Scenario 2
-            if (is_equal(triangle.v[0], b.e[1], mesh_tol*this->lambda)){
-                J1 = J1 + this->I_n(j, 0)*b.L_m[1]*n*n*b.L/(2.0*b.A_m[0]);
+            if (is_equal(triangle.v[0], b.r_p, mesh_tol*this->lambda) &&
+                is_equal(triangle.v[1], b.e[1], mesh_tol*this->lambda) &&
+                is_equal(triangle.v[2], b.e[0], mesh_tol*this->lambda)){
+                J_c = J_c - this->I_n(j, 0)*(1.0/3.0)*(b.L_p[0]+b.L_p[1])*b.L/(2.0*b.A_p[0]);
             }
             // Scenario 3
-            if (is_equal(triangle.v[1], b.e[0], mesh_tol*this->lambda)){
-                J2 = J2 + this->I_n(j, 0)*b.L_m[0]*n*n*b.L/(2.0*b.A_m[0]);
+            if (is_equal(triangle.v[0], b.e[1], mesh_tol*this->lambda) &&
+                is_equal(triangle.v[1], b.r_m, mesh_tol*this->lambda) &&
+                is_equal(triangle.v[2], b.e[0], mesh_tol*this->lambda)){
+                J_c = J_c + this->I_n(j, 0)*(1.0/3.0)*(b.L_m[0]+b.L_m[1])*b.L/(2.0*b.A_m[0]);
             }
             // Scenario 4
-            if (is_equal(triangle.v[1], b.e[1], mesh_tol*this->lambda)){
-                J2 = J2 + this->I_n(j, 0)*b.L_m[1]*n*n*b.L/(2.0*b.A_m[0]);
+            if (is_equal(triangle.v[0], b.e[0], mesh_tol*this->lambda) &&
+                is_equal(triangle.v[1], b.r_p, mesh_tol*this->lambda) &&
+                is_equal(triangle.v[2], b.e[1], mesh_tol*this->lambda)){
+                J_c = J_c - this->I_n(j, 0)*(1.0/3.0)*(b.L_p[0]+b.L_p[1])*b.L/(2.0*b.A_p[0]);
             }
             // Scenario 5
-            if (is_equal(triangle.v[2], b.e[0], mesh_tol*this->lambda)){
-                J3 = J3 + this->I_n(j, 0)*b.L_m[0]*n*n*b.L/(2.0*b.A_m[0]);
+            if (is_equal(triangle.v[0], b.e[0], mesh_tol*this->lambda) &&
+                is_equal(triangle.v[1], b.e[1], mesh_tol*this->lambda) &&
+                is_equal(triangle.v[2], b.r_m, mesh_tol*this->lambda)){
+                J_c = J_c + this->I_n(j, 0)*(1.0/3.0)*(b.L_m[0]+b.L_m[1])*b.L/(2.0*b.A_m[0]);
             }
             // Scenario 6
-            if (is_equal(triangle.v[2], b.e[1], mesh_tol*this->lambda)){
-                J3 = J3 + this->I_n(j, 0)*b.L_m[1]*n*n*b.L/(2.0*b.A_m[0]);
+            if (is_equal(triangle.v[0], b.e[1], mesh_tol*this->lambda) &&
+                is_equal(triangle.v[1], b.e[0], mesh_tol*this->lambda) &&
+                is_equal(triangle.v[2], b.r_p, mesh_tol*this->lambda)){
+                J_c = J_c - this->I_n(j, 0)*(1.0/3.0)*(b.L_p[0]+b.L_p[1])*b.L/(2.0*b.A_p[0]);
             }
         }
-        real_t I1=mag(J1);
-        real_t I2=mag(J2);
-        real_t I3=mag(J3);
+        real_t I_c=mag(J_c);
         // 
         file.write("ST(%21.14E, %21.14E, %21.14E, %21.14E, %21.14E, %21.14E, %21.14E, %21.14E, %21.14E){%21.14E, %21.14E, %21.14E};\n", 
             triangle.v[0].x, triangle.v[0].y, triangle.v[0].z, 
             triangle.v[1].x, triangle.v[1].y, triangle.v[1].z, 
             triangle.v[2].x, triangle.v[2].y, triangle.v[2].z, 
-            I1, I2, I3);
+            I_c, I_c, I_c);
     }
     file.write("};\n");
     file.close();
