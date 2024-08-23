@@ -139,7 +139,7 @@ void test_engine_1d_vertical_dipole(){
 
     print(engine.compute_Z_in(0));
 
-    engine.export_currents("data/currents.txt", 0);
+    engine.export_currents("data/currents.txt");
 
     engine.unset();
     
@@ -427,7 +427,7 @@ void test_engine_1d_far_field_transmission_line(){
     engine.compute_V_m_ports();
     engine.compute_I_n();
     engine.export_solutions();
-    engine.export_currents("data/currents.txt", 0);
+    engine.export_currents("data/currents.txt");
 
     far_field_t far_field;
     file_t file;

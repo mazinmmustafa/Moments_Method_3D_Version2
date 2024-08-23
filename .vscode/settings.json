@@ -8,6 +8,7 @@
         "random": "cpp",
         "*.ipp": "cpp",
         "chrono": "cpp",
-        "bitset": "cpp"
+        "bitset": "cpp",
+        "memory_resource": "cpp"
     }
 }

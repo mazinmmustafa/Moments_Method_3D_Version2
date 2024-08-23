@@ -164,7 +164,7 @@ void shape_t::load_mesh(const real_t metric_unit){
                     }
                 }
             }
-            assert_error(counter<3, "invalid mesh");
+            // assert_error(counter<3, "invalid mesh");
             if (counter==2){
                 if ((this->is_physical_specified&&triangle_s.physical_group>0&&triangle_d.physical_group>0) || !this->is_physical_specified){
                     index_triangle_s = mod_2d(index_triangle_s);
@@ -362,8 +362,8 @@ void call_gmsh(const real_t tol){
     int_t max_length=200;
     char *cmd=(char*)calloc(max_length, sizeof(char));
     print("calling gmsh...");
-    sprintf(cmd, "gmsh mesh/shape.geo -3 -clmax %0.4f -format vtk -save_all -o mesh/shape.vtk > mesh/shape_log.txt", tol);
-    // sprintf(cmd, "gmsh mesh/shape.geo -2 -clmax %0.4f -format vtk -save_all -o mesh/shape.vtk > mesh/shape_log.txt", tol);
+    // sprintf(cmd, "gmsh mesh/shape.geo -3 -clmax %0.4f -format vtk -save_all -o mesh/shape.vtk > mesh/shape_log.txt", tol);
+    sprintf(cmd, "gmsh mesh/shape.geo -2 -clmax %0.4f -format vtk -save_all -o mesh/shape.vtk > mesh/shape_log.txt", tol);
     assert_error(!system(cmd), "unable to mesh geometry");
     print(", done!\n");
     #ifdef __windows__
@@ -518,7 +518,7 @@ void create_sphere(const real_t radius){
     file.write("SetFactory(\"OpenCASCADE\");\n");
     file.write("Sphere(1) = {%21.14E, %21.14E, %21.14E, %21.14E, -Pi/2, Pi/2, 2*Pi};\n", 0.0, 0.0, 0.0, radius);
     file.write("Physical Surface(\"Surface\", 1) = {1};\n");
-    file.write("Physical Volume(\"Volume\", 1) = {-1};\n");
+    file.write("Physical Volume(\"Volume\", 1) = {1};\n");
     file.close();
 }
 

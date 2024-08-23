@@ -488,7 +488,7 @@ near_field_t engine_t::compute_near_field_H(const vector_t<real_t> r){
 
 //
 
-void engine_t::export_currents(const char *filename, const size_t resolution){
+void engine_t::export_currents(const char *filename){
     file_t file;
     binary_file_t binary_file;
     size_t N_0d, N_1d, N_2d, N_3d;
@@ -533,35 +533,18 @@ void engine_t::export_currents(const char *filename, const size_t resolution){
         for (size_t j=0; j<this->N_basis_1d; j++){
             basis_1d_t b=this->shape.get_basis_1d(j);
             // Scenario 1
-            if (is_equal(line.v[0], b.r_m, mesh_tol*this->lambda) &&
-                is_equal(line.v[1], b.e[0], mesh_tol*this->lambda)){
-                J2 = J2 + this->I_n(j, 0)*unit(+1.0*b.L_m[0]);
+            if (is_equal(line.v[0], b.e[0], mesh_tol*this->lambda)){
+                J1 = J1 + this->I_n(j, 0)*unit(b.L_m[0]);
             }
             // Scenario 2
-            if (is_equal(line.v[0], b.r_p, mesh_tol*this->lambda) &&
-                is_equal(line.v[1], b.e[0], mesh_tol*this->lambda)){
-                J2 = J2 + this->I_n(j, 0)*unit(-1.0*b.L_p[0]);
-            }
-            // Scenario 3
-            if (is_equal(line.v[0], b.e[0], mesh_tol*this->lambda) &&
-                is_equal(line.v[1], b.r_m, mesh_tol*this->lambda)){
-                J1 = J1 + this->I_n(j, 0)*unit(+1.0*b.L_m[0]);
-            }
-            // Scenario 4
-            if (is_equal(line.v[0], b.e[0], mesh_tol*this->lambda) &&
-                is_equal(line.v[1], b.r_p, mesh_tol*this->lambda)){
-                J1 = J1 + this->I_n(j, 0)*unit(-1.0*b.L_p[0]);
+            if (is_equal(line.v[1], b.e[0], mesh_tol*this->lambda)){
+                J2 = J2 + this->I_n(j, 0)*unit(b.L_m[0]);
             }
         }
         real_t I1=mag(J1);
         real_t I2=mag(J2);
-        const real_t d_alpha=1.0/(resolution+1.0);
-        for (size_t k=0; k<resolution+2; k++){
-            real_t alpha=k*d_alpha;
-            real_t I= I1+alpha*(I2-I1);
-            vector_t<real_t> r=line.v[0]+alpha*(line.v[1]-line.v[0]);
-            file.write("%21.14E %21.14E %21.14E %21.14E\n", r.x, r.y, r.z, I);
-        }
+        file.write("%21.14E %21.14E %21.14E %21.14E\n", line.v[0].x, line.v[0].y, line.v[0].z, I1);
+        file.write("%21.14E %21.14E %21.14E %21.14E\n", line.v[1].x, line.v[1].y, line.v[1].z, I2);
     }
     file.close();
     free(line_list);
@@ -601,91 +584,43 @@ void engine_t::export_currents(const char *filename, const size_t resolution){
         vector_t<complex_t> J1=vector_t<complex_t>(0.0, 0.0, 0.0);
         vector_t<complex_t> J2=vector_t<complex_t>(0.0, 0.0, 0.0);
         vector_t<complex_t> J3=vector_t<complex_t>(0.0, 0.0, 0.0);
-        size_t counter=0;
         for (size_t j=0; j<this->N_basis_2d; j++){
             basis_2d_t b=this->shape.get_basis_2d(j);
+            vector_t<real_t> n=unit((b.e[1]-b.e[0])^b.n_m[0]);
             // Scenario 1
-            if (is_equal(triangle.v[0], b.r_m, mesh_tol*this->lambda) &&
-                is_equal(triangle.v[1], b.e[0], mesh_tol*this->lambda) &&
-                is_equal(triangle.v[2], b.e[1], mesh_tol*this->lambda)){
-                assert(counter<3);
-                J2 = J2 + this->I_n(j, 0)*(+1.0*b.L_m[0])*b.L/(2.0*b.A_m[0]);
-                J3 = J3 + this->I_n(j, 0)*(+1.0*b.L_m[1])*b.L/(2.0*b.A_m[0]);
-                counter++;
+            if (is_equal(triangle.v[0], b.e[0], mesh_tol*this->lambda)){
+                J1 = J1 + this->I_n(j, 0)*b.L_m[0]*n*n*b.L/(2.0*b.A_m[0]);
             }
             // Scenario 2
-            if (is_equal(triangle.v[0], b.r_p, mesh_tol*this->lambda) &&
-                is_equal(triangle.v[1], b.e[1], mesh_tol*this->lambda) &&
-                is_equal(triangle.v[2], b.e[0], mesh_tol*this->lambda)){
-                assert(counter<3);
-                J2 = J2 + this->I_n(j, 0)*(-1.0*b.L_p[1])*b.L/(2.0*b.A_p[0]);
-                J3 = J3 + this->I_n(j, 0)*(-1.0*b.L_p[0])*b.L/(2.0*b.A_p[0]);
-                counter++;
+            if (is_equal(triangle.v[0], b.e[1], mesh_tol*this->lambda)){
+                J1 = J1 + this->I_n(j, 0)*b.L_m[1]*n*n*b.L/(2.0*b.A_m[0]);
             }
             // Scenario 3
-            if (is_equal(triangle.v[0], b.e[1], mesh_tol*this->lambda) &&
-                is_equal(triangle.v[1], b.r_m, mesh_tol*this->lambda) &&
-                is_equal(triangle.v[2], b.e[0], mesh_tol*this->lambda)){
-                assert(counter<3);
-                J1 = J1 + this->I_n(j, 0)*(+1.0*b.L_m[1])*b.L/(2.0*b.A_m[0]);
-                J3 = J3 + this->I_n(j, 0)*(+1.0*b.L_m[0])*b.L/(2.0*b.A_m[0]);
-                counter++;
+            if (is_equal(triangle.v[1], b.e[0], mesh_tol*this->lambda)){
+                J2 = J2 + this->I_n(j, 0)*b.L_m[0]*n*n*b.L/(2.0*b.A_m[0]);
             }
             // Scenario 4
-            if (is_equal(triangle.v[0], b.e[0], mesh_tol*this->lambda) &&
-                is_equal(triangle.v[1], b.r_p, mesh_tol*this->lambda) &&
-                is_equal(triangle.v[2], b.e[1], mesh_tol*this->lambda)){
-                assert(counter<3);
-                J1 = J1 + this->I_n(j, 0)*(-1.0*b.L_p[0])*b.L/(2.0*b.A_p[0]);
-                J3 = J3 + this->I_n(j, 0)*(-1.0*b.L_p[1])*b.L/(2.0*b.A_p[0]);
-                counter++;
+            if (is_equal(triangle.v[1], b.e[1], mesh_tol*this->lambda)){
+                J2 = J2 + this->I_n(j, 0)*b.L_m[1]*n*n*b.L/(2.0*b.A_m[0]);
             }
             // Scenario 5
-            if (is_equal(triangle.v[0], b.e[0], mesh_tol*this->lambda) &&
-                is_equal(triangle.v[1], b.e[1], mesh_tol*this->lambda) &&
-                is_equal(triangle.v[2], b.r_m, mesh_tol*this->lambda)){
-                assert(counter<3);
-                J1 = J1 + this->I_n(j, 0)*(+1.0*b.L_m[0])*b.L/(2.0*b.A_m[0]);
-                J2 = J2 + this->I_n(j, 0)*(+1.0*b.L_m[1])*b.L/(2.0*b.A_m[0]);
-                counter++;
+            if (is_equal(triangle.v[2], b.e[0], mesh_tol*this->lambda)){
+                J3 = J3 + this->I_n(j, 0)*b.L_m[0]*n*n*b.L/(2.0*b.A_m[0]);
             }
             // Scenario 6
-            if (is_equal(triangle.v[0], b.e[1], mesh_tol*this->lambda) &&
-                is_equal(triangle.v[1], b.e[0], mesh_tol*this->lambda) &&
-                is_equal(triangle.v[2], b.r_p, mesh_tol*this->lambda)){
-                assert(counter<3);
-                J1 = J1 + this->I_n(j, 0)*(-1.0*b.L_p[1])*b.L/(2.0*b.A_p[0]);
-                J2 = J2 + this->I_n(j, 0)*(-1.0*b.L_p[0])*b.L/(2.0*b.A_p[0]);
-                counter++;
+            if (is_equal(triangle.v[2], b.e[1], mesh_tol*this->lambda)){
+                J3 = J3 + this->I_n(j, 0)*b.L_m[1]*n*n*b.L/(2.0*b.A_m[0]);
             }
         }
         real_t I1=mag(J1);
         real_t I2=mag(J2);
         real_t I3=mag(J3);
-        real_t I_1, I_2, I_3;
         // 
-        assert(0.0*resolution==0.0);
-        real_t alpha, beta;
-        alpha = 0.0; beta = 0.0;
-        I_1 = I1+alpha*(I2-I1)+beta*(I3-I1);
-        vector_t<real_t> r_1=triangle.v[0]+
-            alpha*(triangle.v[1]-triangle.v[0])+
-            beta*(triangle.v[2]-triangle.v[0]);
-        alpha = 1.0; beta = 0.0;
-        I_2 = I1+alpha*(I2-I1)+beta*(I3-I1);
-        vector_t<real_t> r_2=triangle.v[0]+
-            alpha*(triangle.v[1]-triangle.v[0])+
-            beta*(triangle.v[2]-triangle.v[0]);
-        alpha = 0.0; beta = 1.0;
-        I_3 = I1+alpha*(I2-I1)+beta*(I3-I1);
-        vector_t<real_t> r_3=triangle.v[0]+
-            alpha*(triangle.v[1]-triangle.v[0])+
-            beta*(triangle.v[2]-triangle.v[0]);
         file.write("ST(%21.14E, %21.14E, %21.14E, %21.14E, %21.14E, %21.14E, %21.14E, %21.14E, %21.14E){%21.14E, %21.14E, %21.14E};\n", 
-            r_1.x, r_1.y, r_1.z, 
-            r_2.x, r_2.y, r_2.z, 
-            r_3.x, r_3.y, r_3.z, 
-            I_1, I_2, I_3);
+            triangle.v[0].x, triangle.v[0].y, triangle.v[0].z, 
+            triangle.v[1].x, triangle.v[1].y, triangle.v[1].z, 
+            triangle.v[2].x, triangle.v[2].y, triangle.v[2].z, 
+            I1, I2, I3);
     }
     file.write("};\n");
     file.close();

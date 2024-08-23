@@ -16,3 +16,6 @@ plot(y, I2*1E3, '--')
 hold off
 xlim([-1 +1]*0.75)
 ylim([0 3])
+
+figure()
+plot(data(:, 3), data(:, 4)*1E3)
