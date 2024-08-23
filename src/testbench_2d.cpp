@@ -51,8 +51,9 @@ void test_engine_2d_sphere_RCS(){
 
     // problem defintions
     const real_t GHz=1.0E+9;
-    const real_t freq=0.4*GHz;
-    const real_t clmax=1.0/11.0;
+    const real_t freq=1.6*GHz;
+    const real_t lambda=c_0/freq;
+    const real_t clmax=lambda/6.0;
     const complex_t mu_b=1.0, eps_b=1.0;
     const real_t radius=0.5;
 
@@ -69,8 +70,8 @@ void test_engine_2d_sphere_RCS(){
     create_sphere(radius);
     engine.set(freq, mu_b, eps_b, clmax, 1.0, 0, 0);
 
-    // engine.compute_Z_mn();
-    engine.load_Z_mn("data/Z_mn.bin");
+    engine.compute_Z_mn();
+    // engine.load_Z_mn("data/Z_mn.bin");
     file_t file;
     sigma_t sigma;
 
