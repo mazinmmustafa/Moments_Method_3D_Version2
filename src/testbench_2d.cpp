@@ -85,7 +85,6 @@ void test_engine_2d_sphere_RCS(){
     engine.compute_I_n();
     engine.export_solutions();
     engine.export_currents("data/currents.pos");
-    exit(0);
 
     file.open("data/RCS_1.txt", 'w');
     for (size_t i=0; i<Ns; i++){
@@ -114,6 +113,73 @@ void test_engine_2d_sphere_RCS(){
     //
     theta_s.unset();
     phi_s.unset();
+
+    engine.unset();
+    
+}
+
+
+void test_engine_2d_sphere_near_field(){
+
+    // problem defintions
+    const real_t GHz=1.0E+9;
+    const real_t freq=0.5*GHz;
+    const real_t lambda=c_0/freq;
+    const real_t clmax=lambda/6.0;
+    const complex_t mu_b=1.0, eps_b=1.0;
+    const real_t radius=0.5;
+
+    const size_t Ns=401;
+    complex_t E_TM, E_TE;
+    real_t theta_i, phi_i;
+
+    engine_t engine;
+    create_sphere(radius);
+    engine.set(freq, mu_b, eps_b, clmax, 1.0, 0, 0);
+
+    // engine.compute_Z_mn();
+    engine.load_Z_mn("data/Z_mn.bin");
+    file_t file;
+    range_t z;
+    real_t z_min, z_max, x, y;
+
+    x = +1.0;
+    y = +1.0;
+    z_min = -1.0;
+    z_max = +1.0;
+    z.set(z_min, z_max, Ns);
+    z.linspace();
+
+    E_TM = +1.0;
+    E_TE = +0.0;
+    theta_i = deg2rad(90.0);
+    phi_i = deg2rad(0.0);
+    engine.compute_V_m_incident(E_TM, E_TE, theta_i, phi_i);
+    engine.compute_I_n();
+    vector_t<real_t> r;
+
+    near_field_t E, H;
+    file.open("data/near_field.txt", 'w');
+    for (size_t i=0; i<Ns; i++){
+        progress_bar(i, Ns, "computing near fields...");
+        r = vector_t<real_t>(x, y, z(i));
+        E = engine.compute_near_field_E(r);
+        H = engine.compute_near_field_H(r);
+        file.write("%21.14E ", z(i));
+        file.write("%21.14E %21.14E %21.14E %21.14E %21.14E %21.14E ", 
+            real(E.x), imag(E.x),
+            real(E.y), imag(E.y),
+            real(E.z), imag(E.z));
+        file.write("%21.14E %21.14E %21.14E %21.14E %21.14E %21.14E ", 
+            real(H.x), imag(H.x),
+            real(H.y), imag(H.y),
+            real(H.z), imag(H.z));
+        file.write("\n");
+    }
+    file.close();
+
+    //
+    z.unset();
 
     engine.unset();
     
