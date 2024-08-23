@@ -1,6 +1,10 @@
 //
 #include "engine.hpp"
 
+// #define only_1d
+#define only_2d
+// #define only_3d
+
 void engine_t::set(const real_t freq, const complex_t mu_b, const complex_t eps_b, 
     const real_t clmax, const real_t unit_metric, const real_t a, const size_t N_ports){
     if (this->is_engine_set){engine_t::unset();}
@@ -17,7 +21,17 @@ void engine_t::set(const real_t freq, const complex_t mu_b, const complex_t eps_
     this->shape.get_basis_functions(clmax, unit_metric);
     this->shape.get_info(this->N_basis_1d, this->N_basis_2d, this->N_basis_3d);
     //
-    this->N = this->N_basis_1d+this->N_basis_2d+this->N_basis_3d;
+    this->N = 0;
+    #ifdef only_1d
+    this->N += this->N_basis_1d;
+    #endif
+    #ifdef only_2d
+    this->N += this->N_basis_2d;
+    #endif
+    #ifdef only_3d
+    this->N += this->N_basis_3d;
+    #endif
+    assert_error(this->N<max_system_size, "too large linear system");
     this->Z_mn.set(this->N, this->N);
     this->V_m.set(this->N, 1);
     this->I_n.set(this->N, 1);
@@ -76,6 +90,7 @@ void engine_t::compute_Z_mn(){
     size_t count=0;
     complex_t Z=0.0;
     // Zmn_LL
+    #ifdef only_1d
     {   
         size_t i=this->N_basis_3d+this->N_basis_2d;
         size_t j=this->N_basis_3d+this->N_basis_2d;
@@ -106,7 +121,9 @@ void engine_t::compute_Z_mn(){
             }
         }
     }
+    #endif
     // Zmn_SS
+    #ifdef only_2d
     {   
         size_t i=this->N_basis_3d;
         size_t j=this->N_basis_3d;
@@ -119,13 +136,13 @@ void engine_t::compute_Z_mn(){
                 sprintf(msg, "SS: Z_mn (%zu, %zu)", m, n);
                 progress_bar(count, this->N_basis_2d*(this->N_basis_2d+1)/2, msg);
                 Z = Z_mn_2d_2d(b_m, b_n, k_b, eta_b, lambda, quadl, flag);
-                if (m==n){
-                    for (size_t k=0; k<this->N_ports; k++){
-                        if ((b_m.pg_m==b_m.pg_p)&&(b_m.pg_m==this->port_list[k].pg)){
-                            Z+=this->port_list[k].Z;
-                        }
-                    }
-                }
+                // if (m==n){
+                //     for (size_t k=0; k<this->N_ports; k++){
+                //         if ((b_m.pg_m==b_m.pg_p)&&(b_m.pg_m==this->port_list[k].pg)){
+                //             Z+=this->port_list[k].Z;
+                //         }
+                //     }
+                // }
                 assert_error(flag==false, "no convergence");
                 assert_error(!isinf(abs(Z)), "inf value for Z_mn");
                 assert_error(!isnan(abs(Z)), "nan value for Z_mn");
@@ -137,6 +154,8 @@ void engine_t::compute_Z_mn(){
             }
         }
     }
+    #endif
+    //
     free(msg);
     engine_t::save_Z_mn("data/Z_mn.bin");
     this->is_Z_mn_calculated = true;
@@ -227,6 +246,7 @@ void engine_t::compute_V_m_ports(){
     assert_error(this->is_engine_set, "egnine is not set yet");
     print("computing V_m...");
     // Vm_L
+    #ifdef only_1d
     {
         basis_1d_t b_m;
         size_t i=this->N_basis_3d+this->N_basis_2d;
@@ -242,20 +262,16 @@ void engine_t::compute_V_m_ports(){
             }
         }
     }
+    #endif
     // Vm_S
+    #ifdef only_2d
     {
         size_t i=this->N_basis_3d;
         for (size_t m=0; m<this->N_basis_2d; m++){
             this->V_m(i+m, 0) = 0.0;
         }
     }
-    // Vm_V
-    {
-        size_t i=0;
-        for (size_t m=0; m<this->N_basis_3d; m++){
-            this->V_m(i+m, 0) = 0.0;
-        }
-    }
+    #endif
     print(", done!\n");
 }
 
@@ -263,13 +279,14 @@ void engine_t::compute_V_m_incident(const complex_t E_TM, const complex_t E_TE, 
     assert_error(this->is_engine_set, "egnine is not set yet");
     print("computing V_m...");
     // Vm_L
+    #ifdef only_1d
     {
         basis_1d_t b_m;
         size_t i=this->N_basis_3d+this->N_basis_2d;
         for (size_t m=0; m<this->N_basis_1d; m++){
             b_m = this->shape.get_basis_1d(m);
             line_domain_t line={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(1.0, 0.0, 0.0)};
-            incident_field_args_t args;
+            incident_field_args_1d_t args;
             args.b_m = b_m;
             args.E_TM = E_TM;
             args.E_TE = E_TE;
@@ -281,20 +298,37 @@ void engine_t::compute_V_m_incident(const complex_t E_TM, const complex_t E_TE, 
             this->V_m(i+m, 0) =  this->quadl.integral_1d(compute_incident_E_integrand_1d, &args, line, flag);
         }
     }
+    #endif
     // Vm_S
+    #ifdef only_2d
     {
+        basis_2d_t b_m;
         size_t i=this->N_basis_3d;
         for (size_t m=0; m<this->N_basis_2d; m++){
-            this->V_m(i+m, 0) = 0.0;
+            b_m = this->shape.get_basis_2d(m);
+            triangle_domain_t triangle={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(1.0, 0.0, 0.0), vector_t<real_t>(0.0, 1.0, 0.0)};
+            incident_field_args_2d_t args;
+            args.b_m = b_m;
+            args.E_TM = E_TM;
+            args.E_TE = E_TE;
+            args.theta_i = theta_i;
+            args.phi_i = phi_i;
+            args.k = real(this->k_b);
+            args.eta = real(this->eta_b);
+            int_t flag;
+            this->V_m(i+m, 0) = this->quadl.integral_2d(compute_incident_E_integrand_2d, &args, triangle, flag);
         }
     }
+    #endif
     // Vm_V
+    #ifdef only_3d
     {
         size_t i=0;
         for (size_t m=0; m<this->N_basis_3d; m++){
             this->V_m(i+m, 0) = 0.0;
         }
     }
+    #endif
     print(", done!\n");
 }
 
@@ -357,14 +391,15 @@ void engine_t::export_solutions(){
 
 sigma_t engine_t::compute_RCS(const real_t theta_i, const real_t phi_i){
     sigma_t sigma;
-    incident_field_args_t args;
+    complex_t sum_theta=0.0, sum_phi=0.0;
+    int_t flag;
+    // 1d
+    #ifdef only_1d
+    incident_field_args_1d_t args;
     args.theta_i = theta_i;
     args.phi_i = phi_i;
     args.k = real(this->k_b);
     args.eta = real(this->eta_b);
-    complex_t sum_theta=0.0, sum_phi=0.0;
-    // 1d
-    int_t flag;
     line_domain_t line={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(1.0, 0.0, 0.0)};
     for (size_t m=0; m<this->N_basis_1d; m++){
         basis_1d_t b_m=this->shape.get_basis_1d(m);
@@ -372,6 +407,22 @@ sigma_t engine_t::compute_RCS(const real_t theta_i, const real_t phi_i){
         sum_theta+=this->quadl.integral_1d(compute_scattered_far_field_E_theta_integrand_1d, &args, line, flag)*this->I_n(m, 0);
         sum_phi+=this->quadl.integral_1d(compute_scattered_far_field_E_phi_integrand_1d, &args, line, flag)*this->I_n(m, 0);
     }
+    #endif
+    // 2d
+    #ifdef only_2d
+    incident_field_args_2d_t args;
+    args.theta_i = theta_i;
+    args.phi_i = phi_i;
+    args.k = real(this->k_b);
+    args.eta = real(this->eta_b);
+    triangle_domain_t triangle={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(1.0, 0.0, 0.0), vector_t<real_t>(0.0, 1.0, 0.0)};
+    for (size_t m=0; m<this->N_basis_2d; m++){
+        basis_2d_t b_m=this->shape.get_basis_2d(m);
+        args.b_m = b_m;
+        sum_theta+=this->quadl.integral_2d(compute_scattered_far_field_E_theta_integrand_2d, &args, triangle, flag)*this->I_n(m, 0);
+        sum_phi+=this->quadl.integral_2d(compute_scattered_far_field_E_phi_integrand_2d, &args, triangle, flag)*this->I_n(m, 0);
+    }
+    #endif
     sigma.theta = 4.0*pi*abs(sum_theta)*abs(sum_theta);
     sigma.phi = 4.0*pi*abs(sum_phi)*abs(sum_phi);
     return sigma;
@@ -379,7 +430,7 @@ sigma_t engine_t::compute_RCS(const real_t theta_i, const real_t phi_i){
 
 far_field_t engine_t::compute_far_field(const real_t theta_i, const real_t phi_i){
     far_field_t far_field;
-    incident_field_args_t args;
+    incident_field_args_1d_t args;
     args.theta_i = theta_i;
     args.phi_i = phi_i;
     args.k = real(this->k_b);
@@ -452,6 +503,7 @@ void engine_t::export_currents(const char *filename, const size_t resolution){
     vector_t<real_t> v1, v2, v3, v4, v5;
     int_t pg;
     // 1d bases
+    #ifdef only_1d
     line_t *line_list=(line_t*)calloc(N_1d, sizeof(line_t));
     assert(line_list!=null);
     file.open("mesh/mesh/elements_1d.txt", 'r');
@@ -513,4 +565,130 @@ void engine_t::export_currents(const char *filename, const size_t resolution){
     }
     file.close();
     free(line_list);
+    #endif
+    // 2d bases
+    #ifdef only_2d
+    triangle_t *triangle_list=(triangle_t*)calloc(N_2d, sizeof(triangle_t));
+    assert(triangle_list!=null);
+    file.open("mesh/mesh/elements_2d.txt", 'r');
+    for (size_t i=0; i<N_2d; i++){
+        pg = -1;
+        file.read("%lf %lf %lf", &x, &y, &z); x*=metric_unit; y*=metric_unit; z*=metric_unit;
+        x = round_m(x, -round(log10(mesh_tol)));
+        y = round_m(y, -round(log10(mesh_tol)));
+        z = round_m(z, -round(log10(mesh_tol)));
+        v1 = vector_t<real_t>(x, y, z);
+        file.read("%lf %lf %lf", &x, &y, &z); x*=metric_unit; y*=metric_unit; z*=metric_unit;
+        x = round_m(x, -round(log10(mesh_tol)));
+        y = round_m(y, -round(log10(mesh_tol)));
+        z = round_m(z, -round(log10(mesh_tol)));
+        v2 = vector_t<real_t>(x, y, z);
+        file.read("%lf %lf %lf", &x, &y, &z); x*=metric_unit; y*=metric_unit; z*=metric_unit;
+        x = round_m(x, -round(log10(mesh_tol)));
+        y = round_m(y, -round(log10(mesh_tol)));
+        z = round_m(z, -round(log10(mesh_tol)));
+        v3 = vector_t<real_t>(x, y, z);
+        file.read("%d", &pg);
+        triangle_list[i] = triangle_t(v1, v2, v3, pg);
+    }
+    file.close();
+    //    
+    file.open(filename, 'w');
+    file.write("View \"Current\" {\n");
+    for (size_t i=0; i<N_2d; i++){
+        progress_bar(i, N_2d, "exporting currents");
+        triangle_t triangle=triangle_list[i];
+        vector_t<complex_t> J1=vector_t<complex_t>(0.0, 0.0, 0.0);
+        vector_t<complex_t> J2=vector_t<complex_t>(0.0, 0.0, 0.0);
+        vector_t<complex_t> J3=vector_t<complex_t>(0.0, 0.0, 0.0);
+        size_t counter=0;
+        for (size_t j=0; j<this->N_basis_2d; j++){
+            basis_2d_t b=this->shape.get_basis_2d(j);
+            // Scenario 1
+            if (is_equal(triangle.v[0], b.r_m, mesh_tol*this->lambda) &&
+                is_equal(triangle.v[1], b.e[0], mesh_tol*this->lambda) &&
+                is_equal(triangle.v[2], b.e[1], mesh_tol*this->lambda)){
+                assert(counter<3);
+                J2 = J2 + this->I_n(j, 0)*(+1.0*b.L_m[0])*b.L/(2.0*b.A_m[0]);
+                J3 = J3 + this->I_n(j, 0)*(+1.0*b.L_m[1])*b.L/(2.0*b.A_m[0]);
+                counter++;
+            }
+            // Scenario 2
+            if (is_equal(triangle.v[0], b.r_p, mesh_tol*this->lambda) &&
+                is_equal(triangle.v[1], b.e[1], mesh_tol*this->lambda) &&
+                is_equal(triangle.v[2], b.e[0], mesh_tol*this->lambda)){
+                assert(counter<3);
+                J2 = J2 + this->I_n(j, 0)*(-1.0*b.L_p[1])*b.L/(2.0*b.A_p[0]);
+                J3 = J3 + this->I_n(j, 0)*(-1.0*b.L_p[0])*b.L/(2.0*b.A_p[0]);
+                counter++;
+            }
+            // Scenario 3
+            if (is_equal(triangle.v[0], b.e[1], mesh_tol*this->lambda) &&
+                is_equal(triangle.v[1], b.r_m, mesh_tol*this->lambda) &&
+                is_equal(triangle.v[2], b.e[0], mesh_tol*this->lambda)){
+                assert(counter<3);
+                J1 = J1 + this->I_n(j, 0)*(+1.0*b.L_m[1])*b.L/(2.0*b.A_m[0]);
+                J3 = J3 + this->I_n(j, 0)*(+1.0*b.L_m[0])*b.L/(2.0*b.A_m[0]);
+                counter++;
+            }
+            // Scenario 4
+            if (is_equal(triangle.v[0], b.e[0], mesh_tol*this->lambda) &&
+                is_equal(triangle.v[1], b.r_p, mesh_tol*this->lambda) &&
+                is_equal(triangle.v[2], b.e[1], mesh_tol*this->lambda)){
+                assert(counter<3);
+                J1 = J1 + this->I_n(j, 0)*(-1.0*b.L_p[0])*b.L/(2.0*b.A_p[0]);
+                J3 = J3 + this->I_n(j, 0)*(-1.0*b.L_p[1])*b.L/(2.0*b.A_p[0]);
+                counter++;
+            }
+            // Scenario 5
+            if (is_equal(triangle.v[0], b.e[0], mesh_tol*this->lambda) &&
+                is_equal(triangle.v[1], b.e[1], mesh_tol*this->lambda) &&
+                is_equal(triangle.v[2], b.r_m, mesh_tol*this->lambda)){
+                assert(counter<3);
+                J1 = J1 + this->I_n(j, 0)*(+1.0*b.L_m[0])*b.L/(2.0*b.A_m[0]);
+                J2 = J2 + this->I_n(j, 0)*(+1.0*b.L_m[1])*b.L/(2.0*b.A_m[0]);
+                counter++;
+            }
+            // Scenario 6
+            if (is_equal(triangle.v[0], b.e[1], mesh_tol*this->lambda) &&
+                is_equal(triangle.v[1], b.e[0], mesh_tol*this->lambda) &&
+                is_equal(triangle.v[2], b.r_p, mesh_tol*this->lambda)){
+                assert(counter<3);
+                J1 = J1 + this->I_n(j, 0)*(-1.0*b.L_p[1])*b.L/(2.0*b.A_p[0]);
+                J2 = J2 + this->I_n(j, 0)*(-1.0*b.L_p[0])*b.L/(2.0*b.A_p[0]);
+                counter++;
+            }
+        }
+        real_t I1=mag(J1);
+        real_t I2=mag(J2);
+        real_t I3=mag(J3);
+        real_t I_1, I_2, I_3;
+        // 
+        assert(0.0*resolution==0.0);
+        real_t alpha, beta;
+        alpha = 0.0; beta = 0.0;
+        I_1 = I1+alpha*(I2-I1)+beta*(I3-I1);
+        vector_t<real_t> r_1=triangle.v[0]+
+            alpha*(triangle.v[1]-triangle.v[0])+
+            beta*(triangle.v[2]-triangle.v[0]);
+        alpha = 1.0; beta = 0.0;
+        I_2 = I1+alpha*(I2-I1)+beta*(I3-I1);
+        vector_t<real_t> r_2=triangle.v[0]+
+            alpha*(triangle.v[1]-triangle.v[0])+
+            beta*(triangle.v[2]-triangle.v[0]);
+        alpha = 0.0; beta = 1.0;
+        I_3 = I1+alpha*(I2-I1)+beta*(I3-I1);
+        vector_t<real_t> r_3=triangle.v[0]+
+            alpha*(triangle.v[1]-triangle.v[0])+
+            beta*(triangle.v[2]-triangle.v[0]);
+        file.write("ST(%21.14E, %21.14E, %21.14E, %21.14E, %21.14E, %21.14E, %21.14E, %21.14E, %21.14E){%21.14E, %21.14E, %21.14E};\n", 
+            r_1.x, r_1.y, r_1.z, 
+            r_2.x, r_2.y, r_2.z, 
+            r_3.x, r_3.y, r_3.z, 
+            I_1, I_2, I_3);
+    }
+    file.write("};\n");
+    file.close();
+    free(triangle_list);
+    #endif
 }

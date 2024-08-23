@@ -18,8 +18,20 @@ struct incident_field_t{
     vector_t<complex_t> E, H;
 };
 
-struct incident_field_args_t{
+struct incident_field_args_1d_t{
     basis_1d_t b_m;
+    complex_t E_TM=0.0; 
+    complex_t E_TE=0.0;
+    real_t theta_i=0.0;
+    real_t phi_i=0.0; 
+    real_t k=0.0; 
+    real_t eta=0.0;
+    vector_t<real_t> r;
+    //
+};
+
+struct incident_field_args_2d_t{
+    basis_2d_t b_m;
     complex_t E_TM=0.0; 
     complex_t E_TE=0.0;
     real_t theta_i=0.0;
@@ -36,5 +48,7 @@ incident_field_t compute_incident_field(const complex_t E_TM, const complex_t E_
 complex_t compute_incident_E_integrand_1d(const complex_t alpha, void *args_);
 complex_t compute_scattered_far_field_E_theta_integrand_1d(const complex_t alpha, void *args_);
 complex_t compute_scattered_far_field_E_phi_integrand_1d(const complex_t alpha, void *args_);
-
+complex_t compute_incident_E_integrand_2d(const complex_t alpha, const complex_t beta, void *args_);
+complex_t compute_scattered_far_field_E_theta_integrand_2d(const complex_t alpha, const complex_t beta, void *args_);
+complex_t compute_scattered_far_field_E_phi_integrand_2d(const complex_t alpha, const complex_t beta, void *args_);
 #endif

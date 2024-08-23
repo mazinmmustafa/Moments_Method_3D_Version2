@@ -17,5 +17,6 @@
 
 // Functions
 void test_engine_2d_2d();
+void test_engine_2d_sphere_RCS();
 
 #endif

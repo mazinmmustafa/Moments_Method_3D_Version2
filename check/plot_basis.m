@@ -1,22 +1,22 @@
 close all; clear; clc;
 %%
-data_1d         =   load("../mesh/basis/basis_1d.txt");
-% data_2d         =   load("../mesh/basis/basis_2d.txt");
+##data_1d         =   load("../mesh/basis/basis_1d.txt");
+ data_2d         =   load("../mesh/basis/basis_2d.txt");
 % data_3d         =   load("../mesh/basis/basis_3d.txt");
 %%
-[N1d, ~]        =   size(data_1d);
-% [N2d, ~]        =   size(data_2d);
+##[N1d, ~]        =   size(data_1d);
+ [N2d, ~]        =   size(data_2d);
 % [N3d, ~]        =   size(data_3d);
 %%
 figure()
 axis equal
 view([45 45])
 hold on
-for i=1:N1d
-    plot3([data_1d(i, 1), data_1d(i, 1+3)], [data_1d(i, 2), data_1d(i, 2+3)], [data_1d(i, 3), data_1d(i, 3+3)], '-b')
-    plot3([data_1d(i, 1+3), data_1d(i, 1+3+3)], [data_1d(i, 2+3), data_1d(i, 2+3+3)], [data_1d(i, 3+3), data_1d(i, 3+3+3)], '-r')
-    input("press enter");
-end
+##for i=1:N1d
+##    plot3([data_1d(i, 1), data_1d(i, 1+3)], [data_1d(i, 2), data_1d(i, 2+3)], [data_1d(i, 3), data_1d(i, 3+3)], '-b')
+##    plot3([data_1d(i, 1+3), data_1d(i, 1+3+3)], [data_1d(i, 2+3), data_1d(i, 2+3+3)], [data_1d(i, 3+3), data_1d(i, 3+3+3)], '-r')
+##    input("press enter");
+##end
 for i=1:N2d
     plot3([data_2d(i, 1), data_2d(i, 1+3), data_2d(i, 1+3+3), data_2d(i, 1+3+3+3)],...
           [data_2d(i, 2), data_2d(i, 2+3), data_2d(i, 2+3+3), data_2d(i, 2+3+3+3)],...

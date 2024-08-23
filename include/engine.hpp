@@ -19,11 +19,14 @@
 // #include "integrand_projection_3d.hpp"
 #include "psi_integrand.hpp"
 #include "phi_integrand.hpp"
+#include "delta_integrand.hpp"
 #include "Z_mn.hpp"
 #include "incident_field.hpp"
 #include "scattered_field.hpp"
 
 // Definitions
+#define max_system_size 20000
+
 struct port_t{
     size_t index=0;
     complex_t V=0.0;
@@ -77,9 +80,9 @@ class engine_t{
         //
         size_t N_ports=0;
         port_t *port_list=null;
+    public:        
         void save_Z_mn(const char *filename);
         void load_Z_mn(const char *filename);
-    public:        
         void get_basis_info(size_t &N_1d, size_t &N_2d, size_t &N_3d){
             N_1d = this->N_basis_1d;
             N_2d = this->N_basis_2d;

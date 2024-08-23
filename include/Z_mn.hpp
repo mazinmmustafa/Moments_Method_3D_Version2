@@ -14,6 +14,7 @@
 //
 #include "psi_integrand.hpp"
 #include "phi_integrand.hpp"
+#include "delta_integrand.hpp"
 
 // Definitions
 

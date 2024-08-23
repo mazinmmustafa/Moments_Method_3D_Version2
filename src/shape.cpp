@@ -363,7 +363,7 @@ void call_gmsh(const real_t tol){
     char *cmd=(char*)calloc(max_length, sizeof(char));
     print("calling gmsh...");
     sprintf(cmd, "gmsh mesh/shape.geo -3 -clmax %0.4f -format vtk -save_all -o mesh/shape.vtk > mesh/shape_log.txt", tol);
-    // sprintf(cmd, "gmsh mesh/shape.geo -3 -format vtk -save_all -o mesh/shape.vtk > mesh/shape_log");
+    // sprintf(cmd, "gmsh mesh/shape.geo -2 -clmax %0.4f -format vtk -save_all -o mesh/shape.vtk > mesh/shape_log.txt", tol);
     assert_error(!system(cmd), "unable to mesh geometry");
     print(", done!\n");
     #ifdef __windows__
@@ -518,7 +518,7 @@ void create_sphere(const real_t radius){
     file.write("SetFactory(\"OpenCASCADE\");\n");
     file.write("Sphere(1) = {%21.14E, %21.14E, %21.14E, %21.14E, -Pi/2, Pi/2, 2*Pi};\n", 0.0, 0.0, 0.0, radius);
     file.write("Physical Surface(\"Surface\", 1) = {1};\n");
-    file.write("Physical Volume(\"Volume\", 1) = {1};\n");
+    file.write("Physical Volume(\"Volume\", 1) = {-1};\n");
     file.close();
 }
 

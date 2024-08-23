@@ -94,7 +94,8 @@ real_t mag(const vector_t<complex_t> A){
 
 vector_t<real_t> unit(const vector_t<real_t> A){
     real_t A_mag=mag(A);
-    return vector_t<real_t>(A.x/A_mag, A.y/A_mag, A.z/A_mag);
+    return  A_mag==0.0 ? vector_t<real_t>(0.0, 0.0, 0.0) : 
+                         vector_t<real_t>(A.x/A_mag, A.y/A_mag, A.z/A_mag);
 }
 
 int is_equal(const vector_t<real_t> A, const vector_t<real_t> B, const real_t tol){
