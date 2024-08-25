@@ -289,7 +289,7 @@ void integrand_L3_2d(basis_2d_t b_m, const vector_t<real_t> p,
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_p[i]);
         real_t C=atan2(para.para_1d[i].P_0*para.para_1d[i].l_m, 
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_m[i]);
-        I_m= I_m+A*para.u[i]+sign(para.d)*(B-C)*para.n;
+        I_m = I_m+A*para.u[i]+sign(para.d)*(B-C)*para.n;
     }
     // p
     para = prjection_2d(b_m.r_p, b_m.e[1], b_m.e[0], p);

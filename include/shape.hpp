@@ -248,5 +248,7 @@ void create_vertical_wire(const real_t length, const real_t clmax);
 void create_transmission_line(const real_t L, const real_t S, const real_t clmax);
 void create_sphere(const real_t radius);
 void create_patch_antenna();
+void create_sheet(const real_t Lx, const real_t Ly, const real_t clmax);
+void create_box();
 
 #endif

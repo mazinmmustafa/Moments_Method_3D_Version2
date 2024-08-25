@@ -9,6 +9,8 @@
         "*.ipp": "cpp",
         "chrono": "cpp",
         "bitset": "cpp",
-        "memory_resource": "cpp"
+        "memory_resource": "cpp",
+        "*.tcc": "cpp",
+        "fstream": "cpp"
     }
 }

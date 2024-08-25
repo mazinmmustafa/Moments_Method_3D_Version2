@@ -536,3 +536,32 @@ void create_patch_antenna(){
     file.write("Physical Volume(\"Substrate\", 4) = {1};\n");
     file.close();
 }
+
+void create_sheet(const real_t Lx, const real_t Ly, const real_t clmax){
+    assert_error(Lx>0.0 && Ly>0.0, "invalid shape dimensions");
+    file_t file;
+    file.open("mesh/shape.geo", 'w');
+    file.write("Point(1) = {%21.14E, %21.14E, %21.14E, 1.0};\n", -Lx/2.0, -Ly/2.0, 0.0);
+    file.write("Point(2) = {%21.14E, %21.14E, %21.14E, 1.0};\n", +Lx/2.0, -Ly/2.0, 0.0);
+    file.write("Point(3) = {%21.14E, %21.14E, %21.14E, 1.0};\n", +Lx/2.0, +Ly/2.0, 0.0);
+    file.write("Point(4) = {%21.14E, %21.14E, %21.14E, 1.0};\n", -Lx/2.0, +Ly/2.0, 0.0);
+    file.write("MeshSize {1, 2, 3, 4} = %21.14E;\n", clmax);
+    file.write("Line(1) = {1, 2};\n");
+    file.write("Line(2) = {2, 3};\n");
+    file.write("Line(3) = {3, 4};\n");
+    file.write("Line(4) = {4, 1};\n");
+    file.write("Curve Loop(1) = {1, 2, 3, 4};\n");
+    file.write("Surface(1) = {1};\n");
+    file.write("Physical Surface(\"Sheet\", 1) = {1};\n");
+    file.close();
+}
+
+void create_box(){
+    file_t file;
+    file.open("mesh/shape.geo", 'w');
+    file.write("Merge \"cad/box.brep\";\n");
+    // file.write("MeshSize {1, 2, 3, 4, 5, 6, 7, 8} = 1; // Box;\n");
+    file.write("Physical Surface(\"Box_Surface\", 1) = {1, 2, 3, 4, 5, 6};\n");
+    file.write("Physical Volume(\"Box_Volume\", 2) = {1};\n");
+    file.close();
+}

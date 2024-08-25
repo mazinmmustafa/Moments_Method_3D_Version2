@@ -137,8 +137,8 @@ void test_engine_2d_sphere_near_field(){
     create_sphere(radius);
     engine.set(freq, mu_b, eps_b, clmax, 1.0, 0, 0);
 
-    // engine.compute_Z_mn();
-    engine.load_Z_mn("data/Z_mn.bin");
+    engine.compute_Z_mn();
+    // engine.load_Z_mn("data/Z_mn.bin");
     file_t file;
     range_t z;
     real_t z_min, z_max, x, y;
@@ -152,7 +152,7 @@ void test_engine_2d_sphere_near_field(){
 
     E_TM = +1.0;
     E_TE = +0.0;
-    theta_i = deg2rad(90.0);
+    theta_i = deg2rad(0.0);
     phi_i = deg2rad(0.0);
     engine.compute_V_m_incident(E_TM, E_TE, theta_i, phi_i);
     engine.compute_I_n();
@@ -185,16 +185,16 @@ void test_engine_2d_sphere_near_field(){
     
 }
 
-struct integrand_args_{
+struct integrand_args_2d{
     triangle_t tri;
     vector_t<real_t> r, unit_vector;
 };
 
-#define EPS 1.0E-6
+#define EPS 1.0E-20
 
 complex_t integrand_1(const complex_t alpha, const complex_t beta, void *args_){
     assert(args_!=null);
-    integrand_args_* args=(integrand_args_*)args_;
+    integrand_args_2d* args=(integrand_args_2d*)args_;
     vector_t<real_t> rho=args->tri.v[0]
                          +real(alpha)*(args->tri.v[1]-args->tri.v[0])
                          +real(beta) *(args->tri.v[2]-args->tri.v[0]);
@@ -204,7 +204,7 @@ complex_t integrand_1(const complex_t alpha, const complex_t beta, void *args_){
 
 complex_t integrand_2(const complex_t alpha, const complex_t beta, void *args_){
     assert(args_!=null);
-    integrand_args_* args=(integrand_args_*)args_;
+    integrand_args_2d* args=(integrand_args_2d*)args_;
     vector_t<real_t> rho=args->tri.v[0]
                          +real(alpha)*(args->tri.v[1]-args->tri.v[0])
                          +real(beta) *(args->tri.v[2]-args->tri.v[0]);
@@ -214,7 +214,7 @@ complex_t integrand_2(const complex_t alpha, const complex_t beta, void *args_){
 
 complex_t integrand_3(const complex_t alpha, const complex_t beta, void *args_){
     assert(args_!=null);
-    integrand_args_* args=(integrand_args_*)args_;
+    integrand_args_2d* args=(integrand_args_2d*)args_;
     vector_t<real_t> rho=args->tri.v[0]
                          +real(alpha)*(args->tri.v[1]-args->tri.v[0])
                          +real(beta) *(args->tri.v[2]-args->tri.v[0]);
@@ -226,13 +226,13 @@ void test_engine_2d_debug(){
 
     //
     vector_t<real_t> v1, v2, v3;
-    real_t alpha=1.0E+0;
-    v1 = vector_t<real_t>(+0.7, -0.4, +0.6)*alpha;
-    v2 = vector_t<real_t>(+0.2, +0.5, -0.0)*alpha;
-    v3 = vector_t<real_t>(-0.8, -0.5, -0.7)*alpha;
+    real_t alpha=1.0E-2;
+    v1 = vector_t<real_t>(+0.0, +0.0, -0.6)*alpha;
+    v2 = vector_t<real_t>(+1.2, -1.2, +0.0)*alpha;
+    v3 = vector_t<real_t>(+0.0, +0.8, +0.2)*alpha;
 
     triangle_t tri=triangle_t(v1, v2, v3, 0);
-    vector_t<real_t> p=vector_t<real_t>(+0.0, +0.0, +1.0);
+    vector_t<real_t> p=vector_t<real_t>(+1.0, -1.0, +1.0);
 
     projection_2d_para para;
     para = prjection_2d(v1, v2, v3, p);
@@ -246,7 +246,7 @@ void test_engine_2d_debug(){
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_p[i]);
         real_t D=atan2(para.para_1d[i].P_0*para.para_1d[i].l_m, 
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_m[i]);
-        I1+=A*(B-abs(para.d)*(C-D));
+        I1 = I1+A*(B-abs(para.d)*(C-D));
     }
     print(I1);
 
@@ -275,8 +275,8 @@ void test_engine_2d_debug(){
 
     int_t flag;
     quadl_domain_t quadl;
-    quadl.set_2d(15, 1.0E-4);
-    integrand_args_ args={tri, p, p};
+    quadl.set_2d(15, 1.0E-10);
+    integrand_args_2d args={tri, p, p};
     triangle_domain_t triangle={vector_t<real_t>(0.0, 0.0, 0.0), 
                                 vector_t<real_t>(1.0, 0.0, 0.0), 
                                 vector_t<real_t>(0.0, 1.0, 0.0)};
@@ -300,4 +300,223 @@ void test_engine_2d_debug(){
     I3.z =real(quadl.integral_2d(integrand_3, &args, triangle, flag)); assert(!flag);
     print(I3);
 
+}
+
+void test_engine_2d_sheet_near_field(){
+
+    // problem defintions
+    const real_t GHz=1.0E+9;
+    const real_t freq=2.0*GHz;
+    const real_t lambda=c_0/freq;
+    const real_t clmax=lambda/11.0;
+    const complex_t mu_b=1.0, eps_b=1.0;
+    const real_t Lx=0.6, Ly=0.4;
+
+    const size_t Ns=201;
+    complex_t E_TM, E_TE;
+    real_t theta_i, phi_i;
+
+    engine_t engine;
+    create_sheet(Lx, Ly, clmax);
+    engine.set(freq, mu_b, eps_b, clmax, 1.0, 0, 0);
+
+    engine.compute_Z_mn();
+    // engine.load_Z_mn("data/Z_mn.bin");
+    file_t file;
+    range_t z;
+    real_t z_min, z_max, x, y;
+
+    x = +1.0;
+    y = +1.0;
+    z_min = -1.0;
+    z_max = +1.0;
+    z.set(z_min, z_max, Ns);
+    z.linspace();
+
+    E_TM = +1.0;
+    E_TE = +0.0;
+    theta_i = deg2rad(0.0);
+    phi_i = deg2rad(0.0);
+    engine.compute_V_m_incident(E_TM, E_TE, theta_i, phi_i);
+    engine.compute_I_n();
+    engine.export_currents("data/currents.pos");
+    vector_t<real_t> r;
+
+    near_field_t E, H;
+    file.open("data/near_field.txt", 'w');
+    for (size_t i=0; i<Ns; i++){
+        progress_bar(i, Ns, "computing near fields...");
+        r = vector_t<real_t>(x, y, z(i));
+        E = engine.compute_near_field_E(r);
+        H = engine.compute_near_field_H(r);
+        file.write("%21.14E ", z(i));
+        file.write("%21.14E %21.14E %21.14E %21.14E %21.14E %21.14E ", 
+            real(E.x), imag(E.x),
+            real(E.y), imag(E.y),
+            real(E.z), imag(E.z));
+        file.write("%21.14E %21.14E %21.14E %21.14E %21.14E %21.14E ", 
+            real(H.x), imag(H.x),
+            real(H.y), imag(H.y),
+            real(H.z), imag(H.z));
+        file.write("\n");
+    }
+    file.close();
+
+    //
+    z.unset();
+
+    engine.unset();
+    
+}
+
+
+void test_engine_2d_box_near_field(){
+
+    // problem defintions
+    const real_t mm=1.0E-3;
+    const real_t GHz=1.0E+9;
+    const real_t freq=4.0*GHz;
+    const real_t lambda=c_0/freq;
+    const real_t clmax=lambda/6.0;
+    const complex_t mu_b=1.0, eps_b=1.0;
+
+    const size_t Ns=401;
+    complex_t E_TM, E_TE;
+    real_t theta_i, phi_i;
+    
+    engine_t engine;
+    create_box();
+    engine.set(freq, mu_b, eps_b, clmax/mm, mm, 0, 0);
+
+    engine.compute_Z_mn();
+    // engine.load_Z_mn("data/Z_mn.bin");
+    file_t file;
+    range_t z;
+    real_t z_min, z_max, x, y;
+
+    x = +100.0*mm;
+    y = +100.0*mm;
+    z_min = -50.0*mm;
+    z_max = +50.0*mm;
+    z.set(z_min, z_max, Ns);
+    z.linspace();
+
+    E_TM = +1.0;
+    E_TE = +0.0;
+    theta_i = deg2rad(+0.0);
+    phi_i = deg2rad(+0.0);
+    engine.compute_V_m_incident(E_TM, E_TE, theta_i, phi_i);
+    engine.compute_I_n();
+    engine.export_currents("data/currents.pos");
+    vector_t<real_t> r;
+
+    near_field_t E, H;
+    file.open("data/near_field.txt", 'w');
+    for (size_t i=0; i<Ns; i++){
+        progress_bar(i, Ns, "computing near fields...");
+        r = vector_t<real_t>(x, y, z(i));
+        E = engine.compute_near_field_E(r);
+        H = engine.compute_near_field_H(r);
+        file.write("%21.14E ", z(i));
+        file.write("%21.14E %21.14E %21.14E %21.14E %21.14E %21.14E ", 
+            real(E.x), imag(E.x),
+            real(E.y), imag(E.y),
+            real(E.z), imag(E.z));
+        file.write("%21.14E %21.14E %21.14E %21.14E %21.14E %21.14E ", 
+            real(H.x), imag(H.x),
+            real(H.y), imag(H.y),
+            real(H.z), imag(H.z));
+        file.write("\n");
+    }
+    file.close();
+
+    //
+    z.unset();
+
+    engine.unset();
+    
+}
+
+
+void test_engine_2d_sphere_near_field_2d(){
+
+    // problem defintions
+    const real_t GHz=1.0E+9;
+    const real_t freq=0.6*GHz;
+    const real_t lambda=c_0/freq;
+    const real_t clmax=lambda/5.0;
+    const complex_t mu_b=1.0, eps_b=1.0;
+    const real_t radius=0.5;
+
+    const size_t Ns_x=1001, Ns_z=1001;
+    complex_t E_TM, E_TE;
+    real_t theta_i, phi_i;
+
+    engine_t engine;
+    create_sphere(radius);
+    engine.set(freq, mu_b, eps_b, clmax, 1.0, 0, 0);
+
+    // engine.compute_Z_mn();
+    engine.load_Z_mn("data/Z_mn.bin");
+    file_t file_x, file_y, file_data;
+    range_t x, z;
+    real_t z_min, z_max, x_min, x_max, y;
+    const real_t range=3.0;
+
+    x_min = -range;
+    x_max = +range;
+    y = +0.0;
+    z_min = -range;
+    z_max = +range;
+    x.set(x_min, x_max, Ns_x);
+    z.set(z_min, z_max, Ns_z);
+    x.linspace();
+    z.linspace();
+
+    E_TM = +0.0;
+    E_TE = +1.0;
+    theta_i = deg2rad(30.0);
+    phi_i = deg2rad(180.0);
+    engine.compute_V_m_incident(E_TM, E_TE, theta_i, phi_i);
+    engine.compute_I_n();
+    vector_t<real_t> r;
+
+    near_field_t E, H;
+    incident_field_t incident_field;
+    file_x.open("data/near_field_2d_x.txt", 'w');
+    file_y.open("data/near_field_2d_y.txt", 'w');
+    file_data.open("data/near_field_2d_data.txt", 'w');
+    size_t counter=0;
+    for (size_t i=0; i<Ns_x; i++){
+        for (size_t j=0; j<Ns_z; j++){
+            progress_bar(counter, Ns_x*Ns_z, "computing near fields...");
+            counter++;
+            r = vector_t<real_t>(x(i), y, z(j));
+            incident_field = compute_incident_field(E_TM, E_TE, theta_i, phi_i, 
+                                                    2.0*pi/lambda, sqrt(mu_0/eps_0), r);
+            E = engine.compute_near_field_E(r);
+            H = engine.compute_near_field_H(r);
+            E.x+=incident_field.E.x;
+            E.y+=incident_field.E.y;
+            E.z+=incident_field.E.z;
+            file_x.write("%21.14E ", x(i));
+            file_y.write("%21.14E ", z(j));
+            file_data.write("%21.14E ", sqrt(pow(abs(E.x), 2.0)
+                                            +pow(abs(E.y), 2.0)
+                                            +pow(abs(E.z), 2.0)));
+        }
+        file_x.write("\n");
+        file_y.write("\n");
+        file_data.write("\n");
+    }
+    file_x.close();
+    file_y.close();
+    file_data.close();
+
+    //
+    x.unset();
+    z.unset();
+
+    engine.unset();
+    
 }
