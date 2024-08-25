@@ -123,13 +123,13 @@ void test_engine_2d_sphere_near_field(){
 
     // problem defintions
     const real_t GHz=1.0E+9;
-    const real_t freq=0.5*GHz;
+    const real_t freq=0.2*GHz;
     const real_t lambda=c_0/freq;
-    const real_t clmax=lambda/6.0;
+    const real_t clmax=lambda/5.0;
     const complex_t mu_b=1.0, eps_b=1.0;
     const real_t radius=0.5;
 
-    const size_t Ns=401;
+    const size_t Ns=201;
     complex_t E_TM, E_TE;
     real_t theta_i, phi_i;
 
@@ -183,4 +183,121 @@ void test_engine_2d_sphere_near_field(){
 
     engine.unset();
     
+}
+
+struct integrand_args_{
+    triangle_t tri;
+    vector_t<real_t> r, unit_vector;
+};
+
+#define EPS 1.0E-6
+
+complex_t integrand_1(const complex_t alpha, const complex_t beta, void *args_){
+    assert(args_!=null);
+    integrand_args_* args=(integrand_args_*)args_;
+    vector_t<real_t> rho=args->tri.v[0]
+                         +real(alpha)*(args->tri.v[1]-args->tri.v[0])
+                         +real(beta) *(args->tri.v[2]-args->tri.v[0]);
+    real_t R=mag(args->r-rho)+EPS;
+    return 2.0*args->tri.area/R;
+}
+
+complex_t integrand_2(const complex_t alpha, const complex_t beta, void *args_){
+    assert(args_!=null);
+    integrand_args_* args=(integrand_args_*)args_;
+    vector_t<real_t> rho=args->tri.v[0]
+                         +real(alpha)*(args->tri.v[1]-args->tri.v[0])
+                         +real(beta) *(args->tri.v[2]-args->tri.v[0]);
+    real_t R=mag(args->r-rho)+EPS;
+    return 2.0*args->tri.area*(rho-args->r)*args->unit_vector/R;
+}
+
+complex_t integrand_3(const complex_t alpha, const complex_t beta, void *args_){
+    assert(args_!=null);
+    integrand_args_* args=(integrand_args_*)args_;
+    vector_t<real_t> rho=args->tri.v[0]
+                         +real(alpha)*(args->tri.v[1]-args->tri.v[0])
+                         +real(beta) *(args->tri.v[2]-args->tri.v[0]);
+    real_t R=mag(args->r-rho)+EPS;
+    return 2.0*args->tri.area*(1.0/pow(R, 2.0))*(args->unit_vector*unit(args->r-rho));
+}
+
+void test_engine_2d_debug(){
+
+    //
+    vector_t<real_t> v1, v2, v3;
+    real_t alpha=1.0E+0;
+    v1 = vector_t<real_t>(+0.7, -0.4, +0.6)*alpha;
+    v2 = vector_t<real_t>(+0.2, +0.5, -0.0)*alpha;
+    v3 = vector_t<real_t>(-0.8, -0.5, -0.7)*alpha;
+
+    triangle_t tri=triangle_t(v1, v2, v3, 0);
+    vector_t<real_t> p=vector_t<real_t>(+0.0, +0.0, +1.0);
+
+    projection_2d_para para;
+    para = prjection_2d(v1, v2, v3, p);
+
+    //
+    real_t I1=0.0;
+    for (size_t i=0; i<3; i++){
+        real_t A=para.para_1d[i].P_0_unit*para.u[i];
+        real_t B=para.para_1d[i].P_0*log((para.R_p[i]+para.para_1d[i].l_p)/(para.R_m[i]+para.para_1d[i].l_m));
+        real_t C=atan2(para.para_1d[i].P_0*para.para_1d[i].l_p, 
+                        pow(para.R_0[i], 2.0)+abs(para.d)*para.R_p[i]);
+        real_t D=atan2(para.para_1d[i].P_0*para.para_1d[i].l_m, 
+                        pow(para.R_0[i], 2.0)+abs(para.d)*para.R_m[i]);
+        I1+=A*(B-abs(para.d)*(C-D));
+    }
+    print(I1);
+
+    vector_t<real_t> I2 = vector_t<real_t>(0.0, 0.0, 0.0);
+    for (size_t i=0; i<3; i++){
+        real_t A=para.R_p[i]*para.para_1d[i].l_p-para.R_m[i]*para.para_1d[i].l_m;
+        real_t B=pow(para.R_0[i], 2.0)*log((para.R_p[i]+para.para_1d[i].l_p)/(para.R_m[i]+para.para_1d[i].l_m));
+        I2 = I2+0.5*(A+B)*para.u[i];
+    }
+    print(I2);
+
+    vector_t<real_t> I3 = vector_t<real_t>(0.0, 0.0, 0.0);
+    for (size_t i=0; i<3; i++){
+        real_t A=log((para.R_p[i]+para.para_1d[i].l_p)/(para.R_m[i]+para.para_1d[i].l_m));
+        real_t B=atan2(para.para_1d[i].P_0*para.para_1d[i].l_p, 
+                        pow(para.R_0[i], 2.0)+abs(para.d)*para.R_p[i]);
+        real_t C=atan2(para.para_1d[i].P_0*para.para_1d[i].l_m, 
+                        pow(para.R_0[i], 2.0)+abs(para.d)*para.R_m[i]);
+        I3= I3+A*para.u[i]+sign(para.d)*(B-C)*para.n;
+    }
+    print(I3);
+
+    vector_t<real_t> x=vector_t<real_t>(1.0, 0.0, 0.0);
+    vector_t<real_t> y=vector_t<real_t>(0.0, 1.0, 0.0);
+    vector_t<real_t> z=vector_t<real_t>(0.0, 0.0, 1.0);
+
+    int_t flag;
+    quadl_domain_t quadl;
+    quadl.set_2d(15, 1.0E-4);
+    integrand_args_ args={tri, p, p};
+    triangle_domain_t triangle={vector_t<real_t>(0.0, 0.0, 0.0), 
+                                vector_t<real_t>(1.0, 0.0, 0.0), 
+                                vector_t<real_t>(0.0, 1.0, 0.0)};
+    
+    I1 =real(quadl.integral_2d(integrand_1, &args, triangle, flag)); assert(!flag);
+    print(I1);
+
+    args.unit_vector = x;
+    I2.x =real(quadl.integral_2d(integrand_2, &args, triangle, flag)); assert(!flag);
+    args.unit_vector = y;
+    I2.y =real(quadl.integral_2d(integrand_2, &args, triangle, flag)); assert(!flag);
+    args.unit_vector = z;
+    I2.z =real(quadl.integral_2d(integrand_2, &args, triangle, flag)); assert(!flag);
+    print(I2);
+
+    args.unit_vector = x;
+    I3.x =real(quadl.integral_2d(integrand_3, &args, triangle, flag)); assert(!flag);
+    args.unit_vector = y;
+    I3.y =real(quadl.integral_2d(integrand_3, &args, triangle, flag)); assert(!flag);
+    args.unit_vector = z;
+    I3.z =real(quadl.integral_2d(integrand_3, &args, triangle, flag)); assert(!flag);
+    print(I3);
+
 }

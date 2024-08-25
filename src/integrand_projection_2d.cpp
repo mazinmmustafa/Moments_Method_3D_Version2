@@ -113,7 +113,7 @@ void integrand_L3_2d_2d(const real_t alpha, const real_t beta, basis_2d_t b_m, b
     para = prjection_2d(b_n.r_m, b_n.e[0], b_n.e[1], p);
     I_mm = vector_t<real_t>(0.0, 0.0, 0.0);
     for (size_t i=0; i<3; i++){
-        real_t A=pow(para.R_0[i], 2.0)*log((para.R_p[i]+para.para_1d[i].l_p)/(para.R_m[i]+para.para_1d[i].l_m));
+        real_t A=log((para.R_p[i]+para.para_1d[i].l_p)/(para.R_m[i]+para.para_1d[i].l_m));
         real_t B=atan2(para.para_1d[i].P_0*para.para_1d[i].l_p, 
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_p[i]);
         real_t C=atan2(para.para_1d[i].P_0*para.para_1d[i].l_m, 
@@ -125,7 +125,7 @@ void integrand_L3_2d_2d(const real_t alpha, const real_t beta, basis_2d_t b_m, b
     para = prjection_2d(b_n.r_p, b_n.e[1], b_n.e[0], p);
     I_mp = vector_t<real_t>(0.0, 0.0, 0.0);
     for (size_t i=0; i<3; i++){
-        real_t A=pow(para.R_0[i], 2.0)*log((para.R_p[i]+para.para_1d[i].l_p)/(para.R_m[i]+para.para_1d[i].l_m));
+        real_t A=log((para.R_p[i]+para.para_1d[i].l_p)/(para.R_m[i]+para.para_1d[i].l_m));
         real_t B=atan2(para.para_1d[i].P_0*para.para_1d[i].l_p, 
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_p[i]);
         real_t C=atan2(para.para_1d[i].P_0*para.para_1d[i].l_m, 
@@ -137,7 +137,7 @@ void integrand_L3_2d_2d(const real_t alpha, const real_t beta, basis_2d_t b_m, b
     para = prjection_2d(b_n.r_m, b_n.e[0], b_n.e[1], p);
     I_pm = vector_t<real_t>(0.0, 0.0, 0.0);
     for (size_t i=0; i<3; i++){
-        real_t A=pow(para.R_0[i], 2.0)*log((para.R_p[i]+para.para_1d[i].l_p)/(para.R_m[i]+para.para_1d[i].l_m));
+        real_t A=log((para.R_p[i]+para.para_1d[i].l_p)/(para.R_m[i]+para.para_1d[i].l_m));
         real_t B=atan2(para.para_1d[i].P_0*para.para_1d[i].l_p, 
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_p[i]);
         real_t C=atan2(para.para_1d[i].P_0*para.para_1d[i].l_m, 
@@ -149,7 +149,7 @@ void integrand_L3_2d_2d(const real_t alpha, const real_t beta, basis_2d_t b_m, b
     para = prjection_2d(b_n.r_p, b_n.e[1], b_n.e[0], p);
     I_pp = vector_t<real_t>(0.0, 0.0, 0.0);
     for (size_t i=0; i<3; i++){
-        real_t A=pow(para.R_0[i], 2.0)*log((para.R_p[i]+para.para_1d[i].l_p)/(para.R_m[i]+para.para_1d[i].l_m));
+        real_t A=log((para.R_p[i]+para.para_1d[i].l_p)/(para.R_m[i]+para.para_1d[i].l_m));
         real_t B=atan2(para.para_1d[i].P_0*para.para_1d[i].l_p, 
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_p[i]);
         real_t C=atan2(para.para_1d[i].P_0*para.para_1d[i].l_m, 

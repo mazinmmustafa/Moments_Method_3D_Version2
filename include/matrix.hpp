@@ -155,6 +155,7 @@ class matrix_t{
             this->P[i]=i;
         }
         for (size_t i=0; i<N; i++){
+            progress_bar(i, N, "LUP decomposition...");
             max_element = 0.0;
             i_max = i;
             for (size_t k=i; k<N; k++){

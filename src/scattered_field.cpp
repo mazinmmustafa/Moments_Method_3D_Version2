@@ -284,7 +284,7 @@ void integrand_L3_2d(basis_2d_t b_m, const vector_t<real_t> p,
     para = prjection_2d(b_m.r_m, b_m.e[0], b_m.e[1], p);
     I_m = vector_t<real_t>(0.0, 0.0, 0.0);
     for (size_t i=0; i<3; i++){
-        real_t A=pow(para.R_0[i], 2.0)*log((para.R_p[i]+para.para_1d[i].l_p)/(para.R_m[i]+para.para_1d[i].l_m));
+        real_t A=log((para.R_p[i]+para.para_1d[i].l_p)/(para.R_m[i]+para.para_1d[i].l_m));
         real_t B=atan2(para.para_1d[i].P_0*para.para_1d[i].l_p, 
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_p[i]);
         real_t C=atan2(para.para_1d[i].P_0*para.para_1d[i].l_m, 
@@ -295,7 +295,7 @@ void integrand_L3_2d(basis_2d_t b_m, const vector_t<real_t> p,
     para = prjection_2d(b_m.r_p, b_m.e[1], b_m.e[0], p);
     I_p = vector_t<real_t>(0.0, 0.0, 0.0);
     for (size_t i=0; i<3; i++){
-        real_t A=pow(para.R_0[i], 2.0)*log((para.R_p[i]+para.para_1d[i].l_p)/(para.R_m[i]+para.para_1d[i].l_m));
+        real_t A=log((para.R_p[i]+para.para_1d[i].l_p)/(para.R_m[i]+para.para_1d[i].l_m));
         real_t B=atan2(para.para_1d[i].P_0*para.para_1d[i].l_p, 
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_p[i]);
         real_t C=atan2(para.para_1d[i].P_0*para.para_1d[i].l_m, 
@@ -374,7 +374,6 @@ complex_t E_2d_integral_3(void *args_){
     ans+= +1.0*args->unit_vector*I_m*b_m.L/b_m.A_m[0];
     ans+= -1.0*args->unit_vector*I_p*b_m.L/b_m.A_p[0];
     return ans/(4.0*pi);
-
 }
 
 complex_t compute_E_2d(const basis_2d_t b_m, const vector_t<real_t> r, const vector_t<real_t> unit_vector, 

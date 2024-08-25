@@ -168,7 +168,7 @@ void engine_t::compute_I_n(){
     this->Z_mn.lup();
     this->Z_mn.solve(this->V_m, this->I_n);
     this->is_I_n_calculated = true;
-    print(", done!\n");
+    // print(", done!\n");
 }
 
 complex_t engine_t::compute_Z_in(const size_t port_index){
