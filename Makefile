@@ -92,7 +92,7 @@ clean_mesh:
 	@$(RM) -rv mesh/basis/* mesh/mesh/* mesh/shape.vtk mesh/shape_log.txt
 
 clean_all: clean clean_mesh
-	@$(RM) -rv $(BDIR) $(ODIR) $(DDIR)
+	@$(RM) -rv $(BDIR) $(ODIR) $(DDIR) data/*
 
 clean_data:
 	@find ./data/ -type f -name '*.pos' | xargs $(RM) -rv
