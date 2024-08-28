@@ -482,7 +482,7 @@ void test_engine_1d_near_field_vertical_dipole(){
     engine.export_solutions();
 
     vector_t<real_t> r;
-    near_field_t E, H;
+    vector_t<complex_t> E, H;
     file_t file;
     file.open("data/near_field.txt", 'w');
     for (size_t i=0; i<Ns; i++){

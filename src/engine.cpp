@@ -450,62 +450,62 @@ far_field_t engine_t::compute_far_field(const real_t theta_i, const real_t phi_i
     return far_field;
 }
 
-near_field_t engine_t::compute_near_field_E(const vector_t<real_t> r){
-    near_field_t near_field;
+vector_t<complex_t> engine_t::compute_near_field_E(const vector_t<real_t> r){
+    vector_t<complex_t> E;
     vector_t<real_t> x=vector_t<real_t>(1.0, 0.0, 0.0);
     vector_t<real_t> y=vector_t<real_t>(0.0, 1.0, 0.0);
     vector_t<real_t> z=vector_t<real_t>(0.0, 0.0, 1.0);
-    near_field.x = 0.0;
-    near_field.y = 0.0;
-    near_field.z = 0.0;
+    E.x = 0.0;
+    E.y = 0.0;
+    E.z = 0.0;
     // 1d
     #ifdef only_1d
     for (size_t m=0; m<this->N_basis_1d; m++){
         basis_1d_t b_m=this->shape.get_basis_1d(m);
-        near_field.x+= compute_E_1d(b_m, r, x, k_b, eta_b, a, quadl)*this->I_n(m, 0);
-        near_field.y+= compute_E_1d(b_m, r, y, k_b, eta_b, a, quadl)*this->I_n(m, 0);
-        near_field.z+= compute_E_1d(b_m, r, z, k_b, eta_b, a, quadl)*this->I_n(m, 0);
+        E.x+= compute_E_1d(b_m, r, x, k_b, eta_b, a, quadl)*this->I_n(m, 0);
+        E.y+= compute_E_1d(b_m, r, y, k_b, eta_b, a, quadl)*this->I_n(m, 0);
+        E.z+= compute_E_1d(b_m, r, z, k_b, eta_b, a, quadl)*this->I_n(m, 0);
     }
     #endif
     // 2d
     #ifdef only_2d
     for (size_t m=0; m<this->N_basis_2d; m++){
         basis_2d_t b_m=this->shape.get_basis_2d(m);
-        near_field.x+= compute_E_2d(b_m, r, x, k_b, eta_b, quadl)*this->I_n(m, 0);
-        near_field.y+= compute_E_2d(b_m, r, y, k_b, eta_b, quadl)*this->I_n(m, 0);
-        near_field.z+= compute_E_2d(b_m, r, z, k_b, eta_b, quadl)*this->I_n(m, 0);
+        E.x+= compute_E_2d(b_m, r, x, k_b, eta_b, quadl)*this->I_n(m, 0);
+        E.y+= compute_E_2d(b_m, r, y, k_b, eta_b, quadl)*this->I_n(m, 0);
+        E.z+= compute_E_2d(b_m, r, z, k_b, eta_b, quadl)*this->I_n(m, 0);
     }
     #endif
-    return near_field;
+    return E;
 }
 
-near_field_t engine_t::compute_near_field_H(const vector_t<real_t> r){
-    near_field_t near_field;
+vector_t<complex_t> engine_t::compute_near_field_H(const vector_t<real_t> r){
+    vector_t<complex_t> H;
     vector_t<real_t> x=vector_t<real_t>(1.0, 0.0, 0.0);
     vector_t<real_t> y=vector_t<real_t>(0.0, 1.0, 0.0);
     vector_t<real_t> z=vector_t<real_t>(0.0, 0.0, 1.0);
-    near_field.x = 0.0;
-    near_field.y = 0.0;
-    near_field.z = 0.0;
+    H.x = 0.0;
+    H.y = 0.0;
+    H.z = 0.0;
     // 1d
     #ifdef only_1d
     for (size_t m=0; m<this->N_basis_1d; m++){
         basis_1d_t b_m=this->shape.get_basis_1d(m);
-        near_field.x+= compute_H_1d(b_m, r, x, k_b, eta_b, a, quadl)*this->I_n(m, 0);
-        near_field.y+= compute_H_1d(b_m, r, y, k_b, eta_b, a, quadl)*this->I_n(m, 0);
-        near_field.z+= compute_H_1d(b_m, r, z, k_b, eta_b, a, quadl)*this->I_n(m, 0);
+        H.x+= compute_H_1d(b_m, r, x, k_b, eta_b, a, quadl)*this->I_n(m, 0);
+        H.y+= compute_H_1d(b_m, r, y, k_b, eta_b, a, quadl)*this->I_n(m, 0);
+        H.z+= compute_H_1d(b_m, r, z, k_b, eta_b, a, quadl)*this->I_n(m, 0);
     }
     #endif
     // 2d
     #ifdef only_2d
     for (size_t m=0; m<this->N_basis_2d; m++){
         basis_2d_t b_m=this->shape.get_basis_2d(m);
-        near_field.x+= compute_H_2d(b_m, r, x, k_b, eta_b, quadl)*this->I_n(m, 0);
-        near_field.y+= compute_H_2d(b_m, r, y, k_b, eta_b, quadl)*this->I_n(m, 0);
-        near_field.z+= compute_H_2d(b_m, r, z, k_b, eta_b, quadl)*this->I_n(m, 0);
+        H.x+= compute_H_2d(b_m, r, x, k_b, eta_b, quadl)*this->I_n(m, 0);
+        H.y+= compute_H_2d(b_m, r, y, k_b, eta_b, quadl)*this->I_n(m, 0);
+        H.z+= compute_H_2d(b_m, r, z, k_b, eta_b, quadl)*this->I_n(m, 0);
     }
     #endif
-    return near_field;
+    return H;
 }
 
 //

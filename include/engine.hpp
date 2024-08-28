@@ -45,10 +45,6 @@ struct far_field_t{
     complex_t theta=0.0, phi=0.0;
 };
 
-struct near_field_t{
-    complex_t x=0.0, y=0.0, z=0.0;
-};
-
 class engine_t{
     private:
         const size_t max_line_length=200;
@@ -106,8 +102,8 @@ class engine_t{
         //
         sigma_t compute_RCS(const real_t theta_i, const real_t phi_i);
         far_field_t compute_far_field(const real_t theta_i, const real_t phi_i);
-        near_field_t compute_near_field_E(const vector_t<real_t> r);
-        near_field_t compute_near_field_H(const vector_t<real_t> r);
+        vector_t<complex_t> compute_near_field_E(const vector_t<real_t> r);
+        vector_t<complex_t> compute_near_field_H(const vector_t<real_t> r);
         void export_currents(const char *filename);
 };
 

@@ -9,8 +9,9 @@ pcolor(x, y, data)
 hold on
 plot(cos(linspace(0, 2*pi))*0.5, sin(linspace(0, 2*pi))*0.5, '-k')
 hold off
-colormap jet
+colormap(jet)
 shading flat
 axis equal
 colorbar
-caxis([0 3])
+##caxis([0 3])
+axis off

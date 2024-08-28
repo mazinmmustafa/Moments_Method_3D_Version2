@@ -158,7 +158,7 @@ void test_engine_2d_sphere_near_field(){
     engine.compute_I_n();
     vector_t<real_t> r;
 
-    near_field_t E, H;
+    vector_t<complex_t> E, H;
     file.open("data/near_field.txt", 'w');
     for (size_t i=0; i<Ns; i++){
         progress_bar(i, Ns, "computing near fields...");
@@ -342,7 +342,7 @@ void test_engine_2d_sheet_near_field(){
     engine.export_currents("data/currents.pos");
     vector_t<real_t> r;
 
-    near_field_t E, H;
+    vector_t<complex_t> E, H;
     file.open("data/near_field.txt", 'w');
     for (size_t i=0; i<Ns; i++){
         progress_bar(i, Ns, "computing near fields...");
@@ -410,7 +410,7 @@ void test_engine_2d_box_near_field(){
     engine.export_currents("data/currents.pos");
     vector_t<real_t> r;
 
-    near_field_t E, H;
+    vector_t<complex_t> E, H;
     file.open("data/near_field.txt", 'w');
     for (size_t i=0; i<Ns; i++){
         progress_bar(i, Ns, "computing near fields...");
@@ -442,13 +442,13 @@ void test_engine_2d_sphere_near_field_2d(){
 
     // problem defintions
     const real_t GHz=1.0E+9;
-    const real_t freq=0.6*GHz;
+    const real_t freq=0.75*GHz;
     const real_t lambda=c_0/freq;
-    const real_t clmax=lambda/5.0;
+    const real_t clmax=lambda/6.0;
     const complex_t mu_b=1.0, eps_b=1.0;
     const real_t radius=0.5;
 
-    const size_t Ns_x=1001, Ns_z=1001;
+    const size_t Ns_x=101, Ns_z=101;
     complex_t E_TM, E_TE;
     real_t theta_i, phi_i;
 
@@ -461,7 +461,7 @@ void test_engine_2d_sphere_near_field_2d(){
     file_t file_x, file_y, file_data;
     range_t x, z;
     real_t z_min, z_max, x_min, x_max, y;
-    const real_t range=3.0;
+    const real_t range=2.0;
 
     x_min = -range;
     x_max = +range;
@@ -475,13 +475,13 @@ void test_engine_2d_sphere_near_field_2d(){
 
     E_TM = +0.0;
     E_TE = +1.0;
-    theta_i = deg2rad(30.0);
+    theta_i = deg2rad(0.0);
     phi_i = deg2rad(180.0);
     engine.compute_V_m_incident(E_TM, E_TE, theta_i, phi_i);
     engine.compute_I_n();
     vector_t<real_t> r;
 
-    near_field_t E, H;
+    vector_t<complex_t> E, H;
     incident_field_t incident_field;
     file_x.open("data/near_field_2d_x.txt", 'w');
     file_y.open("data/near_field_2d_y.txt", 'w');
@@ -496,14 +496,14 @@ void test_engine_2d_sphere_near_field_2d(){
                                                     2.0*pi/lambda, sqrt(mu_0/eps_0), r);
             E = engine.compute_near_field_E(r);
             H = engine.compute_near_field_H(r);
-            E.x+=incident_field.E.x;
-            E.y+=incident_field.E.y;
-            E.z+=incident_field.E.z;
+            E = E+incident_field.E;
             file_x.write("%21.14E ", x(i));
             file_y.write("%21.14E ", z(j));
-            file_data.write("%21.14E ", sqrt(pow(abs(E.x), 2.0)
-                                            +pow(abs(E.y), 2.0)
-                                            +pow(abs(E.z), 2.0)));
+            vector_t<complex_t> E_field=vector_t<complex_t>(E.x, E.y, E.z);
+            // file_data.write("%21.14E ", sqrt(pow(real(E.x), 2.0)
+            //                                 +pow(real(E.y), 2.0)
+            //                                 +pow(real(E.z), 2.0)));
+            file_data.write("%21.14E ", mag(E));
         }
         file_x.write("\n");
         file_y.write("\n");
