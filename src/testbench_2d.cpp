@@ -454,7 +454,7 @@ void test_engine_2d_sphere_near_field_2d(){
     const complex_t mu_b=1.0, eps_b=1.0;
     const real_t radius=0.5;
 
-    const size_t Ns_x=101, Ns_z=101;
+    const size_t Ns_x=2001, Ns_z=2001;
     complex_t E_TM, E_TE;
     real_t theta_i, phi_i;
 
@@ -462,8 +462,8 @@ void test_engine_2d_sphere_near_field_2d(){
     create_sphere(radius);
     engine.set(freq, mu_b, eps_b, clmax, 1.0, 0, 0);
 
-    // engine.compute_Z_mn();
-    engine.load_Z_mn("data/Z_mn.bin");
+    engine.compute_Z_mn();
+    // engine.load_Z_mn("data/Z_mn.bin");
     file_t file_x, file_y, file_data;
     range_t x, z;
     real_t z_min, z_max, x_min, x_max, y;
@@ -482,7 +482,7 @@ void test_engine_2d_sphere_near_field_2d(){
     E_TM = +1.0;
     E_TE = +0.0;
     theta_i = deg2rad(0.0);
-    phi_i = deg2rad(180.0);
+    phi_i = deg2rad(0.0);
     engine.compute_V_m_incident(E_TM, E_TE, theta_i, phi_i);
     engine.compute_I_n();
     vector_t<real_t> r;

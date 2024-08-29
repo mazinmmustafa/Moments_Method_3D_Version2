@@ -17,7 +17,7 @@ int main(){
     // test_engine_1d_transmission_line_S_parameters();
     // test_engine_1d_RCS_vertical_wire();
     // test_engine_1d_far_field_transmission_line();
-    test_engine_1d_near_field_vertical_dipole();
+    // test_engine_1d_near_field_vertical_dipole();
     // test_engine_2d_transmission_line_near_field_1d();
     //
     // test_engine_2d_2d();
@@ -26,7 +26,7 @@ int main(){
     // test_engine_2d_debug();
     // test_engine_2d_sheet_near_field();
     // test_engine_2d_box_near_field();
-    // test_engine_2d_sphere_near_field_2d();
+    test_engine_2d_sphere_near_field_2d();
 
     // const real_t y=-1.0;
     // vector_t<real_t> r_m=vector_t<real_t>(-1.0, 0.0, +0.0);

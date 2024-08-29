@@ -634,8 +634,6 @@ void test_engine_2d_transmission_line_near_field_1d(){
     const complex_t Z_0=50.0;
 
     const size_t Ns_x=201, Ns_y=201;
-    complex_t E_TM, E_TE;
-    real_t theta_i, phi_i;
 
     engine_t engine;
     create_transmission_line(L, 2.0*h, clmax);
@@ -676,8 +674,6 @@ void test_engine_2d_transmission_line_near_field_1d(){
             progress_bar(counter, Ns_x*Ns_y, "computing near fields...");
             counter++;
             r = vector_t<real_t>(x(i), y(j), z);
-            incident_field = compute_incident_field(E_TM, E_TE, theta_i, phi_i, 
-                                                    2.0*pi/lambda, sqrt(mu_0/eps_0), r);
             E = engine.compute_near_field_E(r);
             H = engine.compute_near_field_H(r);
             file_x.write("%21.14E ", x(i));
