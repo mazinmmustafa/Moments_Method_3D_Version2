@@ -8,7 +8,7 @@ incident_field_t compute_incident_field(const complex_t E_TM, const complex_t E_
     vector_t<real_t> phi_i_u=vector_t<real_t>(-sin(phi_i), cos(phi_i), 0.0);
     vector_t<real_t> k_i=k*vector_t<real_t>(sin(theta_i)*cos(phi_i), sin(theta_i)*sin(phi_i), cos(theta_i));
     vector_t<complex_t> E_i=(E_TM*theta_i_u+E_TE*phi_i_u)*exp(+j*(k_i*r));
-    vector_t<complex_t> H_i=(E_TM*(k_i^theta_i_u)+E_TE*(k_i^phi_i_u))*exp(+j*(k_i*r))/eta;
+    vector_t<complex_t> H_i=unit(k_i)^E_i/eta;
     incident_field_t incident_field;
     incident_field.E = E_i;
     incident_field.H = H_i;

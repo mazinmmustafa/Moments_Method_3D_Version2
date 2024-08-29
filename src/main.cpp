@@ -22,7 +22,7 @@ int main(){
     //
     // test_engine_2d_2d();
     // test_engine_2d_sphere_RCS();
-    // test_engine_2d_sphere_near_field();
+    test_engine_2d_sphere_near_field();
     // test_engine_2d_debug();
     // test_engine_2d_sheet_near_field();
     // test_engine_2d_box_near_field();

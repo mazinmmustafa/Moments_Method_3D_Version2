@@ -24,8 +24,7 @@ CXXOPT = $(OPT)
 COPT = $(OPT) 
 F90OPT = $(OPT) 
 F77OPT = -O2 
-# FLTO = -flto
-FLTO = 
+FLTO = -flto
 
 # Directories
 BDIR = bin

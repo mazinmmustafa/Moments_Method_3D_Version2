@@ -15,5 +15,6 @@ shading flat
 axis equal
 colorbar
 ##caxis([-20 20])
-caxis([0 2])
+##caxis([0 2])
+caxis([0 0.06])
 axis off
