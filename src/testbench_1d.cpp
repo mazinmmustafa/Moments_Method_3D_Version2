@@ -512,7 +512,7 @@ void test_engine_1d_debug(){
     para.P_p = sqrt(para.P_p*para.P_p+a*a);
     para.P_m = sqrt(para.P_m*para.P_m+a*a);
     I3 = (1.0/para.P_p-1.0/para.P_m)*para.l_unit
-         -(atan2(para.l_p, para.P_0)-atan2(para.l_m, para.P_0))*para.P_0_unit/para.P_0;
+         -(para.l_p/para.P_p-para.l_m/para.P_m)*para.P_0_unit/para.P_0;
     print(I3);
 
     vector_t<real_t> x=vector_t<real_t>(1.0, 0.0, 0.0);
