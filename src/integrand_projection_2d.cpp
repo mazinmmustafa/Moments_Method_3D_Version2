@@ -118,7 +118,7 @@ void integrand_L3_2d_2d(const real_t alpha, const real_t beta, basis_2d_t b_m, b
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_p[i]);
         real_t C=atan2(para.para_1d[i].P_0*para.para_1d[i].l_m, 
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_m[i]);
-        I_mm = I_mm+A*para.u[i]+sign(para.d)*(B-C)*para.n;
+        I_mm = I_mm+A*para.u[i]+sign(para.d)*(B-C)*(para.u[i]*para.para_1d[i].P_0_unit)*para.n;
     }
     // mp
     p = b_m.r_m+alpha*b_m.L_m[0]+beta*b_m.L_m[1];
@@ -130,7 +130,7 @@ void integrand_L3_2d_2d(const real_t alpha, const real_t beta, basis_2d_t b_m, b
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_p[i]);
         real_t C=atan2(para.para_1d[i].P_0*para.para_1d[i].l_m, 
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_m[i]);
-        I_mp = I_mp+A*para.u[i]+sign(para.d)*(B-C)*para.n;
+        I_mp = I_mp+A*para.u[i]+sign(para.d)*(B-C)*(para.u[i]*para.para_1d[i].P_0_unit)*para.n;
     }
     // pm
     p = b_m.r_p+alpha*b_m.L_p[1]+beta*b_m.L_p[0];
@@ -142,7 +142,7 @@ void integrand_L3_2d_2d(const real_t alpha, const real_t beta, basis_2d_t b_m, b
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_p[i]);
         real_t C=atan2(para.para_1d[i].P_0*para.para_1d[i].l_m, 
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_m[i]);
-        I_pm = I_pm+A*para.u[i]+sign(para.d)*(B-C)*para.n;
+        I_pm = I_pm+A*para.u[i]+sign(para.d)*(B-C)*(para.u[i]*para.para_1d[i].P_0_unit)*para.n;
     }
     // pp
     p = b_m.r_p+alpha*b_m.L_p[1]+beta*b_m.L_p[0];
@@ -154,6 +154,6 @@ void integrand_L3_2d_2d(const real_t alpha, const real_t beta, basis_2d_t b_m, b
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_p[i]);
         real_t C=atan2(para.para_1d[i].P_0*para.para_1d[i].l_m, 
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_m[i]);
-        I_pp = I_pp+A*para.u[i]+sign(para.d)*(B-C)*para.n;
+        I_pp = I_pp+A*para.u[i]+sign(para.d)*(B-C)*(para.u[i]*para.para_1d[i].P_0_unit)*para.n;
     }
 }

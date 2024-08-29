@@ -49,7 +49,6 @@ void integrand_L3_1d(basis_1d_t b_m, const vector_t<real_t> p,
     para.P_m = sqrt(para.P_m*para.P_m+a*a);
     ans = (1.0/para.P_p-1.0/para.P_m)*para.l_unit
          -(atan2(para.l_p, para.P_0)-atan2(para.l_m, para.P_0))*para.P_0_unit/para.P_0;
-    if (isnan(mag(ans))){ans = vector_t<real_t>(0.0, 0.0, 0.0);}
     I_m = ans;
     // p
     para = prjection_1d(b_m.e[0], b_m.r_p, p);
@@ -57,7 +56,6 @@ void integrand_L3_1d(basis_1d_t b_m, const vector_t<real_t> p,
     para.P_m = sqrt(para.P_m*para.P_m+a*a);
     ans = (1.0/para.P_p-1.0/para.P_m)*para.l_unit
          -(atan2(para.l_p, para.P_0)-atan2(para.l_m, para.P_0))*para.P_0_unit/para.P_0;
-    if (isnan(mag(ans))){ans = vector_t<real_t>(0.0, 0.0, 0.0);}
     I_p = ans;
 }
 
@@ -289,7 +287,7 @@ void integrand_L3_2d(basis_2d_t b_m, const vector_t<real_t> p,
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_p[i]);
         real_t C=atan2(para.para_1d[i].P_0*para.para_1d[i].l_m, 
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_m[i]);
-        I_m = I_m+A*para.u[i]+sign(para.d)*(B-C)*para.n;
+        I_m = I_m+A*para.u[i]+sign(para.d)*(B-C)*(para.u[i]*para.para_1d[i].P_0_unit)*para.n;
     }
     // p
     para = prjection_2d(b_m.r_p, b_m.e[1], b_m.e[0], p);
@@ -300,7 +298,7 @@ void integrand_L3_2d(basis_2d_t b_m, const vector_t<real_t> p,
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_p[i]);
         real_t C=atan2(para.para_1d[i].P_0*para.para_1d[i].l_m, 
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_m[i]);
-        I_p = I_p+A*para.u[i]+sign(para.d)*(B-C)*para.n;
+        I_p = I_p+A*para.u[i]+sign(para.d)*(B-C)*(para.u[i]*para.para_1d[i].P_0_unit)*para.n;
     }
 }
 

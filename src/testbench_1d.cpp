@@ -443,6 +443,111 @@ void test_engine_1d_far_field_transmission_line(){
 }
 
 
+struct integrand_args_1d{
+    line_t line;
+    vector_t<real_t> r, unit_vector;
+    real_t a;
+};
+
+#define EPS 1.0E-20
+
+complex_t integrand_1_1d(const complex_t alpha, void *args_){
+    assert(args_!=null);
+    integrand_args_1d* args=(integrand_args_1d*)args_;
+    vector_t<real_t> rho=args->line.v[0]
+                         +real(alpha)*(args->line.v[1]-args->line.v[0]);
+    real_t R=mag(args->r-rho)+EPS;
+    R = sqrt(R*R+args->a*args->a);
+    return args->line.length/R;
+}
+
+complex_t integrand_2_1d(const complex_t alpha, void *args_){
+    assert(args_!=null);
+    integrand_args_1d* args=(integrand_args_1d*)args_;
+    vector_t<real_t> rho=args->line.v[0]
+                         +real(alpha)*(args->line.v[1]-args->line.v[0]);
+    real_t R=mag(args->r-rho)+EPS;
+    R = sqrt(R*R+args->a*args->a);
+    return args->line.length*(rho-args->r)*args->unit_vector/R;
+}
+
+complex_t integrand_3_1d(const complex_t alpha, void *args_){
+    assert(args_!=null);
+    integrand_args_1d* args=(integrand_args_1d*)args_;
+    vector_t<real_t> rho=args->line.v[0]
+                         +real(alpha)*(args->line.v[1]-args->line.v[0]);
+    real_t R=mag(args->r-rho)+EPS;
+    R = sqrt(R*R+args->a*args->a);
+    return args->line.length*(1.0/pow(R, 2.0))*(args->unit_vector*unit(args->r-rho));
+}
+
+void test_engine_1d_debug(){
+
+    //
+    vector_t<real_t> v1, v2;
+    v1 = vector_t<real_t>(-0.5, -0.6, -0.2);
+    v2 = vector_t<real_t>(+0.4, -0.6, +0.0);
+
+    const real_t a=1.0E-3;
+    line_t line=line_t(v1, v2, 0);
+    vector_t<real_t> p=vector_t<real_t>(+0.2, +0.1, +1.0);
+
+    projection_1d_para para;
+    para = prjection_1d(v1, v2, p);
+
+    //
+    real_t I1=0.0;
+    para.P_p = sqrt(para.P_p*para.P_p+a*a);
+    para.P_m = sqrt(para.P_m*para.P_m+a*a);
+    I1 = log((para.P_p+para.l_p)/(para.P_m+para.l_m));
+    print(I1);
+
+    vector_t<real_t> I2 = vector_t<real_t>(0.0, 0.0, 0.0);
+    para.P_p = sqrt(para.P_p*para.P_p+a*a);
+    para.P_m = sqrt(para.P_m*para.P_m+a*a);
+    I2 = (para.P_p-para.P_m)*para.l_unit+log((para.P_p+para.l_p)/(para.P_m+para.l_m))*para.P_0*para.P_0_unit;
+    print(I2);
+
+    vector_t<real_t> I3 = vector_t<real_t>(0.0, 0.0, 0.0);
+    para.P_p = sqrt(para.P_p*para.P_p+a*a);
+    para.P_m = sqrt(para.P_m*para.P_m+a*a);
+    I3 = (1.0/para.P_p-1.0/para.P_m)*para.l_unit
+         -(atan2(para.l_p, para.P_0)-atan2(para.l_m, para.P_0))*para.P_0_unit/para.P_0;
+    print(I3);
+
+    vector_t<real_t> x=vector_t<real_t>(1.0, 0.0, 0.0);
+    vector_t<real_t> y=vector_t<real_t>(0.0, 1.0, 0.0);
+    vector_t<real_t> z=vector_t<real_t>(0.0, 0.0, 1.0);
+
+    int_t flag;
+    quadl_domain_t quadl;
+    quadl.set_1d(15, 1.0E-10);
+    integrand_args_1d args={line, p, p, a};
+    line_domain_t line_domain={vector_t<real_t>(0.0, 0.0, 0.0), 
+                                vector_t<real_t>(1.0, 0.0, 0.0)};
+    
+    I1 =real(quadl.integral_1d(integrand_1_1d, &args, line_domain, flag)); assert(!flag);
+    print(I1);
+
+    args.unit_vector = x;
+    I2.x =real(quadl.integral_1d(integrand_2_1d, &args, line_domain, flag)); assert(!flag);
+    args.unit_vector = y;
+    I2.y =real(quadl.integral_1d(integrand_2_1d, &args, line_domain, flag)); assert(!flag);
+    args.unit_vector = z;
+    I2.z =real(quadl.integral_1d(integrand_2_1d, &args, line_domain, flag)); assert(!flag);
+    print(I2);
+
+    args.unit_vector = x;
+    I3.x =real(quadl.integral_1d(integrand_3_1d, &args, line_domain, flag)); assert(!flag);
+    args.unit_vector = y;
+    I3.y =real(quadl.integral_1d(integrand_3_1d, &args, line_domain, flag)); assert(!flag);
+    args.unit_vector = z;
+    I3.z =real(quadl.integral_1d(integrand_3_1d, &args, line_domain, flag)); assert(!flag);
+    print(I3);
+
+}
+
+
 void test_engine_1d_near_field_vertical_dipole(){
 
     // problem defintions
@@ -504,4 +609,96 @@ void test_engine_1d_near_field_vertical_dipole(){
     file.close();
     
     z.unset();
+}
+
+void test_engine_2d_transmission_line_near_field_1d(){
+
+    // problem defintions
+    const real_t cm=1.0E-2;
+    const real_t mm=1.0E-3;
+    const real_t GHz=1.0E+9;
+
+    const real_t freq=1.0*GHz;
+    const real_t lambda=c_0/freq;
+    const real_t clmax=lambda/21.0;
+    const complex_t mu_b=1.0, eps_b=1.0;
+    const real_t L=150.0*cm;
+    const real_t h=25.0*cm;
+    const real_t a=0.8*mm;
+
+    const size_t N_ports=2;
+    const int_t pg1=1; 
+    const int_t pg2=2; 
+    const vector_t<real_t> p1=vector_t<real_t>(+0.0, +1.0, +0.0);
+    const vector_t<real_t> p2=vector_t<real_t>(+0.0, +1.0, +0.0);
+    const complex_t Z_0=50.0;
+
+    const size_t Ns_x=101, Ns_y=101;
+    complex_t E_TM, E_TE;
+    real_t theta_i, phi_i;
+
+    engine_t engine;
+    create_transmission_line(L, 2.0*h, clmax);
+    engine.set(freq, mu_b, eps_b, clmax, 1.0, a, N_ports);
+    engine.assign_port(0, +2.0, 2.0*Z_0, pg1, p1, 0.0, 0.0);
+    engine.assign_port(1, +0.0, 0.0, pg2, p2, 0.0, 0.0);
+
+    engine.compute_Z_mn();
+    // engine.load_Z_mn("data/Z_mn.bin");
+    file_t file_x, file_y, file_data;
+    range_t x, y;
+    real_t y_min, y_max, x_min, x_max, z;
+    const real_t range=2.0;
+
+    x_min = -range;
+    x_max = +range;
+    z = +0.0;
+    y_min = -range;
+    y_max = +range;
+    x.set(x_min, x_max, Ns_x);
+    y.set(y_min, y_max, Ns_y);
+    x.linspace();
+    y.linspace();
+
+    engine.compute_V_m_ports();
+    engine.compute_I_n();
+    vector_t<real_t> r;
+
+    vector_t<complex_t> E, H;
+    incident_field_t incident_field;
+    file_x.open("data/near_field_2d_x.txt", 'w');
+    file_y.open("data/near_field_2d_y.txt", 'w');
+    file_data.open("data/near_field_2d_data.txt", 'w');
+
+    size_t counter=0;
+    for (size_t i=0; i<Ns_x; i++){
+        for (size_t j=0; j<Ns_y; j++){
+            progress_bar(counter, Ns_x*Ns_y, "computing near fields...");
+            counter++;
+            r = vector_t<real_t>(x(i), y(j), z);
+            incident_field = compute_incident_field(E_TM, E_TE, theta_i, phi_i, 
+                                                    2.0*pi/lambda, sqrt(mu_0/eps_0), r);
+            E = engine.compute_near_field_E(r);
+            H = engine.compute_near_field_H(r);
+            file_x.write("%21.14E ", x(i));
+            file_y.write("%21.14E ", y(j));
+            vector_t<complex_t> E_field=vector_t<complex_t>(E.x, E.y, E.z);
+            file_data.write("%21.14E ", sqrt(pow(real(E.x), 2.0)
+                                            +pow(real(E.y), 2.0)
+                                            +pow(real(E.z), 2.0)));
+        }
+        file_x.write("\n");
+        file_y.write("\n");
+        file_data.write("\n");
+    }
+    file_x.close();
+    file_y.close();
+    file_data.close();
+
+    //
+    x.unset();
+    y.unset();
+
+    engine.unset();
+    
 }

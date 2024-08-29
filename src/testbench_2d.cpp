@@ -192,7 +192,7 @@ struct integrand_args_2d{
 
 #define EPS 1.0E-20
 
-complex_t integrand_1(const complex_t alpha, const complex_t beta, void *args_){
+complex_t integrand_1_2d(const complex_t alpha, const complex_t beta, void *args_){
     assert(args_!=null);
     integrand_args_2d* args=(integrand_args_2d*)args_;
     vector_t<real_t> rho=args->tri.v[0]
@@ -202,7 +202,7 @@ complex_t integrand_1(const complex_t alpha, const complex_t beta, void *args_){
     return 2.0*args->tri.area/R;
 }
 
-complex_t integrand_2(const complex_t alpha, const complex_t beta, void *args_){
+complex_t integrand_2_2d(const complex_t alpha, const complex_t beta, void *args_){
     assert(args_!=null);
     integrand_args_2d* args=(integrand_args_2d*)args_;
     vector_t<real_t> rho=args->tri.v[0]
@@ -212,7 +212,7 @@ complex_t integrand_2(const complex_t alpha, const complex_t beta, void *args_){
     return 2.0*args->tri.area*(rho-args->r)*args->unit_vector/R;
 }
 
-complex_t integrand_3(const complex_t alpha, const complex_t beta, void *args_){
+complex_t integrand_3_2d(const complex_t alpha, const complex_t beta, void *args_){
     assert(args_!=null);
     integrand_args_2d* args=(integrand_args_2d*)args_;
     vector_t<real_t> rho=args->tri.v[0]
@@ -226,13 +226,12 @@ void test_engine_2d_debug(){
 
     //
     vector_t<real_t> v1, v2, v3;
-    real_t alpha=1.0E-2;
-    v1 = vector_t<real_t>(+0.0, +0.0, -0.6)*alpha;
-    v2 = vector_t<real_t>(+1.2, -1.2, +0.0)*alpha;
-    v3 = vector_t<real_t>(+0.0, +0.8, +0.2)*alpha;
+    v1 = vector_t<real_t>(-0.5, -0.6, -0.2);
+    v2 = vector_t<real_t>(+0.4, -0.6, +0.0);
+    v3 = vector_t<real_t>(+0.0, +0.3, +0.2);
 
     triangle_t tri=triangle_t(v1, v2, v3, 0);
-    vector_t<real_t> p=vector_t<real_t>(+1.0, -1.0, +1.0);
+    vector_t<real_t> p=vector_t<real_t>(+0.2, +0.1, +1.0);
 
     projection_2d_para para;
     para = prjection_2d(v1, v2, v3, p);
@@ -255,6 +254,13 @@ void test_engine_2d_debug(){
         real_t A=para.R_p[i]*para.para_1d[i].l_p-para.R_m[i]*para.para_1d[i].l_m;
         real_t B=pow(para.R_0[i], 2.0)*log((para.R_p[i]+para.para_1d[i].l_p)/(para.R_m[i]+para.para_1d[i].l_m));
         I2 = I2+0.5*(A+B)*para.u[i];
+        real_t C=para.para_1d[i].P_0_unit*para.u[i];
+        real_t D=para.para_1d[i].P_0*log((para.R_p[i]+para.para_1d[i].l_p)/(para.R_m[i]+para.para_1d[i].l_m));
+        real_t E=atan2(para.para_1d[i].P_0*para.para_1d[i].l_p, 
+                        pow(para.R_0[i], 2.0)+abs(para.d)*para.R_p[i]);
+        real_t F=atan2(para.para_1d[i].P_0*para.para_1d[i].l_m, 
+                        pow(para.R_0[i], 2.0)+abs(para.d)*para.R_m[i]);
+        I2 = I2-para.d*C*(D-abs(para.d)*(E-F))*para.n;
     }
     print(I2);
 
@@ -265,7 +271,7 @@ void test_engine_2d_debug(){
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_p[i]);
         real_t C=atan2(para.para_1d[i].P_0*para.para_1d[i].l_m, 
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_m[i]);
-        I3= I3+A*para.u[i]+sign(para.d)*(B-C)*para.n;
+        I3 = I3+A*para.u[i]+sign(para.d)*(B-C)*(para.u[i]*para.para_1d[i].P_0_unit)*para.n;
     }
     print(I3);
 
@@ -281,23 +287,23 @@ void test_engine_2d_debug(){
                                 vector_t<real_t>(1.0, 0.0, 0.0), 
                                 vector_t<real_t>(0.0, 1.0, 0.0)};
     
-    I1 =real(quadl.integral_2d(integrand_1, &args, triangle, flag)); assert(!flag);
+    I1 =real(quadl.integral_2d(integrand_1_2d, &args, triangle, flag)); assert(!flag);
     print(I1);
 
     args.unit_vector = x;
-    I2.x =real(quadl.integral_2d(integrand_2, &args, triangle, flag)); assert(!flag);
+    I2.x =real(quadl.integral_2d(integrand_2_2d, &args, triangle, flag)); assert(!flag);
     args.unit_vector = y;
-    I2.y =real(quadl.integral_2d(integrand_2, &args, triangle, flag)); assert(!flag);
+    I2.y =real(quadl.integral_2d(integrand_2_2d, &args, triangle, flag)); assert(!flag);
     args.unit_vector = z;
-    I2.z =real(quadl.integral_2d(integrand_2, &args, triangle, flag)); assert(!flag);
+    I2.z =real(quadl.integral_2d(integrand_2_2d, &args, triangle, flag)); assert(!flag);
     print(I2);
 
     args.unit_vector = x;
-    I3.x =real(quadl.integral_2d(integrand_3, &args, triangle, flag)); assert(!flag);
+    I3.x =real(quadl.integral_2d(integrand_3_2d, &args, triangle, flag)); assert(!flag);
     args.unit_vector = y;
-    I3.y =real(quadl.integral_2d(integrand_3, &args, triangle, flag)); assert(!flag);
+    I3.y =real(quadl.integral_2d(integrand_3_2d, &args, triangle, flag)); assert(!flag);
     args.unit_vector = z;
-    I3.z =real(quadl.integral_2d(integrand_3, &args, triangle, flag)); assert(!flag);
+    I3.z =real(quadl.integral_2d(integrand_3_2d, &args, triangle, flag)); assert(!flag);
     print(I3);
 
 }
@@ -308,7 +314,7 @@ void test_engine_2d_sheet_near_field(){
     const real_t GHz=1.0E+9;
     const real_t freq=2.0*GHz;
     const real_t lambda=c_0/freq;
-    const real_t clmax=lambda/11.0;
+    const real_t clmax=lambda/5.0;
     const complex_t mu_b=1.0, eps_b=1.0;
     const real_t Lx=0.6, Ly=0.4;
 
@@ -442,7 +448,7 @@ void test_engine_2d_sphere_near_field_2d(){
 
     // problem defintions
     const real_t GHz=1.0E+9;
-    const real_t freq=0.75*GHz;
+    const real_t freq=0.5*GHz;
     const real_t lambda=c_0/freq;
     const real_t clmax=lambda/6.0;
     const complex_t mu_b=1.0, eps_b=1.0;
@@ -473,8 +479,8 @@ void test_engine_2d_sphere_near_field_2d(){
     x.linspace();
     z.linspace();
 
-    E_TM = +0.0;
-    E_TE = +1.0;
+    E_TM = +1.0;
+    E_TE = +0.0;
     theta_i = deg2rad(0.0);
     phi_i = deg2rad(180.0);
     engine.compute_V_m_incident(E_TM, E_TE, theta_i, phi_i);
@@ -486,6 +492,7 @@ void test_engine_2d_sphere_near_field_2d(){
     file_x.open("data/near_field_2d_x.txt", 'w');
     file_y.open("data/near_field_2d_y.txt", 'w');
     file_data.open("data/near_field_2d_data.txt", 'w');
+
     size_t counter=0;
     for (size_t i=0; i<Ns_x; i++){
         for (size_t j=0; j<Ns_z; j++){
@@ -500,10 +507,9 @@ void test_engine_2d_sphere_near_field_2d(){
             file_x.write("%21.14E ", x(i));
             file_y.write("%21.14E ", z(j));
             vector_t<complex_t> E_field=vector_t<complex_t>(E.x, E.y, E.z);
-            // file_data.write("%21.14E ", sqrt(pow(real(E.x), 2.0)
-            //                                 +pow(real(E.y), 2.0)
-            //                                 +pow(real(E.z), 2.0)));
-            file_data.write("%21.14E ", mag(E));
+            file_data.write("%21.14E ", sqrt(pow(real(E.x), 2.0)
+                                            +pow(real(E.y), 2.0)
+                                            +pow(real(E.z), 2.0)));
         }
         file_x.write("\n");
         file_y.write("\n");

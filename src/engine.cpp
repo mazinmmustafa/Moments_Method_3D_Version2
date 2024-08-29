@@ -1,8 +1,8 @@
 //
 #include "engine.hpp"
 
-// #define only_1d
-#define only_2d
+#define only_1d
+// #define only_2d
 // #define only_3d
 
 void engine_t::set(const real_t freq, const complex_t mu_b, const complex_t eps_b, 
