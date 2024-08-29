@@ -454,7 +454,7 @@ void test_engine_2d_sphere_near_field_2d(){
     const complex_t mu_b=1.0, eps_b=1.0;
     const real_t radius=0.5;
 
-    const size_t Ns_x=2001, Ns_z=2001;
+    const size_t Ns_x=401, Ns_z=401;
     complex_t E_TM, E_TE;
     real_t theta_i, phi_i;
 
@@ -462,12 +462,12 @@ void test_engine_2d_sphere_near_field_2d(){
     create_sphere(radius);
     engine.set(freq, mu_b, eps_b, clmax, 1.0, 0, 0);
 
-    engine.compute_Z_mn();
-    // engine.load_Z_mn("data/Z_mn.bin");
+    // engine.compute_Z_mn();
+    engine.load_Z_mn("data/Z_mn.bin");
     file_t file_x, file_y, file_data;
     range_t x, z;
     real_t z_min, z_max, x_min, x_max, y;
-    const real_t range=2.0;
+    const real_t range=1.0;
 
     x_min = -range;
     x_max = +range;
@@ -493,10 +493,13 @@ void test_engine_2d_sphere_near_field_2d(){
     file_y.open("data/near_field_2d_y.txt", 'w');
     file_data.open("data/near_field_2d_data.txt", 'w');
 
+    const size_t max_line=200;
+    char *msg=(char*)calloc(max_line, sizeof(char));
     size_t counter=0;
     for (size_t i=0; i<Ns_x; i++){
         for (size_t j=0; j<Ns_z; j++){
-            progress_bar(counter, Ns_x*Ns_z, "computing near fields...");
+            sprintf(msg, "computing near fields (%zu, %zu)...", i, j);
+            progress_bar(counter, Ns_x*Ns_z, msg);
             counter++;
             r = vector_t<real_t>(x(i), y, z(j));
             incident_field = compute_incident_field(E_TM, E_TE, theta_i, phi_i, 
@@ -515,6 +518,7 @@ void test_engine_2d_sphere_near_field_2d(){
         file_y.write("\n");
         file_data.write("\n");
     }
+    free(msg);
     file_x.close();
     file_y.close();
     file_data.close();
