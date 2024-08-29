@@ -13,6 +13,6 @@ colormap(jet)
 shading flat
 axis equal
 colorbar
-##caxis([-20 30])
-caxis([0 2])
+caxis([-20 20])
+##caxis([0 2])
 axis off

@@ -48,14 +48,14 @@ void integrand_L3_1d(basis_1d_t b_m, const vector_t<real_t> p,
     para.P_p = sqrt(para.P_p*para.P_p+a*a);
     para.P_m = sqrt(para.P_m*para.P_m+a*a);
     ans = (1.0/para.P_p-1.0/para.P_m)*para.l_unit
-         -(atan2(para.l_p, para.P_0)-atan2(para.l_m, para.P_0))*para.P_0_unit/para.P_0;
+         -(para.l_p/para.P_p-para.l_m/para.P_m)*para.P_0_unit/para.P_0;
     I_m = ans;
     // p
     para = prjection_1d(b_m.e[0], b_m.r_p, p);
     para.P_p = sqrt(para.P_p*para.P_p+a*a);
     para.P_m = sqrt(para.P_m*para.P_m+a*a);
     ans = (1.0/para.P_p-1.0/para.P_m)*para.l_unit
-         -(atan2(para.l_p, para.P_0)-atan2(para.l_m, para.P_0))*para.P_0_unit/para.P_0;
+         -(para.l_p/para.P_p-para.l_m/para.P_m)*para.P_0_unit/para.P_0;
     I_p = ans;
 }
 

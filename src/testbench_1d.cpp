@@ -579,7 +579,7 @@ void test_engine_1d_near_field_vertical_dipole(){
     engine_t engine;
     create_vertical_wire_dipole(L, clmax, clmax);
     engine.set(freq, mu_b, eps_b, clmax, 1.0, a, N_ports);
-    engine.assign_port(0, 1.0, Z_0, pg, p, 0.0, 0.0);
+    engine.assign_port(0, sqrt(8.0*Z_0*1.0), Z_0, pg, p, 0.0, 0.0);
 
     engine.compute_Z_mn();
     engine.compute_V_m_ports();
@@ -633,7 +633,7 @@ void test_engine_2d_transmission_line_near_field_1d(){
     const vector_t<real_t> p2=vector_t<real_t>(+0.0, +1.0, +0.0);
     const complex_t Z_0=50.0;
 
-    const size_t Ns_x=101, Ns_y=101;
+    const size_t Ns_x=201, Ns_y=201;
     complex_t E_TM, E_TE;
     real_t theta_i, phi_i;
 

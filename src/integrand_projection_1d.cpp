@@ -87,7 +87,7 @@ void integrand_L3_1d_1d(const real_t alpha, basis_1d_t b_m, basis_1d_t b_n,
     para.P_p = sqrt(para.P_p*para.P_p+a*a);
     para.P_m = sqrt(para.P_m*para.P_m+a*a);
     ans = (1.0/para.P_p-1.0/para.P_m)*para.l_unit
-         -(atan2(para.l_p, para.P_0)-atan2(para.l_m, para.P_0))*para.P_0_unit/para.P_0;
+         -(para.l_p/para.P_p-para.l_m/para.P_m)*para.P_0_unit/para.P_0;
     I_mm = ans;
     // mp
     p = b_m.r_m+alpha*b_m.L_m[0];
@@ -95,7 +95,7 @@ void integrand_L3_1d_1d(const real_t alpha, basis_1d_t b_m, basis_1d_t b_n,
     para.P_p = sqrt(para.P_p*para.P_p+a*a);
     para.P_m = sqrt(para.P_m*para.P_m+a*a);
     ans = (1.0/para.P_p-1.0/para.P_m)*para.l_unit
-         -(atan2(para.l_p, para.P_0)-atan2(para.l_m, para.P_0))*para.P_0_unit/para.P_0;
+         -(para.l_p/para.P_p-para.l_m/para.P_m)*para.P_0_unit/para.P_0;
     I_mp = ans;
     // pm
     p = b_m.r_p+alpha*b_m.L_p[0];
@@ -103,7 +103,7 @@ void integrand_L3_1d_1d(const real_t alpha, basis_1d_t b_m, basis_1d_t b_n,
     para.P_p = sqrt(para.P_p*para.P_p+a*a);
     para.P_m = sqrt(para.P_m*para.P_m+a*a);
     ans = (1.0/para.P_p-1.0/para.P_m)*para.l_unit
-         -(atan2(para.l_p, para.P_0)-atan2(para.l_m, para.P_0))*para.P_0_unit/para.P_0;
+         -(para.l_p/para.P_p-para.l_m/para.P_m)*para.P_0_unit/para.P_0;
     I_pm = ans;
     // pp
     p = b_m.r_p+alpha*b_m.L_p[0];
@@ -111,6 +111,6 @@ void integrand_L3_1d_1d(const real_t alpha, basis_1d_t b_m, basis_1d_t b_n,
     para.P_p = sqrt(para.P_p*para.P_p+a*a);
     para.P_m = sqrt(para.P_m*para.P_m+a*a);
     ans = (1.0/para.P_p-1.0/para.P_m)*para.l_unit
-         -(atan2(para.l_p, para.P_0)-atan2(para.l_m, para.P_0))*para.P_0_unit/para.P_0;
+         -(para.l_p/para.P_p-para.l_m/para.P_m)*para.P_0_unit/para.P_0;
     I_pp = ans;
 }
