@@ -1,12 +1,13 @@
 //
 #include "engine.hpp"
 
-// #define only_1d
-#define only_2d
+#define only_1d
+// #define only_2d
 // #define only_3d
 
 void engine_t::set(const real_t freq, const complex_t mu_b, const complex_t eps_b, 
-    const real_t clmax, const real_t unit_metric, const real_t a, const size_t N_ports){
+    const real_t clmax, const real_t unit_metric, const real_t a, const size_t N_ports,
+    const size_t N_materials){
     if (this->is_engine_set){engine_t::unset();}
     // check inputs errors
     assert_error(freq>0.0, "invalid frequency");
@@ -17,7 +18,7 @@ void engine_t::set(const real_t freq, const complex_t mu_b, const complex_t eps_
     this->lambda = (c_0/real(sqrt(mu_b*eps_b)))/freq;
     this->k_b = 2.0*pi*freq*sqrt(mu_0*eps_0)*sqrt(mu_b*eps_b);
     this->eta_b = sqrt(mu_0/eps_0)*sqrt(mu_b/eps_b);
-    this->shape.set(freq, mu_b, eps_b);
+    this->shape.set(freq, mu_b, eps_b, N_materials);
     this->shape.get_basis_functions(clmax, unit_metric);
     this->shape.get_info(this->N_basis_1d, this->N_basis_2d, this->N_basis_3d);
     //
@@ -136,13 +137,39 @@ void engine_t::compute_Z_mn(){
                 sprintf(msg, "SS: Z_mn (%zu, %zu)", m, n);
                 progress_bar(count, this->N_basis_2d*(this->N_basis_2d+1)/2, msg);
                 Z = Z_mn_2d_2d(b_m, b_n, k_b, eta_b, lambda, quadl, flag);
-                // if (m==n){
-                //     for (size_t k=0; k<this->N_ports; k++){
-                //         if ((b_m.pg_m==b_m.pg_p)&&(b_m.pg_m==this->port_list[k].pg)){
-                //             Z+=this->port_list[k].Z;
-                //         }
-                //     }
-                // }
+                if (m==n){
+                    for (size_t k=0; k<this->N_ports; k++){
+                        if ((b_m.pg_m==b_m.pg_p)&&(b_m.pg_m==this->port_list[k].pg)){
+                            Z+=this->port_list[k].Z;
+                        }
+                    }
+                }
+                assert_error(flag==false, "no convergence");
+                assert_error(!isinf(abs(Z)), "inf value for Z_mn");
+                assert_error(!isnan(abs(Z)), "nan value for Z_mn");
+                this->Z_mn(i+m, j+n) = Z;
+                count++;
+            }
+            for (size_t n=m+1; n<N; n++){
+                this->Z_mn(j+n, i+m) = this->Z_mn(i+m, j+n);
+            }
+        }
+    }
+    #endif
+    // Zmn_VV
+    #ifdef only_3d
+    {   
+        size_t i=0;
+        size_t j=0;
+        basis_3d_t b_m;
+        basis_3d_t b_n;
+        for (size_t m=0; m<this->N_basis_3d; m++){
+            b_m = this->shape.get_basis_3d(m);
+            for (size_t n=m; n<this->N_basis_3d; n++){
+                b_n = this->shape.get_basis_3d(n);
+                sprintf(msg, "VV: Z_mn (%zu, %zu)", m, n);
+                progress_bar(count, this->N_basis_3d*(this->N_basis_3d+1)/2, msg);
+                Z = Z_mn_3d_3d(b_m, b_n, k_b, eta_b, lambda, quadl, flag);
                 assert_error(flag==false, "no convergence");
                 assert_error(!isinf(abs(Z)), "inf value for Z_mn");
                 assert_error(!isnan(abs(Z)), "nan value for Z_mn");
@@ -323,9 +350,22 @@ void engine_t::compute_V_m_incident(const complex_t E_TM, const complex_t E_TE, 
     // Vm_V
     #ifdef only_3d
     {
+        basis_3d_t b_m;
         size_t i=0;
         for (size_t m=0; m<this->N_basis_3d; m++){
-            this->V_m(i+m, 0) = 0.0;
+            b_m = this->shape.get_basis_3d(m);
+            tetrahedron_domain_t tetrahedron={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(1.0, 0.0, 0.0), 
+                vector_t<real_t>(0.0, 1.0, 0.0), vector_t<real_t>(0.0, 0.0, 1.0)};
+            incident_field_args_3d_t args;
+            args.b_m = b_m;
+            args.E_TM = E_TM;
+            args.E_TE = E_TE;
+            args.theta_i = theta_i;
+            args.phi_i = phi_i;
+            args.k = real(this->k_b);
+            args.eta = real(this->eta_b);
+            int_t flag;
+            this->V_m(i+m, 0) = this->quadl.integral_3d(compute_incident_E_integrand_3d, &args, tetrahedron, flag);
         }
     }
     #endif
@@ -395,32 +435,54 @@ sigma_t engine_t::compute_RCS(const real_t theta_i, const real_t phi_i){
     int_t flag;
     // 1d
     #ifdef only_1d
-    incident_field_args_1d_t args;
-    args.theta_i = theta_i;
-    args.phi_i = phi_i;
-    args.k = real(this->k_b);
-    args.eta = real(this->eta_b);
-    line_domain_t line={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(1.0, 0.0, 0.0)};
-    for (size_t m=0; m<this->N_basis_1d; m++){
-        basis_1d_t b_m=this->shape.get_basis_1d(m);
-        args.b_m = b_m;
-        sum_theta+=this->quadl.integral_1d(compute_scattered_far_field_E_theta_integrand_1d, &args, line, flag)*this->I_n(m, 0);
-        sum_phi+=this->quadl.integral_1d(compute_scattered_far_field_E_phi_integrand_1d, &args, line, flag)*this->I_n(m, 0);
+    {
+        incident_field_args_1d_t args;
+        args.theta_i = theta_i;
+        args.phi_i = phi_i;
+        args.k = real(this->k_b);
+        args.eta = real(this->eta_b);
+        line_domain_t line={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(1.0, 0.0, 0.0)};
+        for (size_t m=0; m<this->N_basis_1d; m++){
+            basis_1d_t b_m=this->shape.get_basis_1d(m);
+            args.b_m = b_m;
+            sum_theta+=this->quadl.integral_1d(compute_scattered_far_field_E_theta_integrand_1d, &args, line, flag)*this->I_n(m, 0);
+            sum_phi+=this->quadl.integral_1d(compute_scattered_far_field_E_phi_integrand_1d, &args, line, flag)*this->I_n(m, 0);
+        }
     }
     #endif
     // 2d
     #ifdef only_2d
-    incident_field_args_2d_t args;
-    args.theta_i = theta_i;
-    args.phi_i = phi_i;
-    args.k = real(this->k_b);
-    args.eta = real(this->eta_b);
-    triangle_domain_t triangle={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(1.0, 0.0, 0.0), vector_t<real_t>(0.0, 1.0, 0.0)};
-    for (size_t m=0; m<this->N_basis_2d; m++){
-        basis_2d_t b_m=this->shape.get_basis_2d(m);
-        args.b_m = b_m;
-        sum_theta+=this->quadl.integral_2d(compute_scattered_far_field_E_theta_integrand_2d, &args, triangle, flag)*this->I_n(m, 0);
-        sum_phi+=this->quadl.integral_2d(compute_scattered_far_field_E_phi_integrand_2d, &args, triangle, flag)*this->I_n(m, 0);
+    {
+        incident_field_args_2d_t args;
+        args.theta_i = theta_i;
+        args.phi_i = phi_i;
+        args.k = real(this->k_b);
+        args.eta = real(this->eta_b);
+        triangle_domain_t triangle={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(1.0, 0.0, 0.0), vector_t<real_t>(0.0, 1.0, 0.0)};
+        for (size_t m=0; m<this->N_basis_2d; m++){
+            basis_2d_t b_m=this->shape.get_basis_2d(m);
+            args.b_m = b_m;
+            sum_theta+=this->quadl.integral_2d(compute_scattered_far_field_E_theta_integrand_2d, &args, triangle, flag)*this->I_n(m, 0);
+            sum_phi+=this->quadl.integral_2d(compute_scattered_far_field_E_phi_integrand_2d, &args, triangle, flag)*this->I_n(m, 0);
+        }
+    }
+    #endif
+    // 3d
+    #ifdef only_3d
+    {
+        incident_field_args_3d_t args;
+        args.theta_i = theta_i;
+        args.phi_i = phi_i;
+        args.k = real(this->k_b);
+        args.eta = real(this->eta_b);
+        tetrahedron_domain_t tetrahedron={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(1.0, 0.0, 0.0), 
+            vector_t<real_t>(0.0, 1.0, 0.0), vector_t<real_t>(0.0, 0.0, 1.0)};
+        for (size_t m=0; m<this->N_basis_3d; m++){
+            basis_3d_t b_m=this->shape.get_basis_3d(m);
+            args.b_m = b_m;
+            sum_theta+=this->quadl.integral_3d(compute_scattered_far_field_E_theta_integrand_3d, &args, tetrahedron, flag)*this->I_n(m, 0);
+            sum_phi+=this->quadl.integral_3d(compute_scattered_far_field_E_phi_integrand_3d, &args, tetrahedron, flag)*this->I_n(m, 0);
+        }
     }
     #endif
     sigma.theta = 4.0*pi*abs(sum_theta)*abs(sum_theta);
@@ -430,21 +492,60 @@ sigma_t engine_t::compute_RCS(const real_t theta_i, const real_t phi_i){
 
 far_field_t engine_t::compute_far_field(const real_t theta_i, const real_t phi_i){
     far_field_t far_field;
-    incident_field_args_1d_t args;
-    args.theta_i = theta_i;
-    args.phi_i = phi_i;
-    args.k = real(this->k_b);
-    args.eta = real(this->eta_b);
+    incident_field_args_1d_t args_1d;
+    incident_field_args_2d_t args_2d;
+    incident_field_args_3d_t args_3d;
+    args_1d.theta_i = theta_i;
+    args_1d.phi_i = phi_i;
+    args_1d.k = real(this->k_b);
+    args_1d.eta = real(this->eta_b);
+    //
+    args_2d.theta_i = theta_i;
+    args_2d.phi_i = phi_i;
+    args_2d.k = real(this->k_b);
+    args_2d.eta = real(this->eta_b);
+    //
+    args_3d.theta_i = theta_i;
+    args_3d.phi_i = phi_i;
+    args_3d.k = real(this->k_b);
+    args_3d.eta = real(this->eta_b);
     complex_t sum_theta=0.0, sum_phi=0.0;
     // 1d
     int_t flag;
-    line_domain_t line={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(1.0, 0.0, 0.0)};
-    for (size_t m=0; m<this->N_basis_1d; m++){
-        basis_1d_t b_m=this->shape.get_basis_1d(m);
-        args.b_m = b_m;
-        sum_theta+=this->quadl.integral_1d(compute_scattered_far_field_E_theta_integrand_1d, &args, line, flag)*this->I_n(m, 0);
-        sum_phi+=this->quadl.integral_1d(compute_scattered_far_field_E_phi_integrand_1d, &args, line, flag)*this->I_n(m, 0);
+    #ifdef only_1d
+    {
+        line_domain_t line={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(1.0, 0.0, 0.0)};
+        for (size_t m=0; m<this->N_basis_1d; m++){
+            basis_1d_t b_m=this->shape.get_basis_1d(m);
+            args_1d.b_m = b_m;
+            sum_theta+=this->quadl.integral_1d(compute_scattered_far_field_E_theta_integrand_1d, &args_1d, line, flag)*this->I_n(m, 0);
+            sum_phi+=this->quadl.integral_1d(compute_scattered_far_field_E_phi_integrand_1d, &args_1d, line, flag)*this->I_n(m, 0);
+        }
     }
+    #endif
+    #ifdef only_2d
+    {
+        triangle_domain_t triangle={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(1.0, 0.0, 0.0), vector_t<real_t>(0.0, 1.0, 0.0)};
+        for (size_t m=0; m<this->N_basis_2d; m++){
+            basis_2d_t b_m=this->shape.get_basis_2d(m);
+            args_2d.b_m = b_m;
+            sum_theta+=this->quadl.integral_2d(compute_scattered_far_field_E_theta_integrand_2d, &args_2d, triangle, flag)*this->I_n(m, 0);
+            sum_phi+=this->quadl.integral_2d(compute_scattered_far_field_E_phi_integrand_2d, &args_2d, triangle, flag)*this->I_n(m, 0);
+        }
+    }
+    #endif
+    #ifdef only_3d
+    {
+        tetrahedron_domain_t tetrahedron={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(1.0, 0.0, 0.0), 
+            vector_t<real_t>(0.0, 1.0, 0.0), vector_t<real_t>(0.0, 0.0, 1.0)};
+        for (size_t m=0; m<this->N_basis_3d; m++){
+            basis_3d_t b_m=this->shape.get_basis_3d(m);
+            args_3d.b_m = b_m;
+            sum_theta+=this->quadl.integral_3d(compute_scattered_far_field_E_theta_integrand_3d, &args_3d, tetrahedron, flag)*this->I_n(m, 0);
+            sum_phi+=this->quadl.integral_3d(compute_scattered_far_field_E_phi_integrand_3d, &args_3d, tetrahedron, flag)*this->I_n(m, 0);
+        }
+    }
+    #endif
     far_field.theta = sum_theta;
     far_field.phi = sum_phi;
     return far_field;

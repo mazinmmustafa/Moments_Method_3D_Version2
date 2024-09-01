@@ -25,5 +25,8 @@ complex_t Z_mn_1d_1d(const basis_1d_t b_m, const basis_1d_t b_n, const complex_t
 complex_t Z_mn_2d_2d(const basis_2d_t b_m, const basis_2d_t b_n, const complex_t k, 
     const complex_t eta, const real_t lambda, 
     const quadl_domain_t quadl, int_t &flag);
-    
+complex_t Z_mn_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const complex_t k, 
+    const complex_t eta, const real_t lambda, 
+    const quadl_domain_t quadl, int_t &flag);
+      
 #endif

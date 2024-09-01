@@ -28,10 +28,17 @@ struct projection_2d_para{
     projection_2d_para(){}
 };
 
+struct projection_3d_para{
+    projection_2d_para para_2d[4];
+    projection_3d_para(){}
+};
+
 // Functions
 projection_1d_para prjection_1d(const vector_t<real_t> v1, const vector_t<real_t> v2, 
     const vector_t<real_t> p);
 projection_2d_para prjection_2d(const vector_t<real_t> v1, const vector_t<real_t> v2, 
     const vector_t<real_t> v3, const vector_t<real_t> p);
-
+projection_3d_para prjection_3d(const vector_t<real_t> v1, const vector_t<real_t> v2, 
+    const vector_t<real_t> v3, const vector_t<real_t> v4, const vector_t<real_t> p);
+    
 #endif

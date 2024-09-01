@@ -87,7 +87,8 @@ class engine_t{
         engine_t(){}
         ~engine_t(){}
         void set(const real_t freq, const complex_t mu_b, const complex_t eps_b, 
-            const real_t clmax, const real_t unit_metric, const real_t a, const size_t N_ports);
+            const real_t clmax, const real_t unit_metric, const real_t a, const size_t N_ports,
+            const size_t N_materials);
         void compute_Z_mn();
         void unset();
         void export_solutions();

@@ -2,6 +2,7 @@
 #include "lib_basic.hpp"
 #include "testbench_1d.hpp"
 #include "testbench_2d.hpp"
+#include "testbench_3d.hpp"
 
 int main(){
 
@@ -22,11 +23,15 @@ int main(){
     //
     // test_engine_2d_2d();
     // test_engine_2d_sphere_RCS();
-    test_engine_2d_sphere_near_field();
+    // test_engine_2d_sphere_near_field();
     // test_engine_2d_debug();
     // test_engine_2d_sheet_near_field();
     // test_engine_2d_box_near_field();
     // test_engine_2d_sphere_near_field_2d();
+    // 
+    // test_engine_3d_debug();
+    test_engine_3d_sphere_RCS();
+
 
     // const real_t y=-1.0;
     // vector_t<real_t> r_m=vector_t<real_t>(-1.0, 0.0, +0.0);

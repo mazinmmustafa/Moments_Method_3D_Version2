@@ -16,7 +16,7 @@
 #include "R_mn.hpp"
 #include "integrand_projection_1d.hpp"
 #include "integrand_projection_2d.hpp"
-// #include "integrand_projection_3d.hpp"
+#include "integrand_projection_3d.hpp"
 
 // Definitions
 

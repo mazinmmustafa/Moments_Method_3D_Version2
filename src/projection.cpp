@@ -54,3 +54,13 @@ projection_2d_para prjection_2d(const vector_t<real_t> v1, const vector_t<real_t
     para.p_0 = p_0;
     return para;
 }
+
+projection_3d_para prjection_3d(const vector_t<real_t> v1, const vector_t<real_t> v2, 
+    const vector_t<real_t> v3, const vector_t<real_t> v4, const vector_t<real_t> p){
+    projection_3d_para para;
+    para.para_2d[0] = prjection_2d(v1, v2, v4, p);
+    para.para_2d[1] = prjection_2d(v2, v1, v3, p);
+    para.para_2d[2] = prjection_2d(v3, v4, v2, p);
+    para.para_2d[3] = prjection_2d(v4, v3, v1, p);
+    return para;
+}

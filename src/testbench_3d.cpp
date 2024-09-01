@@ -1,8 +1,8 @@
 //
-#include "testbench_2d.hpp"
+#include "testbench_3d.hpp"
 
 
-void test_engine_2d_2d(){
+void test_engine_3d_3d(){
 
     const complex_t eta=sqrt(mu_0/eps_0);
 
@@ -47,14 +47,15 @@ void test_engine_2d_2d(){
     
 }
 
-void test_engine_2d_sphere_RCS(){
+void test_engine_3d_sphere_RCS(){
 
     // problem defintions
     const real_t GHz=1.0E+9;
-    const real_t freq=1.6*GHz;
+    const real_t freq=0.2*GHz;
     const real_t lambda=c_0/freq;
     const real_t clmax=lambda/6.0;
     const complex_t mu_b=1.0, eps_b=1.0;
+    const complex_t mu_s=1.0, eps_s=4.0;
     const real_t radius=0.5;
 
     const size_t Ns=1001;
@@ -68,7 +69,7 @@ void test_engine_2d_sphere_RCS(){
 
     engine_t engine;
     create_sphere(radius);
-    engine.set(freq, mu_b, eps_b, clmax, 1.0, 0, 0, 0);
+    engine.set(freq, mu_b, eps_b, clmax, 1.0, 0, 0, 1);
 
     engine.compute_Z_mn();
     // engine.load_Z_mn("data/Z_mn.bin");
@@ -119,7 +120,7 @@ void test_engine_2d_sphere_RCS(){
 }
 
 
-void test_engine_2d_sphere_near_field(){
+void test_engine_3d_sphere_near_field(){
 
     // problem defintions
     const real_t GHz=1.0E+9;
@@ -135,7 +136,7 @@ void test_engine_2d_sphere_near_field(){
 
     engine_t engine;
     create_sphere(radius);
-    engine.set(freq, mu_b, eps_b, clmax, 1.0, 0, 0, 0);
+    engine.set(freq, mu_b, eps_b, clmax, 1.0, 0, 0, 1);
 
     // engine.compute_Z_mn();
     engine.load_Z_mn("data/Z_mn.bin");
@@ -190,93 +191,112 @@ void test_engine_2d_sphere_near_field(){
     
 }
 
-struct integrand_args_2d{
-    triangle_t tri;
+struct integrand_args_3d{
+    tetrahedron_t tet;
     vector_t<real_t> r, unit_vector;
 };
 
 #define EPS 1.0E-20
 
-complex_t integrand_1_2d(const complex_t alpha, const complex_t beta, void *args_){
+complex_t integrand_1_3d(const complex_t alpha, const complex_t beta, const complex_t gamma, void *args_){
     assert(args_!=null);
-    integrand_args_2d* args=(integrand_args_2d*)args_;
-    vector_t<real_t> rho=args->tri.v[0]
-                         +real(alpha)*(args->tri.v[1]-args->tri.v[0])
-                         +real(beta) *(args->tri.v[2]-args->tri.v[0]);
+    integrand_args_3d* args=(integrand_args_3d*)args_;
+    vector_t<real_t> rho=args->tet.v[0]
+                         +real(alpha)*(args->tet.v[1]-args->tet.v[0])
+                         +real(beta) *(args->tet.v[2]-args->tet.v[0])
+                         +real(gamma)*(args->tet.v[3]-args->tet.v[0]);
     real_t R=mag(args->r-rho)+EPS;
-    return 2.0*args->tri.area/R;
+    return 6.0*args->tet.volume/R;
 }
 
-complex_t integrand_2_2d(const complex_t alpha, const complex_t beta, void *args_){
+complex_t integrand_2_3d(const complex_t alpha, const complex_t beta, const complex_t gamma, void *args_){
     assert(args_!=null);
-    integrand_args_2d* args=(integrand_args_2d*)args_;
-    vector_t<real_t> rho=args->tri.v[0]
-                         +real(alpha)*(args->tri.v[1]-args->tri.v[0])
-                         +real(beta) *(args->tri.v[2]-args->tri.v[0]);
+    integrand_args_3d* args=(integrand_args_3d*)args_;
+    vector_t<real_t> rho=args->tet.v[0]
+                         +real(alpha)*(args->tet.v[1]-args->tet.v[0])
+                         +real(beta) *(args->tet.v[2]-args->tet.v[0])
+                         +real(gamma)*(args->tet.v[3]-args->tet.v[0]);
     real_t R=mag(args->r-rho)+EPS;
-    return 2.0*args->tri.area*(rho-args->r)*args->unit_vector/R;
+    return 6.0*args->tet.volume*(rho-args->r)*args->unit_vector/R;
 }
 
-complex_t integrand_3_2d(const complex_t alpha, const complex_t beta, void *args_){
+complex_t integrand_3_3d(const complex_t alpha, const complex_t beta, const complex_t gamma, void *args_){
     assert(args_!=null);
-    integrand_args_2d* args=(integrand_args_2d*)args_;
-    vector_t<real_t> rho=args->tri.v[0]
-                         +real(alpha)*(args->tri.v[1]-args->tri.v[0])
-                         +real(beta) *(args->tri.v[2]-args->tri.v[0]);
+    integrand_args_3d* args=(integrand_args_3d*)args_;
+    vector_t<real_t> rho=args->tet.v[0]
+                         +real(alpha)*(args->tet.v[1]-args->tet.v[0])
+                         +real(beta) *(args->tet.v[2]-args->tet.v[0])
+                         +real(gamma)*(args->tet.v[3]-args->tet.v[0]);
     real_t R=mag(args->r-rho)+EPS;
-    return 2.0*args->tri.area*(1.0/pow(R, 2.0))*(args->unit_vector*unit(args->r-rho));
+    return 6.0*args->tet.volume*(1.0/pow(R, 2.0))*(args->unit_vector*unit(args->r-rho));
 }
 
-void test_engine_2d_debug(){
+void test_engine_3d_debug(){
 
     //
-    vector_t<real_t> v1, v2, v3;
+    vector_t<real_t> v1, v2, v3, v4;
     v1 = vector_t<real_t>(-0.5, -0.6, -0.2);
     v2 = vector_t<real_t>(+0.4, -0.6, +0.0);
     v3 = vector_t<real_t>(+0.0, +0.3, +0.2);
+    v4 = vector_t<real_t>(+0.1, -0.1, +0.7);
 
-    triangle_t tri=triangle_t(v1, v2, v3, 0);
-    vector_t<real_t> p=vector_t<real_t>(+0.2, +0.1, +1.0);
+    tetrahedron_t tet=tetrahedron_t(v1, v2, v3, v4, 0);
+    vector_t<real_t> p=vector_t<real_t>(+1.2, +1.1, +1.0);
 
-    projection_2d_para para;
-    para = prjection_2d(v1, v2, v3, p);
+    projection_3d_para para;    
+    para = prjection_3d(v1, v2, v3, v4, p);
 
     //
     real_t I1=0.0;
-    for (size_t i=0; i<3; i++){
-        real_t A=para.para_1d[i].P_0_unit*para.u[i];
-        real_t B=para.para_1d[i].P_0*log((para.R_p[i]+para.para_1d[i].l_p)/(para.R_m[i]+para.para_1d[i].l_m));
-        real_t C=atan2(para.para_1d[i].P_0*para.para_1d[i].l_p, 
-                        pow(para.R_0[i], 2.0)+abs(para.d)*para.R_p[i]);
-        real_t D=atan2(para.para_1d[i].P_0*para.para_1d[i].l_m, 
-                        pow(para.R_0[i], 2.0)+abs(para.d)*para.R_m[i]);
-        I1 = I1+A*(B-abs(para.d)*(C-D));
+    for (size_t j=0; j<4; j++){
+        for (size_t i=0; i<3; i++){
+            real_t A=para.para_2d[j].para_1d[i].P_0_unit*para.para_2d[j].u[i];
+            real_t B=para.para_2d[j].para_1d[i].P_0*
+                log((para.para_2d[j].R_p[i]+para.para_2d[j].para_1d[i].l_p)/
+                    (para.para_2d[j].R_m[i]+para.para_2d[j].para_1d[i].l_m));
+            real_t C=atan2(para.para_2d[j].para_1d[i].P_0*para.para_2d[j].para_1d[i].l_p, 
+                            pow(para.para_2d[j].R_0[i], 2.0)+abs(para.para_2d[j].d)*para.para_2d[j].R_p[i]);
+            real_t D=atan2(para.para_2d[j].para_1d[i].P_0*para.para_2d[j].para_1d[i].l_m, 
+                            pow(para.para_2d[j].R_0[i], 2.0)+abs(para.para_2d[j].d)*para.para_2d[j].R_m[i]);
+            I1 = I1+0.5*para.para_2d[j].d*A*(abs(para.para_2d[j].d)*(C-D)-B);
+        }
     }
     print(I1);
 
     vector_t<real_t> I2 = vector_t<real_t>(0.0, 0.0, 0.0);
-    for (size_t i=0; i<3; i++){
-        real_t A=para.R_p[i]*para.para_1d[i].l_p-para.R_m[i]*para.para_1d[i].l_m;
-        real_t B=pow(para.R_0[i], 2.0)*log((para.R_p[i]+para.para_1d[i].l_p)/(para.R_m[i]+para.para_1d[i].l_m));
-        I2 = I2+0.5*(A+B)*para.u[i];
-        real_t C=para.para_1d[i].P_0_unit*para.u[i];
-        real_t D=para.para_1d[i].P_0*log((para.R_p[i]+para.para_1d[i].l_p)/(para.R_m[i]+para.para_1d[i].l_m));
-        real_t E=atan2(para.para_1d[i].P_0*para.para_1d[i].l_p, 
-                        pow(para.R_0[i], 2.0)+abs(para.d)*para.R_p[i]);
-        real_t F=atan2(para.para_1d[i].P_0*para.para_1d[i].l_m, 
-                        pow(para.R_0[i], 2.0)+abs(para.d)*para.R_m[i]);
-        I2 = I2-para.d*C*(D-abs(para.d)*(E-F))*para.n;
+    for (size_t j=0; j<4; j++){
+        for (size_t i=0; i<3; i++){
+            real_t A=para.para_2d[j].para_1d[i].P_0_unit*para.para_2d[j].u[i];
+            real_t B=0.5*para.para_2d[j].para_1d[i].P_0*(pow(para.para_2d[j].R_0[i], 2.0)+2.0*pow(para.para_2d[j].d, 2.0));
+            real_t C=
+                log((para.para_2d[j].R_p[i]+para.para_2d[j].para_1d[i].l_p)/
+                    (para.para_2d[j].R_m[i]+para.para_2d[j].para_1d[i].l_m));
+            real_t D=0.5*para.para_2d[j].para_1d[i].P_0*(
+                    para.para_2d[j].R_p[i]*para.para_2d[j].para_1d[i].l_p-
+                    para.para_2d[j].R_m[i]*para.para_2d[j].para_1d[i].l_m
+            );
+            real_t E=atan2(para.para_2d[j].para_1d[i].P_0*para.para_2d[j].para_1d[i].l_p, 
+                            pow(para.para_2d[j].R_0[i], 2.0)+abs(para.para_2d[j].d)*para.para_2d[j].R_p[i]);
+            real_t F=atan2(para.para_2d[j].para_1d[i].P_0*para.para_2d[j].para_1d[i].l_m, 
+                            pow(para.para_2d[j].R_0[i], 2.0)+abs(para.para_2d[j].d)*para.para_2d[j].R_m[i]);
+            I2 = I2+(1.0/3.0)*A*(B*C+D-pow(abs(para.para_2d[j].d), 3.0)*(E-F))*para.para_2d[j].n;
+        }
     }
     print(I2);
 
     vector_t<real_t> I3 = vector_t<real_t>(0.0, 0.0, 0.0);
-    for (size_t i=0; i<3; i++){
-        real_t A=log((para.R_p[i]+para.para_1d[i].l_p)/(para.R_m[i]+para.para_1d[i].l_m));
-        real_t B=atan2(para.para_1d[i].P_0*para.para_1d[i].l_p, 
-                        pow(para.R_0[i], 2.0)+abs(para.d)*para.R_p[i]);
-        real_t C=atan2(para.para_1d[i].P_0*para.para_1d[i].l_m, 
-                        pow(para.R_0[i], 2.0)+abs(para.d)*para.R_m[i]);
-        I3 = I3+A*para.u[i]+sign(para.d)*(B-C)*(para.u[i]*para.para_1d[i].P_0_unit)*para.n;
+    for (size_t j=0; j<4; j++){
+        for (size_t i=0; i<3; i++){
+            real_t A=para.para_2d[j].para_1d[i].P_0_unit*para.para_2d[j].u[i];
+            real_t B=para.para_2d[j].para_1d[i].P_0*
+                log((para.para_2d[j].R_p[i]+para.para_2d[j].para_1d[i].l_p)/
+                    (para.para_2d[j].R_m[i]+para.para_2d[j].para_1d[i].l_m));
+            real_t C=atan2(para.para_2d[j].para_1d[i].P_0*para.para_2d[j].para_1d[i].l_p, 
+                            pow(para.para_2d[j].R_0[i], 2.0)+abs(para.para_2d[j].d)*para.para_2d[j].R_p[i]);
+            real_t D=atan2(para.para_2d[j].para_1d[i].P_0*para.para_2d[j].para_1d[i].l_m, 
+                            pow(para.para_2d[j].R_0[i], 2.0)+abs(para.para_2d[j].d)*para.para_2d[j].R_m[i]);
+            I3 = I3+A*(B-abs(para.para_2d[j].d)*(C-D))*para.para_2d[j].n;
+        }
     }
     print(I3);
 
@@ -286,102 +306,36 @@ void test_engine_2d_debug(){
 
     int_t flag;
     quadl_domain_t quadl;
-    quadl.set_2d(15, 1.0E-10);
-    integrand_args_2d args={tri, p, p};
-    triangle_domain_t triangle={vector_t<real_t>(0.0, 0.0, 0.0), 
-                                vector_t<real_t>(1.0, 0.0, 0.0), 
-                                vector_t<real_t>(0.0, 1.0, 0.0)};
+    quadl.set_3d(15, 1.0E-10);
+    integrand_args_3d args={tet, p, p};
+    tetrahedron_domain_t tetrahedron={vector_t<real_t>(0.0, 0.0, 0.0), 
+                                      vector_t<real_t>(1.0, 0.0, 0.0), 
+                                      vector_t<real_t>(0.0, 1.0, 0.0),
+                                      vector_t<real_t>(0.0, 0.0, 1.0)};
     
-    I1 =real(quadl.integral_2d(integrand_1_2d, &args, triangle, flag)); assert(!flag);
+    I1 =real(quadl.integral_3d(integrand_1_3d, &args, tetrahedron, flag)); assert(!flag);
     print(I1);
 
     args.unit_vector = x;
-    I2.x =real(quadl.integral_2d(integrand_2_2d, &args, triangle, flag)); assert(!flag);
+    I2.x =real(quadl.integral_3d(integrand_2_3d, &args, tetrahedron, flag)); assert(!flag);
     args.unit_vector = y;
-    I2.y =real(quadl.integral_2d(integrand_2_2d, &args, triangle, flag)); assert(!flag);
+    I2.y =real(quadl.integral_3d(integrand_2_3d, &args, tetrahedron, flag)); assert(!flag);
     args.unit_vector = z;
-    I2.z =real(quadl.integral_2d(integrand_2_2d, &args, triangle, flag)); assert(!flag);
+    I2.z =real(quadl.integral_3d(integrand_2_3d, &args, tetrahedron, flag)); assert(!flag);
     print(I2);
 
     args.unit_vector = x;
-    I3.x =real(quadl.integral_2d(integrand_3_2d, &args, triangle, flag)); assert(!flag);
+    I3.x =real(quadl.integral_3d(integrand_3_3d, &args, tetrahedron, flag)); assert(!flag);
     args.unit_vector = y;
-    I3.y =real(quadl.integral_2d(integrand_3_2d, &args, triangle, flag)); assert(!flag);
+    I3.y =real(quadl.integral_3d(integrand_3_3d, &args, tetrahedron, flag)); assert(!flag);
     args.unit_vector = z;
-    I3.z =real(quadl.integral_2d(integrand_3_2d, &args, triangle, flag)); assert(!flag);
+    I3.z =real(quadl.integral_3d(integrand_3_3d, &args, tetrahedron, flag)); assert(!flag);
     print(I3);
 
 }
 
-void test_engine_2d_sheet_near_field(){
-
-    // problem defintions
-    const real_t GHz=1.0E+9;
-    const real_t freq=2.0*GHz;
-    const real_t lambda=c_0/freq;
-    const real_t clmax=lambda/5.0;
-    const complex_t mu_b=1.0, eps_b=1.0;
-    const real_t Lx=0.6, Ly=0.4;
-
-    const size_t Ns=201;
-    complex_t E_TM, E_TE;
-    real_t theta_i, phi_i;
-
-    engine_t engine;
-    create_sheet(Lx, Ly, clmax);
-    engine.set(freq, mu_b, eps_b, clmax, 1.0, 0, 0, 0);
-
-    engine.compute_Z_mn();
-    // engine.load_Z_mn("data/Z_mn.bin");
-    file_t file;
-    range_t z;
-    real_t z_min, z_max, x, y;
-
-    x = +1.0;
-    y = +1.0;
-    z_min = -1.0;
-    z_max = +1.0;
-    z.set(z_min, z_max, Ns);
-    z.linspace();
-
-    E_TM = +1.0;
-    E_TE = +0.0;
-    theta_i = deg2rad(0.0);
-    phi_i = deg2rad(0.0);
-    engine.compute_V_m_incident(E_TM, E_TE, theta_i, phi_i);
-    engine.compute_I_n();
-    engine.export_currents("data/currents.pos");
-    vector_t<real_t> r;
-
-    vector_t<complex_t> E, H;
-    file.open("data/near_field.txt", 'w');
-    for (size_t i=0; i<Ns; i++){
-        progress_bar(i, Ns, "computing near fields...");
-        r = vector_t<real_t>(x, y, z(i));
-        E = engine.compute_near_field_E(r);
-        H = engine.compute_near_field_H(r);
-        file.write("%21.14E ", z(i));
-        file.write("%21.14E %21.14E %21.14E %21.14E %21.14E %21.14E ", 
-            real(E.x), imag(E.x),
-            real(E.y), imag(E.y),
-            real(E.z), imag(E.z));
-        file.write("%21.14E %21.14E %21.14E %21.14E %21.14E %21.14E ", 
-            real(H.x), imag(H.x),
-            real(H.y), imag(H.y),
-            real(H.z), imag(H.z));
-        file.write("\n");
-    }
-    file.close();
-
-    //
-    z.unset();
-
-    engine.unset();
-    
-}
-
-
-void test_engine_2d_box_near_field(){
+/*
+void test_engine_3d_box_near_field(){
 
     // problem defintions
     const real_t mm=1.0E-3;
@@ -397,7 +351,7 @@ void test_engine_2d_box_near_field(){
     
     engine_t engine;
     create_box();
-    engine.set(freq, mu_b, eps_b, clmax/mm, mm, 0, 0, 0);
+    engine.set(freq, mu_b, eps_b, clmax/mm, mm, 0, 0, 1);
 
     engine.compute_Z_mn();
     // engine.load_Z_mn("data/Z_mn.bin");
@@ -449,7 +403,7 @@ void test_engine_2d_box_near_field(){
 }
 
 
-void test_engine_2d_sphere_near_field_2d(){
+void test_engine_3d_sphere_near_field_3d(){
 
     // problem defintions
     const real_t GHz=1.0E+9;
@@ -465,7 +419,7 @@ void test_engine_2d_sphere_near_field_2d(){
 
     engine_t engine;
     create_sphere(radius);
-    engine.set(freq, mu_b, eps_b, clmax, 1.0, 0, 0, 0);
+    engine.set(freq, mu_b, eps_b, clmax, 1.0, 0, 0, 1);
 
     engine.compute_Z_mn();
     // engine.load_Z_mn("data/Z_mn.bin");
@@ -540,3 +494,5 @@ void test_engine_2d_sphere_near_field_2d(){
     engine.unset();
     
 }
+
+*/

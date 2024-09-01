@@ -178,6 +178,11 @@ struct basis_3d_t{
     }
 };
 
+struct material_t{
+    complex_t mu=0.0, eps=0.0;
+};
+
+
 class shape_t{
     private:
         int_t is_physical_specified=false;
@@ -193,19 +198,25 @@ class shape_t{
         void load_mesh(const real_t metric_unit);
         void load_basis_functions();
         real_t metric_unit=1.0;
+        size_t N_materials=0;
+        int_t is_material_set=false;
+        material_t *material_list=null;
     public:
         shape_t(){}
         ~shape_t(){}
-        shape_t(const real_t freq, const complex_t mu_b, const complex_t eps_b){
-            shape_t::set(freq, mu_b, eps_b);
+        shape_t(const real_t freq, const complex_t mu_b, const complex_t eps_b, const size_t N_materials){
+            shape_t::set(freq, mu_b, eps_b, N_materials);
         }
-        void set(const real_t freq, const complex_t mu_b, const complex_t eps_b){
+        void set(const real_t freq, const complex_t mu_b, const complex_t eps_b, const size_t N_materials){
             assert_error(abs(mu_b)>0.0 && abs(eps_b)>0.0, "invalid background medium parameters");
             assert_error(freq>0.0, "invalid freq");
             this->freq = freq;
             this->mu_b = mu_b;
             this->eps_b = eps_b;
             this->lambda = c_0/(real(sqrt(mu_b*eps_b))*freq);
+            this->material_list = (material_t*)calloc(N_materials, sizeof(material_t));
+            assert(this->material_list!=null);
+            this->is_material_set = true;
         }
         void get_basis_functions(const real_t clmax, const real_t metric_unit);
         void clear();
@@ -235,6 +246,16 @@ class shape_t{
         }
         real_t get_mesh_tol(){
             return this->mesh_tol;
+        }
+        //
+        void set_material(const size_t pg, const complex_t mu, const complex_t eps){
+            assert_error(pg<=this->N_materials, "material index is out of range");
+            this->material_list[pg].mu = mu;
+            this->material_list[pg].eps = eps;
+        }
+        material_t get_material(const size_t pg){
+            assert_error(pg<=this->N_materials, "material index is out of range");
+            return this->material_list[pg];
         }
 };
 
