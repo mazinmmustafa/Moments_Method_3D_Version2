@@ -54,7 +54,7 @@ void test_shape(){
     const real_t lambda=c_0/freq;
     const real_t clmax=lambda/21.0;
 
-    shape_t shape(freq, 1.0, 1.0, 0);
+    shape_t shape(freq, 1.0, 1.0);
     // create_vertical_wire_dipole(0.47*lambda, 0.1*lambda);
     // create_sphere(100);
     create_patch_antenna();
@@ -129,7 +129,7 @@ void test_engine_1d_vertical_dipole(){
 
     engine_t engine;
     create_vertical_wire_dipole(L, port_length, clmax);
-    engine.set(freq, mu_b, eps_b, clmax, 1.0, a, N_ports, 0);
+    engine.set(freq, mu_b, eps_b, clmax, 1.0, a, N_ports);
     engine.assign_port(0, V1, Z1, pg1, p1, port_length, 0.0);
 
     engine.compute_Z_mn();
@@ -172,7 +172,7 @@ void test_engine_1d_vertical_dipole_input_adminttance(){
     for (size_t i=0; i<Ns; i++){
         print("\nstep %zu:\n", i);
         create_vertical_wire_dipole(L(i), port_length, clmax);
-        engine.set(freq, mu_b, eps_b, clmax, 1.0, a, N_ports, 0);
+        engine.set(freq, mu_b, eps_b, clmax, 1.0, a, N_ports);
         engine.assign_port(0, V1, Z1, pg1, p1, port_length, 0.0);
 
         engine.compute_Z_mn();
@@ -215,7 +215,7 @@ void test_engine_1d_loop_input_impedance(){
     for (size_t i=0; i<Ns; i++){
         print("\nstep %zu:\n", i);
         create_loop(S(i)/(2.0*pi), clmax);
-        engine.set(freq, mu_b, eps_b, clmax, 1.0, a, N_ports, 0);
+        engine.set(freq, mu_b, eps_b, clmax, 1.0, a, N_ports);
         engine.assign_port(0, V1, Z1, pg1, p1, port_length, 0.0);
 
         engine.compute_Z_mn();
@@ -262,7 +262,7 @@ void test_engine_1d_vertical_dipole_mutual_impedance(){
     for (size_t i=0; i<Ns; i++){
         print("\nstep %zu:\n", i);
         create_two_vertical_wire_dipole(L, port_length, d(i), clmax);
-        engine.set(freq, mu_b, eps_b, clmax, 1.0, a, N_ports, 0);
+        engine.set(freq, mu_b, eps_b, clmax, 1.0, a, N_ports);
         engine.assign_port(0, +0.0, +0.0, pg1, p1, port_length, 0.0);
         engine.assign_port(1, +0.0, +0.0, pg2, p2, port_length, 0.0);
 
@@ -320,7 +320,7 @@ void test_engine_1d_transmission_line_S_parameters(){
         lambda = c_0/freq(i);
         clmax = lambda/21.0;
         create_transmission_line(L, S, clmax);
-        engine.set(freq(i), mu_b, eps_b, clmax, 1.0, a, N_ports, 0);
+        engine.set(freq(i), mu_b, eps_b, clmax, 1.0, a, N_ports);
         engine.assign_port(0, +0.0, Z_0, pg1, p1, 0.0, 0.0);
         engine.assign_port(1, +0.0, Z_0, pg2, p2, 0.0, 0.0);
 
@@ -373,7 +373,7 @@ void test_engine_1d_RCS_vertical_wire(){
         const real_t a=L(i)/200.0;
         create_vertical_wire(L(i), clmax);
 
-        engine.set(freq, mu_b, eps_b, clmax, 1.0, a, 0, 0);
+        engine.set(freq, mu_b, eps_b, clmax, 1.0, a, 0);
         engine.compute_Z_mn();
         engine.compute_V_m_incident(E_TM, E_TE, theta_i, phi_i);
         engine.compute_I_n();
@@ -419,7 +419,7 @@ void test_engine_1d_far_field_transmission_line(){
 
     engine_t engine;
     create_transmission_line(L, 2.0*h, clmax);
-    engine.set(freq, mu_b, eps_b, clmax, 1.0, a, N_ports, 0);
+    engine.set(freq, mu_b, eps_b, clmax, 1.0, a, N_ports);
     engine.assign_port(0, +2.0, 2.0*Z_0, pg1, p1, 0.0, 0.0);
     engine.assign_port(1, +0.0, 0.0, pg2, p2, 0.0, 0.0);
 
@@ -578,7 +578,7 @@ void test_engine_1d_near_field_vertical_dipole(){
 
     engine_t engine;
     create_vertical_wire_dipole(L, clmax, clmax);
-    engine.set(freq, mu_b, eps_b, clmax, 1.0, a, N_ports, 0);
+    engine.set(freq, mu_b, eps_b, clmax, 1.0, a, N_ports);
     engine.assign_port(0, sqrt(8.0*Z_0*1.0), Z_0, pg, p, 0.0, 0.0);
 
     engine.compute_Z_mn();
@@ -637,7 +637,7 @@ void test_engine_2d_transmission_line_near_field_1d(){
 
     engine_t engine;
     create_transmission_line(L, 2.0*h, clmax);
-    engine.set(freq, mu_b, eps_b, clmax, 1.0, a, N_ports, 0);
+    engine.set(freq, mu_b, eps_b, clmax, 1.0, a, N_ports);
     engine.assign_port(0, +2.0, 2.0*Z_0, pg1, p1, 0.0, 0.0);
     engine.assign_port(1, +0.0, 0.0, pg2, p2, 0.0, 0.0);
 

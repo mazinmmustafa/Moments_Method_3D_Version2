@@ -19,10 +19,6 @@ void shape_t::clear(){
         free(this->basis_3d_list);
         this->is_basis_allocated = false;
     }
-    if (this->is_material_set){
-        free(this->material_list);
-    }
-    this->N_materials = 0;
 }
 
 

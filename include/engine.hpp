@@ -87,8 +87,7 @@ class engine_t{
         engine_t(){}
         ~engine_t(){}
         void set(const real_t freq, const complex_t mu_b, const complex_t eps_b, 
-            const real_t clmax, const real_t unit_metric, const real_t a, const size_t N_ports,
-            const size_t N_materials);
+            const real_t clmax, const real_t unit_metric, const real_t a, const size_t N_ports);
         void compute_Z_mn();
         void unset();
         void export_solutions();
@@ -106,6 +105,9 @@ class engine_t{
         vector_t<complex_t> compute_near_field_E(const vector_t<real_t> r);
         vector_t<complex_t> compute_near_field_H(const vector_t<real_t> r);
         void export_currents(const char *filename);
+        void set_material(const int_t pg, const complex_t mu, const complex_t eps){
+            this->shape.set_material(pg, mu, eps);
+        }
 };
 
 // Functions

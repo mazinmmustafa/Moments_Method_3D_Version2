@@ -1,13 +1,12 @@
 //
 #include "engine.hpp"
 
-#define only_1d
+// #define only_1d
 // #define only_2d
-// #define only_3d
+#define only_3d
 
 void engine_t::set(const real_t freq, const complex_t mu_b, const complex_t eps_b, 
-    const real_t clmax, const real_t unit_metric, const real_t a, const size_t N_ports,
-    const size_t N_materials){
+    const real_t clmax, const real_t unit_metric, const real_t a, const size_t N_ports){
     if (this->is_engine_set){engine_t::unset();}
     // check inputs errors
     assert_error(freq>0.0, "invalid frequency");
@@ -18,7 +17,6 @@ void engine_t::set(const real_t freq, const complex_t mu_b, const complex_t eps_
     this->lambda = (c_0/real(sqrt(mu_b*eps_b)))/freq;
     this->k_b = 2.0*pi*freq*sqrt(mu_0*eps_0)*sqrt(mu_b*eps_b);
     this->eta_b = sqrt(mu_0/eps_0)*sqrt(mu_b/eps_b);
-    this->shape.set(freq, mu_b, eps_b, N_materials);
     this->shape.get_basis_functions(clmax, unit_metric);
     this->shape.get_info(this->N_basis_1d, this->N_basis_2d, this->N_basis_3d);
     //
@@ -169,7 +167,7 @@ void engine_t::compute_Z_mn(){
                 b_n = this->shape.get_basis_3d(n);
                 sprintf(msg, "VV: Z_mn (%zu, %zu)", m, n);
                 progress_bar(count, this->N_basis_3d*(this->N_basis_3d+1)/2, msg);
-                Z = Z_mn_3d_3d(b_m, b_n, k_b, eta_b, lambda, quadl, flag);
+                Z = Z_mn_3d_3d(b_m, b_n, k_b, eta_b, lambda, eps_b, quadl, flag);
                 assert_error(flag==false, "no convergence");
                 assert_error(!isinf(abs(Z)), "inf value for Z_mn");
                 assert_error(!isnan(abs(Z)), "nan value for Z_mn");

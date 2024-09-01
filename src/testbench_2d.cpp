@@ -68,7 +68,7 @@ void test_engine_2d_sphere_RCS(){
 
     engine_t engine;
     create_sphere(radius);
-    engine.set(freq, mu_b, eps_b, clmax, 1.0, 0, 0, 0);
+    engine.set(freq, mu_b, eps_b, clmax, 1.0, 0, 0);
 
     engine.compute_Z_mn();
     // engine.load_Z_mn("data/Z_mn.bin");
@@ -135,7 +135,7 @@ void test_engine_2d_sphere_near_field(){
 
     engine_t engine;
     create_sphere(radius);
-    engine.set(freq, mu_b, eps_b, clmax, 1.0, 0, 0, 0);
+    engine.set(freq, mu_b, eps_b, clmax, 1.0, 0, 0);
 
     // engine.compute_Z_mn();
     engine.load_Z_mn("data/Z_mn.bin");
@@ -329,7 +329,7 @@ void test_engine_2d_sheet_near_field(){
 
     engine_t engine;
     create_sheet(Lx, Ly, clmax);
-    engine.set(freq, mu_b, eps_b, clmax, 1.0, 0, 0, 0);
+    engine.set(freq, mu_b, eps_b, clmax, 1.0, 0, 0);
 
     engine.compute_Z_mn();
     // engine.load_Z_mn("data/Z_mn.bin");
@@ -397,7 +397,7 @@ void test_engine_2d_box_near_field(){
     
     engine_t engine;
     create_box();
-    engine.set(freq, mu_b, eps_b, clmax/mm, mm, 0, 0, 0);
+    engine.set(freq, mu_b, eps_b, clmax/mm, mm, 0, 0);
 
     engine.compute_Z_mn();
     // engine.load_Z_mn("data/Z_mn.bin");
@@ -465,7 +465,7 @@ void test_engine_2d_sphere_near_field_2d(){
 
     engine_t engine;
     create_sphere(radius);
-    engine.set(freq, mu_b, eps_b, clmax, 1.0, 0, 0, 0);
+    engine.set(freq, mu_b, eps_b, clmax, 1.0, 0, 0);
 
     engine.compute_Z_mn();
     // engine.load_Z_mn("data/Z_mn.bin");
