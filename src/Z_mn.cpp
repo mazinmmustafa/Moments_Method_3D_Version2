@@ -51,9 +51,5 @@ complex_t Z_mn_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const complex_t
     phi = phi_3d_3d(b_m, b_n, k, lambda, quadl, flag);
     if (flag){print("phi\n");}
     nu = nu_3d_3d(b_m, b_n, lambda, eps_b);
-    //
-    print(psi);
-    print(phi);
-    print(nu);
     return +j*k*eta*psi-j*(eta/k)*phi-j*(eta/k)*nu;
 }

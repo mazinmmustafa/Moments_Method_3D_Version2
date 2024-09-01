@@ -241,12 +241,14 @@ complex_t psi_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const complex_t 
     args.k = k;
     args.lambda = lambda;
     complex_t I1=0.0, I2=0.0, I3=0.0;
-    triangle_domain_t triangle={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(1.0, 0.0, 0.0), vector_t<real_t>(0.0, 1.0, 0.0)};
-    I1 = args.quadl.integral_2d(psi_2d_2d_singular_integrand_outer, &args, triangle, flag);
+    tetrahedron_domain_t tetrahedron={vector_t<real_t>(0.0, 0.0, 0.0), 
+        vector_t<real_t>(1.0, 0.0, 0.0), vector_t<real_t>(0.0, 1.0, 0.0), 
+        vector_t<real_t>(0.0, 0.0, 1.0)};
+    I1 = args.quadl.integral_3d(psi_3d_3d_singular_integrand_outer, &args, tetrahedron, flag);
     assert_error(!flag, "no convergence");
-    I2 = args.quadl.integral_2d(psi_2d_2d_integrand_1, &args, triangle, flag);
+    I2 = args.quadl.integral_3d(psi_3d_3d_integrand_1, &args, tetrahedron, flag);
     assert_error(!flag, "no convergence");
-    I3 = args.quadl.integral_2d(psi_2d_2d_integrand_2, &args, triangle, flag);
+    I3 = args.quadl.integral_3d(psi_3d_3d_integrand_2, &args, tetrahedron, flag);
     assert_error(!flag, "no convergence");
     return I1+I2+I3;
 }

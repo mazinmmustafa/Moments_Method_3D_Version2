@@ -164,6 +164,7 @@ void engine_t::compute_Z_mn(){
         for (size_t m=0; m<this->N_basis_3d; m++){
             b_m = this->shape.get_basis_3d(m);
             for (size_t n=m; n<this->N_basis_3d; n++){
+                flag = false;
                 b_n = this->shape.get_basis_3d(n);
                 sprintf(msg, "VV: Z_mn (%zu, %zu)", m, n);
                 progress_bar(count, this->N_basis_3d*(this->N_basis_3d+1)/2, msg);
@@ -375,14 +376,14 @@ void engine_t::save_Z_mn(const char *filename){
     assert(filename!=null);
     file.open(filename, 'w');
     file.write(&this->N);
-    // print("saving Z_mn solutions...");
+    print("saving Z_mn solutions...");
     for (size_t m=0; m<this->N; m++){
         for (size_t n=0; n<this->N; n++){
             file.write(&this->Z_mn(m, n));
         }
     }
     file.close();
-    // print(", done\n");
+    print(", done\n");
 }
 
 void engine_t::load_Z_mn(const char *filename){
@@ -392,7 +393,7 @@ void engine_t::load_Z_mn(const char *filename){
     file.read(&this->N);
     this->Z_mn.unset();
     this->Z_mn.set(this->N, this->N);
-    // print("loading Z_mn solutions...");
+    print("loading Z_mn solutions...");
     for (size_t m=0; m<this->N; m++){
         for (size_t n=0; n<this->N; n++){
             file.read(&this->Z_mn(m, n));

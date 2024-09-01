@@ -66,9 +66,9 @@ complex_t nu_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const real_t lamb
         L_m1 = b_m.L_m[0];
         L_m2 = b_m.L_m[1];
         L_m3 = b_m.L_m[2];
-        L_n1 = b_n.L_m[0];
-        L_n2 = b_n.L_m[1];
-        L_n3 = b_n.L_m[2];
+        L_n1 = b_n.L_p[0];
+        L_n2 = b_n.L_p[1];
+        L_n3 = b_n.L_p[2];
         chi = (b_n.eps_p/eps_b)-1.0;
         factor = -1.0*(2.0*b_m.A*b_n.A)/(3.0*b_n.V_p);
         factor*=(chi+3.0)/(3.0*chi);
@@ -88,9 +88,9 @@ complex_t nu_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const real_t lamb
         }
     }
     if (counter==4){
-        L_m1 = b_m.L_m[0];
-        L_m2 = b_m.L_m[1];
-        L_m3 = b_m.L_m[2];
+        L_m1 = b_m.L_p[0];
+        L_m2 = b_m.L_p[1];
+        L_m3 = b_m.L_p[2];
         L_n1 = b_n.L_m[0];
         L_n2 = b_n.L_m[1];
         L_n3 = b_n.L_m[2];
@@ -113,12 +113,12 @@ complex_t nu_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const real_t lamb
         }
     }
     if (counter==4){
-        L_m1 = b_m.L_m[0];
-        L_m2 = b_m.L_m[1];
-        L_m3 = b_m.L_m[2];
-        L_n1 = b_n.L_m[0];
-        L_n2 = b_n.L_m[1];
-        L_n3 = b_n.L_m[2];
+        L_m1 = b_m.L_p[0];
+        L_m2 = b_m.L_p[1];
+        L_m3 = b_m.L_p[2];
+        L_n1 = b_n.L_p[0];
+        L_n2 = b_n.L_p[1];
+        L_n3 = b_n.L_p[2];
         chi = (b_n.eps_p/eps_b)-1.0;
         factor = +1.0*(2.0*b_m.A*b_n.A)/(3.0*b_n.V_p);
         factor*=(chi+3.0)/(3.0*chi);
