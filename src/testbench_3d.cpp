@@ -51,10 +51,10 @@ void test_engine_3d_sphere_RCS(){
 
     // problem defintions
     const real_t GHz=1.0E+9;
-    const real_t freq=0.3*GHz;
+    const real_t freq=0.25*GHz;
     const real_t lambda=c_0/freq;
     const complex_t mu_b=1.0, eps_b=1.0;
-    const complex_t mu_s=1.0, eps_s=4.0;
+    const complex_t mu_s=1.0, eps_s=2.56;
     const real_t clmax=(lambda/6.0)/real(sqrt(eps_s));
     const real_t radius=0.5;
 

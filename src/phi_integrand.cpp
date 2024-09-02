@@ -135,7 +135,7 @@ complex_t phi_3d_3d_singular_integrand_inner(const complex_t alpha_, const compl
     I_mp = (-j*k*exp(-j*k*R_mp/2.0))*sinc(k*R_mp/2.0);
     I_pm = (-j*k*exp(-j*k*R_pm/2.0))*sinc(k*R_pm/2.0);
     I_pp = (-j*k*exp(-j*k*R_pp/2.0))*sinc(k*R_pp/2.0);
-    return 12.0*b_m.A*b_n.A*(I_mm-I_mp-I_pm+I_pp)/(4.0*pi);
+    return 36.0*b_m.A*b_n.A*(I_mm-I_mp-I_pm+I_pp)/(4.0*pi);
 }
 
 complex_t phi_3d_3d_singular_integrand_outer(const complex_t alpha, const complex_t beta, const complex_t gamma, void *args_){
