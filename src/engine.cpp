@@ -576,6 +576,15 @@ vector_t<complex_t> engine_t::compute_near_field_E(const vector_t<real_t> r){
         E.z+= compute_E_2d(b_m, r, z, k_b, eta_b, quadl)*this->I_n(m, 0);
     }
     #endif
+    // 3d
+    #ifdef only_3d
+    for (size_t m=0; m<this->N_basis_3d; m++){
+        basis_3d_t b_m=this->shape.get_basis_3d(m);
+        E.x+= compute_E_3d(b_m, r, x, k_b, eta_b, quadl)*this->I_n(m, 0);
+        E.y+= compute_E_3d(b_m, r, y, k_b, eta_b, quadl)*this->I_n(m, 0);
+        E.z+= compute_E_3d(b_m, r, z, k_b, eta_b, quadl)*this->I_n(m, 0);
+    }
+    #endif
     return E;
 }
 
@@ -603,6 +612,15 @@ vector_t<complex_t> engine_t::compute_near_field_H(const vector_t<real_t> r){
         H.x+= compute_H_2d(b_m, r, x, k_b, eta_b, quadl)*this->I_n(m, 0);
         H.y+= compute_H_2d(b_m, r, y, k_b, eta_b, quadl)*this->I_n(m, 0);
         H.z+= compute_H_2d(b_m, r, z, k_b, eta_b, quadl)*this->I_n(m, 0);
+    }
+    #endif
+    // 3d
+    #ifdef only_3d
+    for (size_t m=0; m<this->N_basis_3d; m++){
+        basis_3d_t b_m=this->shape.get_basis_3d(m);
+        H.x+= compute_H_3d(b_m, r, x, k_b, eta_b, quadl)*this->I_n(m, 0);
+        H.y+= compute_H_3d(b_m, r, y, k_b, eta_b, quadl)*this->I_n(m, 0);
+        H.z+= compute_H_3d(b_m, r, z, k_b, eta_b, quadl)*this->I_n(m, 0);
     }
     #endif
     return H;

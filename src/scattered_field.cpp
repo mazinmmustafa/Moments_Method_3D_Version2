@@ -447,3 +447,274 @@ complex_t compute_H_2d(const basis_2d_t b_m, const vector_t<real_t> r, const vec
     I2 = H_2d_integral_1(&args);
     return I1+I2;
 }
+
+// 3d 
+
+void integrand_L1_3d(basis_3d_t b_m, const vector_t<real_t> p, 
+    real_t &I_m, real_t &I_p){
+    projection_3d_para para;
+    // m
+    para = prjection_3d(b_m.r_m, b_m.e[0], b_m.e[1], b_m.e[2], p);
+    I_m = 0.0;
+    for (size_t j=0; j<4; j++){
+        for (size_t i=0; i<3; i++){
+            real_t A=para.para_2d[j].para_1d[i].P_0_unit*para.para_2d[j].u[i];
+            real_t B=para.para_2d[j].para_1d[i].P_0*
+                log((para.para_2d[j].R_p[i]+para.para_2d[j].para_1d[i].l_p)/
+                    (para.para_2d[j].R_m[i]+para.para_2d[j].para_1d[i].l_m));
+            real_t C=atan2(para.para_2d[j].para_1d[i].P_0*para.para_2d[j].para_1d[i].l_p, 
+                            pow(para.para_2d[j].R_0[i], 2.0)+abs(para.para_2d[j].d)*para.para_2d[j].R_p[i]);
+            real_t D=atan2(para.para_2d[j].para_1d[i].P_0*para.para_2d[j].para_1d[i].l_m, 
+                            pow(para.para_2d[j].R_0[i], 2.0)+abs(para.para_2d[j].d)*para.para_2d[j].R_m[i]);
+            I_m = I_m+0.5*para.para_2d[j].d*A*(abs(para.para_2d[j].d)*(C-D)-B);
+        }
+    }
+    // p
+    para = prjection_3d(b_m.r_p, b_m.e[2], b_m.e[1], b_m.e[0], p);
+    I_p = 0.0;
+    for (size_t j=0; j<4; j++){
+        for (size_t i=0; i<3; i++){
+            real_t A=para.para_2d[j].para_1d[i].P_0_unit*para.para_2d[j].u[i];
+            real_t B=para.para_2d[j].para_1d[i].P_0*
+                log((para.para_2d[j].R_p[i]+para.para_2d[j].para_1d[i].l_p)/
+                    (para.para_2d[j].R_m[i]+para.para_2d[j].para_1d[i].l_m));
+            real_t C=atan2(para.para_2d[j].para_1d[i].P_0*para.para_2d[j].para_1d[i].l_p, 
+                            pow(para.para_2d[j].R_0[i], 2.0)+abs(para.para_2d[j].d)*para.para_2d[j].R_p[i]);
+            real_t D=atan2(para.para_2d[j].para_1d[i].P_0*para.para_2d[j].para_1d[i].l_m, 
+                            pow(para.para_2d[j].R_0[i], 2.0)+abs(para.para_2d[j].d)*para.para_2d[j].R_m[i]);
+            I_p = I_p+0.5*para.para_2d[j].d*A*(abs(para.para_2d[j].d)*(C-D)-B);
+        }
+    }
+}
+
+void integrand_L2_3d(basis_3d_t b_m, const vector_t<real_t> p, 
+    vector_t<real_t> &I_m, vector_t<real_t> &I_p){
+    projection_3d_para para;
+    // m
+    para = prjection_3d(b_m.r_m, b_m.e[0], b_m.e[1], b_m.e[2], p);
+    I_m = vector_t<real_t>(0.0, 0.0, 0.0);
+    for (size_t j=0; j<4; j++){
+        for (size_t i=0; i<3; i++){
+            real_t A=para.para_2d[j].para_1d[i].P_0_unit*para.para_2d[j].u[i];
+            real_t B=0.5*para.para_2d[j].para_1d[i].P_0*(pow(para.para_2d[j].R_0[i], 2.0)+2.0*pow(para.para_2d[j].d, 2.0));
+            real_t C=
+                log((para.para_2d[j].R_p[i]+para.para_2d[j].para_1d[i].l_p)/
+                    (para.para_2d[j].R_m[i]+para.para_2d[j].para_1d[i].l_m));
+            real_t D=0.5*para.para_2d[j].para_1d[i].P_0*(
+                    para.para_2d[j].R_p[i]*para.para_2d[j].para_1d[i].l_p-
+                    para.para_2d[j].R_m[i]*para.para_2d[j].para_1d[i].l_m
+            );
+            real_t E=atan2(para.para_2d[j].para_1d[i].P_0*para.para_2d[j].para_1d[i].l_p, 
+                            pow(para.para_2d[j].R_0[i], 2.0)+abs(para.para_2d[j].d)*para.para_2d[j].R_p[i]);
+            real_t F=atan2(para.para_2d[j].para_1d[i].P_0*para.para_2d[j].para_1d[i].l_m, 
+                            pow(para.para_2d[j].R_0[i], 2.0)+abs(para.para_2d[j].d)*para.para_2d[j].R_m[i]);
+            I_m = I_m+(1.0/3.0)*A*(B*C+D-pow(abs(para.para_2d[j].d), 3.0)*(E-F))*para.para_2d[j].n;
+        }
+    }
+    // p
+    para = prjection_3d(b_m.r_p, b_m.e[2], b_m.e[1], b_m.e[0], p);
+    I_p = vector_t<real_t>(0.0, 0.0, 0.0);
+    for (size_t j=0; j<4; j++){
+        for (size_t i=0; i<3; i++){
+            real_t A=para.para_2d[j].para_1d[i].P_0_unit*para.para_2d[j].u[i];
+            real_t B=0.5*para.para_2d[j].para_1d[i].P_0*(pow(para.para_2d[j].R_0[i], 2.0)+2.0*pow(para.para_2d[j].d, 2.0));
+            real_t C=
+                log((para.para_2d[j].R_p[i]+para.para_2d[j].para_1d[i].l_p)/
+                    (para.para_2d[j].R_m[i]+para.para_2d[j].para_1d[i].l_m));
+            real_t D=0.5*para.para_2d[j].para_1d[i].P_0*(
+                    para.para_2d[j].R_p[i]*para.para_2d[j].para_1d[i].l_p-
+                    para.para_2d[j].R_m[i]*para.para_2d[j].para_1d[i].l_m
+            );
+            real_t E=atan2(para.para_2d[j].para_1d[i].P_0*para.para_2d[j].para_1d[i].l_p, 
+                            pow(para.para_2d[j].R_0[i], 2.0)+abs(para.para_2d[j].d)*para.para_2d[j].R_p[i]);
+            real_t F=atan2(para.para_2d[j].para_1d[i].P_0*para.para_2d[j].para_1d[i].l_m, 
+                            pow(para.para_2d[j].R_0[i], 2.0)+abs(para.para_2d[j].d)*para.para_2d[j].R_m[i]);
+            I_p = I_p+(1.0/3.0)*A*(B*C+D-pow(abs(para.para_2d[j].d), 3.0)*(E-F))*para.para_2d[j].n;
+        }
+    }
+}
+
+void integrand_L3_3d(basis_3d_t b_m, const vector_t<real_t> p, 
+    vector_t<real_t> &I_m, vector_t<real_t> &I_p){
+    projection_3d_para para;
+    // m
+    para = prjection_3d(b_m.r_m, b_m.e[0], b_m.e[1], b_m.e[2], p);
+    I_m = vector_t<real_t>(0.0, 0.0, 0.0);
+    for (size_t j=0; j<4; j++){
+        for (size_t i=0; i<3; i++){
+            real_t A=para.para_2d[j].para_1d[i].P_0_unit*para.para_2d[j].u[i];
+            real_t B=para.para_2d[j].para_1d[i].P_0*
+                log((para.para_2d[j].R_p[i]+para.para_2d[j].para_1d[i].l_p)/
+                    (para.para_2d[j].R_m[i]+para.para_2d[j].para_1d[i].l_m));
+            real_t C=atan2(para.para_2d[j].para_1d[i].P_0*para.para_2d[j].para_1d[i].l_p, 
+                            pow(para.para_2d[j].R_0[i], 2.0)+abs(para.para_2d[j].d)*para.para_2d[j].R_p[i]);
+            real_t D=atan2(para.para_2d[j].para_1d[i].P_0*para.para_2d[j].para_1d[i].l_m, 
+                            pow(para.para_2d[j].R_0[i], 2.0)+abs(para.para_2d[j].d)*para.para_2d[j].R_m[i]);
+            I_m = I_m+A*(B-abs(para.para_2d[j].d)*(C-D))*para.para_2d[j].n;
+        }
+    }
+    // p
+    para = prjection_3d(b_m.r_p, b_m.e[2], b_m.e[1], b_m.e[0], p);
+    I_p = vector_t<real_t>(0.0, 0.0, 0.0);
+    for (size_t j=0; j<4; j++){
+        for (size_t i=0; i<3; i++){
+            real_t A=para.para_2d[j].para_1d[i].P_0_unit*para.para_2d[j].u[i];
+            real_t B=para.para_2d[j].para_1d[i].P_0*
+                log((para.para_2d[j].R_p[i]+para.para_2d[j].para_1d[i].l_p)/
+                    (para.para_2d[j].R_m[i]+para.para_2d[j].para_1d[i].l_m));
+            real_t C=atan2(para.para_2d[j].para_1d[i].P_0*para.para_2d[j].para_1d[i].l_p, 
+                            pow(para.para_2d[j].R_0[i], 2.0)+abs(para.para_2d[j].d)*para.para_2d[j].R_p[i]);
+            real_t D=atan2(para.para_2d[j].para_1d[i].P_0*para.para_2d[j].para_1d[i].l_m, 
+                            pow(para.para_2d[j].R_0[i], 2.0)+abs(para.para_2d[j].d)*para.para_2d[j].R_m[i]);
+            I_p = I_p+A*(B-abs(para.para_2d[j].d)*(C-D))*para.para_2d[j].n;
+        }
+    }
+}
+
+complex_t E_3d_singular_integrand_1(const complex_t alpha, const complex_t beta, const complex_t gamma, void *args_){
+    scattered_field_args_3d_t *args=(scattered_field_args_3d_t*)args_;
+    basis_3d_t b_m=args->b_m;
+    const complex_t k=args->k;
+    const vector_t<real_t> r=args->r;
+    complex_t I_m, I_p;
+    const complex_t j=complex_t(0.0, 1.0);
+    vector_t<real_t> R_m_vector=b_m.r_m+real(alpha)*b_m.L_m[0]+real(beta)*b_m.L_m[1]+real(gamma)*b_m.L_m[2];
+    vector_t<real_t> R_p_vector=b_m.r_p+real(alpha)*b_m.L_p[2]+real(beta)*b_m.L_p[1]+real(gamma)*b_m.L_p[0];
+    real_t R_m, R_p;
+    R_m = mag(R_m_vector-r);
+    R_p = mag(R_p_vector-r);
+    I_m = -j*k*exp(-j*k*R_m/2.0)*sinc(k*R_m/2.0)*b_m.A*(+1.0*(alpha*b_m.L_m[0]+beta*b_m.L_m[1]+gamma*b_m.L_m[2])*args->unit_vector);
+    I_p = -j*k*exp(-j*k*R_p/2.0)*sinc(k*R_p/2.0)*b_m.A*(-1.0*(alpha*b_m.L_p[2]+beta*b_m.L_p[1]+gamma*b_m.L_p[0])*args->unit_vector);
+    return 2.0*(I_m+I_p)/(4.0*pi);
+}
+
+complex_t E_3d_singular_integrand_2(const complex_t alpha, const complex_t beta, const complex_t gamma, void *args_){
+    scattered_field_args_3d_t *args=(scattered_field_args_3d_t*)args_;
+    basis_3d_t b_m=args->b_m;
+    const complex_t k=args->k;
+    const vector_t<real_t> r=args->r;
+    complex_t I_m, I_p;
+    const complex_t j=complex_t(0.0, 1.0);
+    vector_t<real_t> R_m_vector=b_m.r_m+real(alpha)*b_m.L_m[0]+real(beta)*b_m.L_m[1]+real(gamma)*b_m.L_m[2];
+    vector_t<real_t> R_p_vector=b_m.r_p+real(alpha)*b_m.L_p[2]+real(beta)*b_m.L_p[1]+real(gamma)*b_m.L_p[0];
+    real_t R_m, R_p;
+    R_m = mag(R_m_vector-r);
+    R_p = mag(R_p_vector-r);
+    I_m = -0.5*k*k*exp(-j*k*R_m/2.0)*(sinc(k*R_m/2.0)+j*sinc_dx(k*R_m/2.0))*(unit(R_m_vector-r)*args->unit_vector)*6.0*b_m.A;
+    I_p = -0.5*k*k*exp(-j*k*R_p/2.0)*(sinc(k*R_p/2.0)+j*sinc_dx(k*R_p/2.0))*(unit(R_p_vector-r)*args->unit_vector)*6.0*b_m.A;
+    return (I_m-I_p)/(4.0*pi);
+}
+
+complex_t E_3d_integral_1(void *args_){
+    scattered_field_args_3d_t *args=(scattered_field_args_3d_t*)args_;
+    basis_3d_t b_m=args->b_m;
+    const vector_t<real_t> r=args->r;
+    real_t I_m, I_p;
+    integrand_L1_3d(b_m, r, I_m, I_p);
+    projection_3d_para para_m = prjection_3d(b_m.r_m, b_m.e[0], b_m.e[1], b_m.e[2], r);
+    projection_3d_para para_p = prjection_3d(b_m.r_p, b_m.e[2], b_m.e[1], b_m.e[0], r);
+    complex_t ans=0.0;
+    ans+= -1.0*args->unit_vector*(b_m.r_m-r)*I_m*b_m.A/(3.0*b_m.V_m);
+    ans+= +1.0*args->unit_vector*(b_m.r_p-r)*I_p*b_m.A/(3.0*b_m.V_p);
+    return ans/(4.0*pi);
+}
+
+complex_t E_3d_integral_2(void *args_){
+    scattered_field_args_3d_t *args=(scattered_field_args_3d_t*)args_;
+    basis_3d_t b_m=args->b_m;
+    const vector_t<real_t> r=args->r;
+    vector_t<real_t> I_m, I_p;
+    integrand_L2_3d(b_m, r, I_m, I_p);
+    complex_t ans=0.0;
+    ans+= +1.0*args->unit_vector*I_m*b_m.A/(3.0*b_m.V_m);
+    ans+= -1.0*args->unit_vector*I_p*b_m.A/(3.0*b_m.V_p);
+    return ans/(4.0*pi);
+}
+
+complex_t E_3d_integral_3(void *args_){
+    scattered_field_args_3d_t *args=(scattered_field_args_3d_t*)args_;
+    basis_3d_t b_m=args->b_m;
+    const vector_t<real_t> r=args->r;
+    vector_t<real_t> I_m, I_p;
+    integrand_L3_3d(b_m, r, I_m, I_p);
+    complex_t ans=0.0;
+    ans+= +1.0*args->unit_vector*I_m*b_m.A/b_m.V_m;
+    ans+= -1.0*args->unit_vector*I_p*b_m.A/b_m.V_p;
+    return ans/(4.0*pi);
+}
+
+complex_t compute_E_3d(const basis_3d_t b_m, const vector_t<real_t> r, const vector_t<real_t> unit_vector, 
+    const complex_t k, const complex_t eta, quadl_domain_t quadl){
+    scattered_field_args_3d_t args;
+    const complex_t j=complex_t(0.0, 1.0);
+    args.r = r;
+    args.unit_vector = unit_vector;
+    args.b_m = b_m;
+    args.k = k;
+    args.eta = eta;
+    complex_t I1, I2, I3, I4, I5;
+    int_t flag;
+    tetrahedron_domain_t tetrahedron={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(1.0, 0.0, 0.0), 
+            vector_t<real_t>(0.0, 1.0, 0.0), vector_t<real_t>(0.0, 0.0, 1.0)};
+    //
+    I1 = quadl.integral_3d(E_3d_singular_integrand_1, &args, tetrahedron, flag);
+    assert_error(!flag, "no convergence");
+    I2 = E_3d_integral_1(&args);
+    I3 = E_3d_integral_2(&args);
+    I4 = quadl.integral_3d(E_3d_singular_integrand_2, &args, tetrahedron, flag);
+    assert_error(!flag, "no convergence");
+    I5 = E_3d_integral_3(&args);
+    return -j*k*eta*(I1+I2+I3)+j*(eta/k)*(I4+I5);
+}
+
+complex_t H_3d_singular_integrand_1(const complex_t alpha, const complex_t beta, const complex_t gamma, void *args_){
+    scattered_field_args_3d_t *args=(scattered_field_args_3d_t*)args_;
+    basis_3d_t b_m=args->b_m;
+    const complex_t k=args->k;
+    const vector_t<real_t> r=args->r;
+    complex_t I_m, I_p;
+    const complex_t j=complex_t(0.0, 1.0);
+    vector_t<real_t> R_m_vector=b_m.r_m+real(alpha)*b_m.L_m[0]+real(beta)*b_m.L_m[1]+real(gamma)*b_m.L_m[2];
+    vector_t<real_t> R_p_vector=b_m.r_p+real(alpha)*b_m.L_p[2]+real(beta)*b_m.L_p[1]+real(gamma)*b_m.L_p[0];
+    real_t R_m, R_p;
+    R_m = mag(R_m_vector-r);
+    R_p = mag(R_p_vector-r);
+    I_m = -0.5*k*k*exp(-j*k*R_m/2.0)*(sinc(k*R_m/2.0)+j*sinc_dx(k*R_m/2.0))*
+        ((+1.0*(alpha*b_m.L_m[0]+beta*b_m.L_m[1]+gamma*b_m.L_m[2])^unit(R_m_vector-r))*args->unit_vector)*b_m.A;
+    I_p = -0.5*k*k*exp(-j*k*R_p/2.0)*(sinc(k*R_p/2.0)+j*sinc_dx(k*R_p/2.0))*
+        ((-1.0*(alpha*b_m.L_p[2]+beta*b_m.L_p[1]+gamma*b_m.L_p[0])^unit(R_p_vector-r))*args->unit_vector)*b_m.A;
+    return 2.0*(I_m+I_p)/(4.0*pi);
+}
+
+complex_t H_3d_integral_1(void *args_){
+    scattered_field_args_3d_t *args=(scattered_field_args_3d_t*)args_;
+    basis_3d_t b_m=args->b_m;
+    const vector_t<real_t> r=args->r;
+    vector_t<real_t> I_m, I_p;
+    integrand_L3_3d(b_m, r, I_m, I_p);
+    projection_3d_para para_m = prjection_3d(b_m.r_m, b_m.e[0], b_m.e[1], b_m.e[2], r);
+    projection_3d_para para_p = prjection_3d(b_m.r_p, b_m.e[2], b_m.e[1], b_m.e[0], r);
+    complex_t ans=0.0;
+    ans+= -1.0*args->unit_vector*((b_m.r_m-r)^I_m)*b_m.A/(3.0*b_m.V_m);
+    ans+= +1.0*args->unit_vector*((b_m.r_p-r)^I_p)*b_m.A/(3.0*b_m.V_p);
+    return ans/(4.0*pi);
+}
+
+complex_t compute_H_3d(const basis_3d_t b_m, const vector_t<real_t> r, const vector_t<real_t> unit_vector, 
+    const complex_t k, const complex_t eta, quadl_domain_t quadl){
+    scattered_field_args_3d_t args;
+    args.r = r;
+    args.unit_vector = unit_vector;
+    args.b_m = b_m;
+    args.k = k;
+    args.eta = eta;
+    complex_t I1, I2;
+    int_t flag;
+    tetrahedron_domain_t tetrahedron={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(1.0, 0.0, 0.0), 
+            vector_t<real_t>(0.0, 1.0, 0.0), vector_t<real_t>(0.0, 0.0, 1.0)};
+    //
+    I1 = quadl.integral_3d(H_3d_singular_integrand_1, &args, tetrahedron, flag);
+    assert_error(!flag, "no convergence");
+    I2 = H_3d_integral_1(&args);
+    return I1+I2;
+}

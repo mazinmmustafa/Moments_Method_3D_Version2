@@ -20,7 +20,5 @@ void test_engine_3d_3d();
 void test_engine_3d_sphere_RCS();
 void test_engine_3d_sphere_near_field();
 void test_engine_3d_debug();
-void test_engine_3d_sheet_near_field();
-void test_engine_3d_sphere_near_field_3d();
 
 #endif

@@ -40,7 +40,7 @@ complex_t nu_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const real_t lamb
     if (counter==4){
         chi = (b_n.eps_m/eps_b)-1.0;
         factor = +1.0*(2.0*b_m.A*b_n.A)/(3.0*b_n.V_m);
-        factor*=(chi+3.0)/(3.0*chi);
+        factor*=1.0/chi;
         for (size_t i=0; i<3; i++){
             for (size_t j=0; j<3; j++){
                 if (is_equal(b_m.L_m[i]-b_n.L_m[j], -1.0*(b_m.r_m-b_n.r_m), tol)){
@@ -65,7 +65,7 @@ complex_t nu_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const real_t lamb
     if (counter==4){
         chi = (b_n.eps_p/eps_b)-1.0;
         factor = -1.0*(2.0*b_m.A*b_n.A)/(3.0*b_n.V_p);
-        factor*=(chi+3.0)/(3.0*chi);
+        factor*=1.0/chi;
         for (size_t i=0; i<3; i++){
             for (size_t j=0; j<3; j++){
                 if (is_equal(b_m.L_m[i]-b_n.L_p[j], -1.0*(b_m.r_m-b_n.r_p), tol)){
@@ -90,7 +90,7 @@ complex_t nu_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const real_t lamb
     if (counter==4){
         chi = (b_n.eps_m/eps_b)-1.0;
         factor = -1.0*(2.0*b_m.A*b_n.A)/(3.0*b_n.V_m);
-        factor*=(chi+3.0)/(3.0*chi);
+        factor*=1.0/chi;
         for (size_t i=0; i<3; i++){
             for (size_t j=0; j<3; j++){
                 if (is_equal(b_m.L_p[i]-b_n.L_m[j], -1.0*(b_m.r_p-b_n.r_m), tol)){
@@ -115,7 +115,7 @@ complex_t nu_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const real_t lamb
     if (counter==4){
         chi = (b_n.eps_p/eps_b)-1.0;
         factor = +1.0*(2.0*b_m.A*b_n.A)/(3.0*b_n.V_p);
-        factor*=(chi+3.0)/(3.0*chi);
+        factor*=1.0/chi;
         for (size_t i=0; i<3; i++){
             for (size_t j=0; j<3; j++){
                 if (is_equal(b_m.L_p[i]-b_n.L_p[j], -1.0*(b_m.r_p-b_n.r_p), tol)){
