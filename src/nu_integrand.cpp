@@ -26,105 +26,105 @@ complex_t nu_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const real_t lamb
     // 
     size_t counter=0;
     tetrahedron_t tetrahedron_m, tetrahedron_n;
-    // Case 1
+    // mm
     tetrahedron_m = tetrahedron_t(b_m.r_m, b_m.e[0], b_m.e[1], b_m.e[2], b_m.pg_m);
     tetrahedron_n = tetrahedron_t(b_n.r_m, b_n.e[0], b_n.e[1], b_n.e[2], b_n.pg_m);
     counter = 0;
-    for (size_t ii=0; ii<4; ii++){
-        for (size_t jj=0; jj<4; jj++){
-            if (is_equal(tetrahedron_m.v[ii], tetrahedron_n.v[jj], tol)){
+    for (size_t i=0; i<4; i++){
+        for (size_t j=0; j<4; j++){
+            if (is_equal(tetrahedron_m.v[i], tetrahedron_n.v[j], tol)){
                 counter++;
             }
         }
     }
     if (counter==4){
-        L_m1 = b_m.L_m[0];
-        L_m2 = b_m.L_m[1];
-        L_m3 = b_m.L_m[2];
-        L_n1 = b_n.L_m[0];
-        L_n2 = b_n.L_m[1];
-        L_n3 = b_n.L_m[2];
         chi = (b_n.eps_m/eps_b)-1.0;
         factor = +1.0*(2.0*b_m.A*b_n.A)/(3.0*b_n.V_m);
         factor*=(chi+3.0)/(3.0*chi);
-        ans+=factor*(L_m1*(2.0*L_n1+1.0*L_n2+1.0*L_n3)+
-                     L_m2*(1.0*L_n1+2.0*L_n2+1.0*L_n3)+
-                     L_m3*(1.0*L_n1+1.0*L_n2+2.0*L_n3))/120.0;
+        for (size_t i=0; i<3; i++){
+            for (size_t j=0; j<3; j++){
+                if (is_equal(b_m.L_m[i]-b_n.L_m[j], -1.0*(b_m.r_m-b_n.r_m), tol)){
+                    ans+=2.0*factor*(b_m.L_m[i]*b_n.L_m[j])/120.0;
+                }else{
+                    ans+=1.0*factor*(b_m.L_m[i]*b_n.L_m[j])/120.0;
+                }
+            }
+        }
     }
-    // Case 2
+    // mp
     tetrahedron_m = tetrahedron_t(b_m.r_m, b_m.e[0], b_m.e[1], b_m.e[2], b_m.pg_m);
     tetrahedron_n = tetrahedron_t(b_n.r_p, b_n.e[2], b_n.e[1], b_n.e[0], b_n.pg_p);
     counter = 0;
-    for (size_t ii=0; ii<4; ii++){
-        for (size_t jj=0; jj<4; jj++){
-            if (is_equal(tetrahedron_m.v[ii], tetrahedron_n.v[jj], tol)){
+    for (size_t i=0; i<4; i++){
+        for (size_t j=0; j<4; j++){
+            if (is_equal(tetrahedron_m.v[i], tetrahedron_n.v[j], tol)){
                 counter++;
             }
         }
     }
     if (counter==4){
-        L_m1 = b_m.L_m[0];
-        L_m2 = b_m.L_m[1];
-        L_m3 = b_m.L_m[2];
-        L_n1 = b_n.L_p[2];
-        L_n2 = b_n.L_p[1];
-        L_n3 = b_n.L_p[0];
         chi = (b_n.eps_p/eps_b)-1.0;
         factor = -1.0*(2.0*b_m.A*b_n.A)/(3.0*b_n.V_p);
         factor*=(chi+3.0)/(3.0*chi);
-        ans+=factor*(L_m1*(2.0*L_n1+1.0*L_n2+1.0*L_n3)+
-                     L_m2*(1.0*L_n1+2.0*L_n2+1.0*L_n3)+
-                     L_m3*(1.0*L_n1+1.0*L_n2+2.0*L_n3))/120.0;
+        for (size_t i=0; i<3; i++){
+            for (size_t j=0; j<3; j++){
+                if (is_equal(b_m.L_m[i]-b_n.L_p[j], -1.0*(b_m.r_m-b_n.r_p), tol)){
+                    ans+=2.0*factor*(b_m.L_m[i]*b_n.L_p[j])/120.0;
+                }else{
+                    ans+=1.0*factor*(b_m.L_m[i]*b_n.L_p[j])/120.0;
+                }
+            }
+        }
     }
-    // Case 3
+    // pm
     tetrahedron_m = tetrahedron_t(b_m.r_p, b_m.e[2], b_m.e[1], b_m.e[0], b_m.pg_p);
     tetrahedron_n = tetrahedron_t(b_n.r_m, b_n.e[0], b_n.e[1], b_n.e[2], b_n.pg_m);
     counter = 0;
-    for (size_t ii=0; ii<4; ii++){
-        for (size_t jj=0; jj<4; jj++){
-            if (is_equal(tetrahedron_m.v[ii], tetrahedron_n.v[jj], tol)){
+    for (size_t i=0; i<4; i++){
+        for (size_t j=0; j<4; j++){
+            if (is_equal(tetrahedron_m.v[i], tetrahedron_n.v[j], tol)){
                 counter++;
             }
         }
     }
     if (counter==4){
-        L_m1 = b_m.L_p[2];
-        L_m2 = b_m.L_p[1];
-        L_m3 = b_m.L_p[0];
-        L_n1 = b_n.L_m[0];
-        L_n2 = b_n.L_m[1];
-        L_n3 = b_n.L_m[2];
         chi = (b_n.eps_m/eps_b)-1.0;
         factor = -1.0*(2.0*b_m.A*b_n.A)/(3.0*b_n.V_m);
         factor*=(chi+3.0)/(3.0*chi);
-        ans+=factor*(L_m1*(2.0*L_n1+1.0*L_n2+1.0*L_n3)+
-                     L_m2*(1.0*L_n1+2.0*L_n2+1.0*L_n3)+
-                     L_m3*(1.0*L_n1+1.0*L_n2+2.0*L_n3))/120.0;
+        for (size_t i=0; i<3; i++){
+            for (size_t j=0; j<3; j++){
+                if (is_equal(b_m.L_p[i]-b_n.L_m[j], -1.0*(b_m.r_p-b_n.r_m), tol)){
+                    ans+=2.0*factor*(b_m.L_p[i]*b_n.L_m[j])/120.0;
+                }else{
+                    ans+=1.0*factor*(b_m.L_p[i]*b_n.L_m[j])/120.0;
+                }
+            }
+        }
     }
-    // Case 4
+    // pp
     tetrahedron_m = tetrahedron_t(b_m.r_p, b_m.e[2], b_m.e[1], b_m.e[0], b_m.pg_p);
     tetrahedron_n = tetrahedron_t(b_n.r_p, b_n.e[2], b_n.e[1], b_n.e[0], b_n.pg_p);
     counter = 0;
-    for (size_t ii=0; ii<4; ii++){
-        for (size_t jj=0; jj<4; jj++){
-            if (is_equal(tetrahedron_m.v[ii], tetrahedron_n.v[jj], tol)){
+    for (size_t i=0; i<4; i++){
+        for (size_t j=0; j<4; j++){
+            if (is_equal(tetrahedron_m.v[i], tetrahedron_n.v[j], tol)){
                 counter++;
             }
         }
     }
     if (counter==4){
-        L_m1 = b_m.L_p[2];
-        L_m2 = b_m.L_p[1];
-        L_m3 = b_m.L_p[0];
-        L_n1 = b_n.L_p[2];
-        L_n2 = b_n.L_p[1];
-        L_n3 = b_n.L_p[0];
         chi = (b_n.eps_p/eps_b)-1.0;
         factor = +1.0*(2.0*b_m.A*b_n.A)/(3.0*b_n.V_p);
         factor*=(chi+3.0)/(3.0*chi);
-        ans+=factor*(L_m1*(2.0*L_n1+1.0*L_n2+1.0*L_n3)+
-                     L_m2*(1.0*L_n1+2.0*L_n2+1.0*L_n3)+
-                     L_m3*(1.0*L_n1+1.0*L_n2+2.0*L_n3))/120.0;
+        for (size_t i=0; i<3; i++){
+            for (size_t j=0; j<3; j++){
+                if (is_equal(b_m.L_p[i]-b_n.L_p[j], -1.0*(b_m.r_p-b_n.r_p), tol)){
+                    ans+=2.0*factor*(b_m.L_p[i]*b_n.L_p[j])/120.0;
+                }else{
+                    ans+=1.0*factor*(b_m.L_p[i]*b_n.L_p[j])/120.0;
+                }
+            }
+        }
     }
     //
     return ans;
