@@ -95,6 +95,8 @@ void engine_t::compute_Z_mn(){
         size_t j=this->N_basis_3d+this->N_basis_2d;
         basis_1d_t b_m;
         basis_1d_t b_n;
+        stopwatch_t T;
+        T.set();
         for (size_t m=0; m<this->N_basis_1d; m++){
             b_m = this->shape.get_basis_1d(m);
             for (size_t n=m; n<this->N_basis_1d; n++){
@@ -118,6 +120,10 @@ void engine_t::compute_Z_mn(){
             for (size_t n=m+1; n<N; n++){
                 this->Z_mn(j+n, i+m) = this->Z_mn(i+m, j+n);
             }
+            if (m==0){
+                T.unset_silent();
+                print("\nexpected time is %0.1f hours\n", (T.get_elapsed()*(N_basis_1d-1)/2.0)/3600.0);
+            }
         }
     }
     #endif
@@ -128,6 +134,8 @@ void engine_t::compute_Z_mn(){
         size_t j=this->N_basis_3d;
         basis_2d_t b_m;
         basis_2d_t b_n;
+        stopwatch_t T;
+        T.set();
         for (size_t m=0; m<this->N_basis_2d; m++){
             b_m = this->shape.get_basis_2d(m);
             for (size_t n=m; n<this->N_basis_2d; n++){
@@ -151,6 +159,10 @@ void engine_t::compute_Z_mn(){
             for (size_t n=m+1; n<N; n++){
                 this->Z_mn(j+n, i+m) = this->Z_mn(i+m, j+n);
             }
+            if (m==0){
+                T.unset_silent();
+                print("\nexpected time is %0.1f hours\n", (T.get_elapsed()*(N_basis_2d-1)/2.0)/3600.0);
+            }
         }
     }
     #endif
@@ -161,6 +173,8 @@ void engine_t::compute_Z_mn(){
         size_t j=0;
         basis_3d_t b_m;
         basis_3d_t b_n;
+        stopwatch_t T;
+        T.set();
         for (size_t m=0; m<this->N_basis_3d; m++){
             b_m = this->shape.get_basis_3d(m);
             for (size_t n=m; n<this->N_basis_3d; n++){
@@ -177,6 +191,10 @@ void engine_t::compute_Z_mn(){
             }
             for (size_t n=m+1; n<N; n++){
                 this->Z_mn(j+n, i+m) = this->Z_mn(i+m, j+n);
+            }
+            if (m==0){
+                T.unset_silent();
+                print("\nexpected time is %0.1f hours\n", (T.get_elapsed()*(N_basis_3d-1)/2.0)/3600.0);
             }
         }
     }

@@ -131,7 +131,7 @@ void test_engine_3d_sphere_near_field(){
     const complex_t mu_b=1.0, eps_b=1.0;
     const real_t radius=0.5;
 
-    const size_t Ns=401;
+    const size_t Ns=1001;
     complex_t E_TM, E_TE;
     real_t theta_i, phi_i;
 

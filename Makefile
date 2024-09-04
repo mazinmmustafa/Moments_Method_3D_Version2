@@ -18,14 +18,14 @@ F77FLG =
 CLIB = -lgfortran -lquadmath -lm
 
 # Optimization
-OPT_LEVEL = -O2
+OPT_LEVEL = -Ofast
 OPT = $(OPT_LEVEL) -march=native -mtune=native
 CXXOPT = $(OPT) 
 COPT = $(OPT) 
 F90OPT = $(OPT) 
 F77OPT = -O2 
-# FLTO = -flto
-FLTO = 
+FLTO = -flto
+# FLTO = 
 
 # Directories
 BDIR = bin
