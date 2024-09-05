@@ -362,8 +362,8 @@ void call_gmsh(const real_t tol){
     int_t max_length=200;
     char *cmd=(char*)calloc(max_length, sizeof(char));
     print("calling gmsh...");
-    sprintf(cmd, "gmsh mesh/shape.geo -3 -clmax %0.4f -format vtk -save_all -o mesh/shape.vtk > mesh/shape_log.txt", tol);
-    // sprintf(cmd, "gmsh mesh/shape.geo -2 -clmax %0.4f -format vtk -save_all -o mesh/shape.vtk > mesh/shape_log.txt", tol);
+    // sprintf(cmd, "gmsh mesh/shape.geo -3 -clmax %0.4f -format vtk -save_all -o mesh/shape.vtk > mesh/shape_log.txt", tol);
+    sprintf(cmd, "gmsh mesh/shape.geo -2 -clmax %0.4f -format vtk -save_all -o mesh/shape.vtk > mesh/shape_log.txt", tol);
     assert_error(!system(cmd), "unable to mesh geometry");
     print(", done!\n");
     #ifdef __windows__

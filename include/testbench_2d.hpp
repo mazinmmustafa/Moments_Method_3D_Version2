@@ -21,6 +21,7 @@ void test_engine_2d_sphere_RCS();
 void test_engine_2d_sphere_near_field();
 void test_engine_2d_debug();
 void test_engine_2d_sheet_near_field();
+void test_engine_2d_box_RCS();
 void test_engine_2d_box_near_field();
 void test_engine_2d_sphere_near_field_2d();
 

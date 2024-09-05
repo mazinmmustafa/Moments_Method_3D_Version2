@@ -51,9 +51,9 @@ void test_engine_2d_sphere_RCS(){
 
     // problem defintions
     const real_t GHz=1.0E+9;
-    const real_t freq=1.6*GHz;
+    const real_t freq=0.75*GHz;
     const real_t lambda=c_0/freq;
-    const real_t clmax=lambda/11.0;
+    const real_t clmax=lambda/5.0;
     const complex_t mu_b=1.0, eps_b=1.0;
     const real_t radius=0.5;
 
@@ -380,6 +380,72 @@ void test_engine_2d_sheet_near_field(){
     
 }
 
+void test_engine_2d_box_RCS(){
+
+    // problem defintions
+    const real_t mm=1.0E-3;
+    const real_t GHz=1.0E+9;
+    const real_t freq=0.43*GHz;
+    const real_t lambda=c_0/freq;
+    const real_t clmax=lambda/5.0;
+    const complex_t mu_b=1.0, eps_b=1.0;
+
+    const size_t Ns=201;
+    complex_t E_TM, E_TE;
+    real_t theta_i, phi_i;
+    range_t theta_s;
+    theta_s.set(deg2rad(-180.0), deg2rad(+180.0), Ns);
+    theta_s.linspace();
+
+    engine_t engine;
+    create_box();
+    engine.set(freq, mu_b, eps_b, clmax/mm, mm, 0, 0);
+
+    engine.compute_Z_mn();
+    // engine.load_Z_mn("data/Z_mn.bin");
+    file_t file;
+    sigma_t sigma;
+
+    // theta
+
+    E_TM = +1.0;
+    E_TE = +0.0;
+
+    file.open("data/RCS_1.txt", 'w');
+    for (size_t i=0; i<Ns; i++){
+        progress_bar(i, Ns, "RCS VV...");
+        theta_i = theta_s(i);
+        phi_i = deg2rad(0.0);
+        engine.compute_V_m_incident(E_TM, E_TE, theta_i, phi_i);
+        engine.compute_I_n();
+        sigma = engine.compute_RCS(theta_s(i), phi_i);
+        file.write("%21.14E %21.14E %21.14E\n", rad2deg(theta_i), sigma.theta, sigma.phi);
+    }
+    file.close();
+
+    // phi
+
+    E_TM = +0.0;
+    E_TE = +1.0;
+    
+    file.open("data/RCS_2.txt", 'w');
+    for (size_t i=0; i<Ns; i++){
+        progress_bar(i, Ns, "RCS HH...");
+        theta_i = theta_s(i);
+        phi_i = deg2rad(0.0);
+        engine.compute_V_m_incident(E_TM, E_TE, theta_i, phi_i);
+        engine.compute_I_n();
+        sigma = engine.compute_RCS(theta_s(i), phi_i);
+        file.write("%21.14E %21.14E %21.14E\n", rad2deg(theta_i), sigma.theta, sigma.phi);
+    }
+    file.close();
+
+    //
+    theta_s.unset();
+
+    engine.unset();
+    
+}
 
 void test_engine_2d_box_near_field(){
 

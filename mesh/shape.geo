@@ -1,4 +1,3 @@
-SetFactory("OpenCASCADE");
-Sphere(1) = { 0.00000000000000E+00,  0.00000000000000E+00,  0.00000000000000E+00,  2.00000000000000E-01, -Pi/2, Pi/2, 2*Pi};
-Physical Surface("Surface", 1) = {1};
-Physical Volume("Volume", 1) = {1};
+Merge "cad/box.brep";
+Physical Surface("Box_Surface", 1) = {1, 2, 3, 4, 5, 6};
+Physical Volume("Box_Volume", 2) = {1};
