@@ -158,8 +158,8 @@ struct basis_3d_t{
     void get_parameters(){
         vector_t<real_t> vector=(this->e[2]-this->e[0])^(this->e[1]-this->e[0]);
         this->A = mag(vector)/2.0;
-        this->nA_m = -1.0*unit(vector);
-        this->nA_p = +1.0*unit(vector);
+        this->nA_m = +1.0*unit(vector);
+        this->nA_p = -1.0*unit(vector);
         for (size_t i=0; i<3; i++){
             this->L_m[i] = this->e[i]-this->r_m;
             this->L_p[i] = this->e[i]-this->r_p;

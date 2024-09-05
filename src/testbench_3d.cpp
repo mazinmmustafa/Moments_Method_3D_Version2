@@ -51,12 +51,12 @@ void test_engine_3d_sphere_RCS(){
 
     // problem defintions
     const real_t GHz=1.0E+9;
-    const real_t freq=0.3*GHz;
+    const real_t freq=0.2*GHz;
     const real_t lambda=c_0/freq;
     const complex_t mu_b=1.0, eps_b=1.0;
     const complex_t mu_s=1.0, eps_s=4.0;
-    const real_t clmax=(lambda/6.0)/real(sqrt(eps_s));
-    const real_t radius=0.5;
+    const real_t clmax=(lambda/11.0)/sqrt(abs(eps_s));
+    const real_t radius=0.2;
 
     const size_t Ns=1001;
     complex_t E_TM, E_TE;
@@ -122,14 +122,14 @@ void test_engine_3d_sphere_RCS(){
 
 void test_engine_3d_sphere_near_field(){
 
-    // problem defintions
+    // problem defintions 
     const real_t GHz=1.0E+9;
     const real_t freq=0.25*GHz;
     const real_t lambda=c_0/freq;
-    const complex_t mu_s=1.0, eps_s=2.56;
-    const real_t clmax=(lambda/6.0)/real(sqrt(eps_s));
+    const complex_t mu_s=1.0, eps_s=4.0;
+    const real_t clmax=(lambda/4.0)/sqrt(abs(eps_s));
     const complex_t mu_b=1.0, eps_b=1.0;
-    const real_t radius=0.5;
+    const real_t radius=0.2;
 
     const size_t Ns=1001;
     complex_t E_TM, E_TE;
@@ -140,8 +140,8 @@ void test_engine_3d_sphere_near_field(){
     engine.set(freq, mu_b, eps_b, clmax, 1.0, 0, 0);
     engine.set_material(1, mu_s, eps_s);
 
-    // engine.compute_Z_mn();
-    engine.load_Z_mn("data/Z_mn.bin");
+    engine.compute_Z_mn();
+    // engine.load_Z_mn("data/Z_mn.bin");
     file_t file;
     range_t z;
     real_t z_min, z_max, x, y;

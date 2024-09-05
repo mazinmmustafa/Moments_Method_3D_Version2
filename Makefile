@@ -18,7 +18,7 @@ F77FLG =
 CLIB = -lgfortran -lquadmath -lm
 
 # Optimization
-OPT_LEVEL = -Ofast
+OPT_LEVEL = -O2
 OPT = $(OPT_LEVEL) -march=native -mtune=native
 CXXOPT = $(OPT) 
 COPT = $(OPT) 

@@ -12,13 +12,13 @@ void integrand_L1_1d(basis_1d_t b_m, const vector_t<real_t> p,
     para.P_p = sqrt(para.P_p*para.P_p+a*a);
     para.P_m = sqrt(para.P_m*para.P_m+a*a);
     ans = log((para.P_p+para.l_p)/(para.P_m+para.l_m));
-    I_m = ans;
+    I_m = para.P_0 == 0.0 ? 0.0 : ans;
     // p
     para = prjection_1d(b_m.e[0], b_m.r_p, p);
     para.P_p = sqrt(para.P_p*para.P_p+a*a);
     para.P_m = sqrt(para.P_m*para.P_m+a*a);
     ans = log((para.P_p+para.l_p)/(para.P_m+para.l_m));
-    I_p = ans;
+    I_p = para.P_0 == 0.0 ? 0.0 : ans;
 }
 
 void integrand_L2_1d(basis_1d_t b_m, const vector_t<real_t> p, 
@@ -30,13 +30,13 @@ void integrand_L2_1d(basis_1d_t b_m, const vector_t<real_t> p,
     para.P_p = sqrt(para.P_p*para.P_p+a*a);
     para.P_m = sqrt(para.P_m*para.P_m+a*a);
     ans = (para.P_p-para.P_m)*para.l_unit;
-    I_m = ans;
+    I_m = para.P_0 == 0.0 ? vector_t<real_t>(0.0, 0.0, 0.0) : ans;
     // p
     para = prjection_1d(b_m.e[0], b_m.r_p, p);
     para.P_p = sqrt(para.P_p*para.P_p+a*a);
     para.P_m = sqrt(para.P_m*para.P_m+a*a);
     ans = (para.P_p-para.P_m)*para.l_unit;
-    I_p = ans;
+    I_p = para.P_0 == 0.0 ? vector_t<real_t>(0.0, 0.0, 0.0) : ans;
 }
 
 void integrand_L3_1d(basis_1d_t b_m, const vector_t<real_t> p, 
@@ -49,14 +49,14 @@ void integrand_L3_1d(basis_1d_t b_m, const vector_t<real_t> p,
     para.P_m = sqrt(para.P_m*para.P_m+a*a);
     ans = (1.0/para.P_p-1.0/para.P_m)*para.l_unit
          -(para.l_p/para.P_p-para.l_m/para.P_m)*para.P_0_unit/para.P_0;
-    I_m = ans;
+    I_m = para.P_0 == 0.0 ? vector_t<real_t>(0.0, 0.0, 0.0) : ans;
     // p
     para = prjection_1d(b_m.e[0], b_m.r_p, p);
     para.P_p = sqrt(para.P_p*para.P_p+a*a);
     para.P_m = sqrt(para.P_m*para.P_m+a*a);
     ans = (1.0/para.P_p-1.0/para.P_m)*para.l_unit
          -(para.l_p/para.P_p-para.l_m/para.P_m)*para.P_0_unit/para.P_0;
-    I_p = ans;
+    I_p = para.P_0 == 0.0 ? vector_t<real_t>(0.0, 0.0, 0.0) : ans;
 }
 
 complex_t E_1d_singular_integrand_1(const complex_t alpha, void *args_){
@@ -238,6 +238,10 @@ void integrand_L1_2d(basis_2d_t b_m, const vector_t<real_t> p,
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_p[i]);
         real_t D=atan2(para.para_1d[i].P_0*para.para_1d[i].l_m, 
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_m[i]);
+        A = isnan(A) ? 0.0 : A; A = isinf(A) ? 0.0 : A;
+        B = isnan(B) ? 0.0 : B; B = isinf(B) ? 0.0 : B;
+        C = isnan(C) ? 0.0 : C; C = isinf(C) ? 0.0 : C;
+        D = isnan(D) ? 0.0 : D; D = isinf(D) ? 0.0 : D;
         I_m+=A*(B-abs(para.d)*(C-D));
     }
     // p
@@ -250,6 +254,10 @@ void integrand_L1_2d(basis_2d_t b_m, const vector_t<real_t> p,
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_p[i]);
         real_t D=atan2(para.para_1d[i].P_0*para.para_1d[i].l_m, 
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_m[i]);
+        A = isnan(A) ? 0.0 : A; A = isinf(A) ? 0.0 : A;
+        B = isnan(B) ? 0.0 : B; B = isinf(B) ? 0.0 : B;
+        C = isnan(C) ? 0.0 : C; C = isinf(C) ? 0.0 : C;
+        D = isnan(D) ? 0.0 : D; D = isinf(D) ? 0.0 : D;
         I_p+=A*(B-abs(para.d)*(C-D));
     }
 }
@@ -263,6 +271,8 @@ void integrand_L2_2d(basis_2d_t b_m, const vector_t<real_t> p,
     for (size_t i=0; i<3; i++){
         real_t A=para.R_p[i]*para.para_1d[i].l_p-para.R_m[i]*para.para_1d[i].l_m;
         real_t B=pow(para.R_0[i], 2.0)*log((para.R_p[i]+para.para_1d[i].l_p)/(para.R_m[i]+para.para_1d[i].l_m));
+        A = isnan(A) ? 0.0 : A; A = isinf(A) ? 0.0 : A;
+        B = isnan(B) ? 0.0 : B; B = isinf(B) ? 0.0 : B;
         I_m = I_m+0.5*(A+B)*para.u[i];
     }
     // p
@@ -271,6 +281,8 @@ void integrand_L2_2d(basis_2d_t b_m, const vector_t<real_t> p,
     for (size_t i=0; i<3; i++){
         real_t A=para.R_p[i]*para.para_1d[i].l_p-para.R_m[i]*para.para_1d[i].l_m;
         real_t B=pow(para.R_0[i], 2.0)*log((para.R_p[i]+para.para_1d[i].l_p)/(para.R_m[i]+para.para_1d[i].l_m));
+        A = isnan(A) ? 0.0 : A; A = isinf(A) ? 0.0 : A;
+        B = isnan(B) ? 0.0 : B; B = isinf(B) ? 0.0 : B;
         I_p = I_p+0.5*(A+B)*para.u[i];
     }
 }
@@ -287,6 +299,9 @@ void integrand_L3_2d(basis_2d_t b_m, const vector_t<real_t> p,
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_p[i]);
         real_t C=atan2(para.para_1d[i].P_0*para.para_1d[i].l_m, 
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_m[i]);
+        A = isnan(A) ? 0.0 : A; A = isinf(A) ? 0.0 : A;
+        B = isnan(B) ? 0.0 : B; B = isinf(B) ? 0.0 : B;
+        C = isnan(C) ? 0.0 : C; C = isinf(C) ? 0.0 : C;
         I_m = I_m+A*para.u[i]+sign(para.d)*(B-C)*(para.u[i]*para.para_1d[i].P_0_unit)*para.n;
     }
     // p
@@ -298,6 +313,9 @@ void integrand_L3_2d(basis_2d_t b_m, const vector_t<real_t> p,
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_p[i]);
         real_t C=atan2(para.para_1d[i].P_0*para.para_1d[i].l_m, 
                         pow(para.R_0[i], 2.0)+abs(para.d)*para.R_m[i]);
+        A = isnan(A) ? 0.0 : A; A = isinf(A) ? 0.0 : A;
+        B = isnan(B) ? 0.0 : B; B = isinf(B) ? 0.0 : B;
+        C = isnan(C) ? 0.0 : C; C = isinf(C) ? 0.0 : C;
         I_p = I_p+A*para.u[i]+sign(para.d)*(B-C)*(para.u[i]*para.para_1d[i].P_0_unit)*para.n;
     }
 }
@@ -466,6 +484,10 @@ void integrand_L1_3d(basis_3d_t b_m, const vector_t<real_t> p,
                             pow(para.para_2d[j].R_0[i], 2.0)+abs(para.para_2d[j].d)*para.para_2d[j].R_p[i]);
             real_t D=atan2(para.para_2d[j].para_1d[i].P_0*para.para_2d[j].para_1d[i].l_m, 
                             pow(para.para_2d[j].R_0[i], 2.0)+abs(para.para_2d[j].d)*para.para_2d[j].R_m[i]);
+            A = isnan(A) ? 0.0 : A; A = isinf(A) ? 0.0 : A;
+            B = isnan(B) ? 0.0 : B; B = isinf(B) ? 0.0 : B;
+            C = isnan(C) ? 0.0 : C; C = isinf(C) ? 0.0 : C;
+            D = isnan(D) ? 0.0 : D; D = isinf(D) ? 0.0 : D;
             I_m = I_m+0.5*para.para_2d[j].d*A*(abs(para.para_2d[j].d)*(C-D)-B);
         }
     }
@@ -482,6 +504,10 @@ void integrand_L1_3d(basis_3d_t b_m, const vector_t<real_t> p,
                             pow(para.para_2d[j].R_0[i], 2.0)+abs(para.para_2d[j].d)*para.para_2d[j].R_p[i]);
             real_t D=atan2(para.para_2d[j].para_1d[i].P_0*para.para_2d[j].para_1d[i].l_m, 
                             pow(para.para_2d[j].R_0[i], 2.0)+abs(para.para_2d[j].d)*para.para_2d[j].R_m[i]);
+            A = isnan(A) ? 0.0 : A; A = isinf(A) ? 0.0 : A;
+            B = isnan(B) ? 0.0 : B; B = isinf(B) ? 0.0 : B;
+            C = isnan(C) ? 0.0 : C; C = isinf(C) ? 0.0 : C;
+            D = isnan(D) ? 0.0 : D; D = isinf(D) ? 0.0 : D;
             I_p = I_p+0.5*para.para_2d[j].d*A*(abs(para.para_2d[j].d)*(C-D)-B);
         }
     }
@@ -508,6 +534,11 @@ void integrand_L2_3d(basis_3d_t b_m, const vector_t<real_t> p,
                             pow(para.para_2d[j].R_0[i], 2.0)+abs(para.para_2d[j].d)*para.para_2d[j].R_p[i]);
             real_t F=atan2(para.para_2d[j].para_1d[i].P_0*para.para_2d[j].para_1d[i].l_m, 
                             pow(para.para_2d[j].R_0[i], 2.0)+abs(para.para_2d[j].d)*para.para_2d[j].R_m[i]);
+            A = isnan(A) ? 0.0 : A; A = isinf(A) ? 0.0 : A;
+            B = isnan(B) ? 0.0 : B; B = isinf(B) ? 0.0 : B;
+            C = isnan(C) ? 0.0 : C; C = isinf(C) ? 0.0 : C;
+            D = isnan(D) ? 0.0 : D; D = isinf(D) ? 0.0 : D;
+            E = isnan(E) ? 0.0 : E; E = isinf(E) ? 0.0 : E;
             I_m = I_m+(1.0/3.0)*A*(B*C+D-pow(abs(para.para_2d[j].d), 3.0)*(E-F))*para.para_2d[j].n;
         }
     }
@@ -529,6 +560,11 @@ void integrand_L2_3d(basis_3d_t b_m, const vector_t<real_t> p,
                             pow(para.para_2d[j].R_0[i], 2.0)+abs(para.para_2d[j].d)*para.para_2d[j].R_p[i]);
             real_t F=atan2(para.para_2d[j].para_1d[i].P_0*para.para_2d[j].para_1d[i].l_m, 
                             pow(para.para_2d[j].R_0[i], 2.0)+abs(para.para_2d[j].d)*para.para_2d[j].R_m[i]);
+            A = isnan(A) ? 0.0 : A; A = isinf(A) ? 0.0 : A;
+            B = isnan(B) ? 0.0 : B; B = isinf(B) ? 0.0 : B;
+            C = isnan(C) ? 0.0 : C; C = isinf(C) ? 0.0 : C;
+            D = isnan(D) ? 0.0 : D; D = isinf(D) ? 0.0 : D;
+            E = isnan(E) ? 0.0 : E; E = isinf(E) ? 0.0 : E;
             I_p = I_p+(1.0/3.0)*A*(B*C+D-pow(abs(para.para_2d[j].d), 3.0)*(E-F))*para.para_2d[j].n;
         }
     }
@@ -550,6 +586,10 @@ void integrand_L3_3d(basis_3d_t b_m, const vector_t<real_t> p,
                             pow(para.para_2d[j].R_0[i], 2.0)+abs(para.para_2d[j].d)*para.para_2d[j].R_p[i]);
             real_t D=atan2(para.para_2d[j].para_1d[i].P_0*para.para_2d[j].para_1d[i].l_m, 
                             pow(para.para_2d[j].R_0[i], 2.0)+abs(para.para_2d[j].d)*para.para_2d[j].R_m[i]);
+            A = isnan(A) ? 0.0 : A; A = isinf(A) ? 0.0 : A;
+            B = isnan(B) ? 0.0 : B; B = isinf(B) ? 0.0 : B;
+            C = isnan(C) ? 0.0 : C; C = isinf(C) ? 0.0 : C;
+            D = isnan(D) ? 0.0 : D; D = isinf(D) ? 0.0 : D;
             I_m = I_m+A*(B-abs(para.para_2d[j].d)*(C-D))*para.para_2d[j].n;
         }
     }
@@ -566,6 +606,10 @@ void integrand_L3_3d(basis_3d_t b_m, const vector_t<real_t> p,
                             pow(para.para_2d[j].R_0[i], 2.0)+abs(para.para_2d[j].d)*para.para_2d[j].R_p[i]);
             real_t D=atan2(para.para_2d[j].para_1d[i].P_0*para.para_2d[j].para_1d[i].l_m, 
                             pow(para.para_2d[j].R_0[i], 2.0)+abs(para.para_2d[j].d)*para.para_2d[j].R_m[i]);
+            A = isnan(A) ? 0.0 : A; A = isinf(A) ? 0.0 : A;
+            B = isnan(B) ? 0.0 : B; B = isinf(B) ? 0.0 : B;
+            C = isnan(C) ? 0.0 : C; C = isinf(C) ? 0.0 : C;
+            D = isnan(D) ? 0.0 : D; D = isinf(D) ? 0.0 : D;
             I_p = I_p+A*(B-abs(para.para_2d[j].d)*(C-D))*para.para_2d[j].n;
         }
     }
