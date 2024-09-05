@@ -51,11 +51,11 @@ void test_engine_3d_sphere_RCS(){
 
     // problem defintions
     const real_t GHz=1.0E+9;
-    const real_t freq=0.25*GHz;
+    const real_t freq=0.3*GHz;
     const real_t lambda=c_0/freq;
     const complex_t mu_b=1.0, eps_b=1.0;
-    const complex_t mu_s=1.0, eps_s=2.56;
-    const real_t clmax=(lambda/11.0)/real(sqrt(eps_s));
+    const complex_t mu_s=1.0, eps_s=4.0;
+    const real_t clmax=(lambda/6.0)/real(sqrt(eps_s));
     const real_t radius=0.5;
 
     const size_t Ns=1001;
@@ -72,8 +72,8 @@ void test_engine_3d_sphere_RCS(){
     engine.set(freq, mu_b, eps_b, clmax, 1.0, 0, 0);
     engine.set_material(1, mu_s, eps_s);
 
-    // engine.compute_Z_mn();
-    engine.load_Z_mn("data/Z_mn.bin");
+    engine.compute_Z_mn();
+    // engine.load_Z_mn("data/Z_mn.bin");
     file_t file;
     sigma_t sigma;
 
@@ -127,7 +127,7 @@ void test_engine_3d_sphere_near_field(){
     const real_t freq=0.25*GHz;
     const real_t lambda=c_0/freq;
     const complex_t mu_s=1.0, eps_s=2.56;
-    const real_t clmax=(lambda/11.0)/real(sqrt(eps_s));
+    const real_t clmax=(lambda/6.0)/real(sqrt(eps_s));
     const complex_t mu_b=1.0, eps_b=1.0;
     const real_t radius=0.5;
 
@@ -140,8 +140,8 @@ void test_engine_3d_sphere_near_field(){
     engine.set(freq, mu_b, eps_b, clmax, 1.0, 0, 0);
     engine.set_material(1, mu_s, eps_s);
 
-    engine.compute_Z_mn();
-    // engine.load_Z_mn("data/Z_mn.bin");
+    // engine.compute_Z_mn();
+    engine.load_Z_mn("data/Z_mn.bin");
     file_t file;
     range_t z;
     real_t z_min, z_max, x, y;
@@ -171,8 +171,8 @@ void test_engine_3d_sphere_near_field(){
         H = engine.compute_near_field_H(r);
         incident_field = compute_incident_field(E_TM, E_TE, theta_i, phi_i, 
             2.0*pi/lambda, sqrt(mu_0/eps_0), r);
-        // E = E+incident_field.E;
-        // H = H+incident_field.H;
+        E = E+incident_field.E;
+        H = H+incident_field.H;
         file.write("%21.14E ", z(i));
         file.write("%21.14E %21.14E %21.14E %21.14E %21.14E %21.14E ", 
             real(E.x), imag(E.x),
@@ -243,7 +243,7 @@ void test_engine_3d_debug(){
     v4 = vector_t<real_t>(+0.1, -0.1, +0.7);
 
     tetrahedron_t tet=tetrahedron_t(v1, v2, v3, v4, 0);
-    vector_t<real_t> p=vector_t<real_t>(+1.2, +1.1, +1.0);
+    vector_t<real_t> p=vector_t<real_t>(+0.2, +0.1, +0.0);
 
     projection_3d_para para;    
     para = prjection_3d(v1, v2, v3, v4, p);

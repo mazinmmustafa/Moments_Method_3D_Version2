@@ -611,8 +611,6 @@ complex_t E_3d_integral_1(void *args_){
     const vector_t<real_t> r=args->r;
     real_t I_m, I_p;
     integrand_L1_3d(b_m, r, I_m, I_p);
-    projection_3d_para para_m = prjection_3d(b_m.r_m, b_m.e[0], b_m.e[1], b_m.e[2], r);
-    projection_3d_para para_p = prjection_3d(b_m.r_p, b_m.e[2], b_m.e[1], b_m.e[0], r);
     complex_t ans=0.0;
     ans+= -1.0*args->unit_vector*(b_m.r_m-r)*I_m*b_m.A/(3.0*b_m.V_m);
     ans+= +1.0*args->unit_vector*(b_m.r_p-r)*I_p*b_m.A/(3.0*b_m.V_p);
@@ -692,8 +690,6 @@ complex_t H_3d_integral_1(void *args_){
     const vector_t<real_t> r=args->r;
     vector_t<real_t> I_m, I_p;
     integrand_L3_3d(b_m, r, I_m, I_p);
-    projection_3d_para para_m = prjection_3d(b_m.r_m, b_m.e[0], b_m.e[1], b_m.e[2], r);
-    projection_3d_para para_p = prjection_3d(b_m.r_p, b_m.e[2], b_m.e[1], b_m.e[0], r);
     complex_t ans=0.0;
     ans+= -1.0*args->unit_vector*((b_m.r_m-r)^I_m)*b_m.A/(3.0*b_m.V_m);
     ans+= +1.0*args->unit_vector*((b_m.r_p-r)^I_p)*b_m.A/(3.0*b_m.V_p);
