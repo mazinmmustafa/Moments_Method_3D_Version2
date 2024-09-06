@@ -94,7 +94,7 @@ void shape_t::load_mesh(const real_t metric_unit){
                     }
                 }
             }
-            assert_error(counter<2, "invalid mesh");
+            // assert_error(counter<2, "invalid mesh");
             if (counter==1){
                 if ((this->is_physical_specified&&line_s.physical_group>0&&line_d.physical_group>0) || !this->is_physical_specified){
                     index_line_s = mod_1d(index_line_s);
@@ -362,8 +362,8 @@ void call_gmsh(const real_t tol){
     int_t max_length=200;
     char *cmd=(char*)calloc(max_length, sizeof(char));
     print("calling gmsh...");
-    // sprintf(cmd, "gmsh mesh/shape.geo -3 -clmax %0.4f -format vtk -save_all -o mesh/shape.vtk > mesh/shape_log.txt", tol);
-    sprintf(cmd, "gmsh mesh/shape.geo -2 -clmax %0.4f -format vtk -save_all -o mesh/shape.vtk > mesh/shape_log.txt", tol);
+    sprintf(cmd, "gmsh mesh/shape.geo -3 -clmax %0.4f -format vtk -save_all -o mesh/shape.vtk > mesh/shape_log.txt", tol);
+    // sprintf(cmd, "gmsh mesh/shape.geo -2 -clmax %0.4f -format vtk -save_all -o mesh/shape.vtk > mesh/shape_log.txt", tol);
     assert_error(!system(cmd), "unable to mesh geometry");
     print(", done!\n");
     #ifdef __windows__
@@ -563,5 +563,24 @@ void create_box(){
     // file.write("MeshSize {1, 2, 3, 4, 5, 6, 7, 8} = 1; // Box;\n");
     file.write("Physical Surface(\"Box_Surface\", 1) = {1, 2, 3, 4, 5, 6};\n");
     file.write("Physical Volume(\"Box_Volume\", 2) = {1};\n");
+    file.close();
+}
+
+void create_mixed_shape(const real_t clmax_1, const real_t clmax_2){
+    file_t file;
+    file.open("mesh/shape.geo", 'w');
+    file.write("SetFactory(\"OpenCASCADE\");\n");
+    file.write("Merge \"cad/mixed_dielectric_1.brep\";\n");
+    file.write("Merge \"cad/mixed_dielectric_2.brep\";\n");
+    file.write("Coherence;\n");
+    file.write("Physical Volume(\"Half_Volume_1\", 1) = {1};\n");
+    file.write("Physical Volume(\"Half_Volume_2\", 2) = {2};\n");
+    file.write("Field[1] = Constant;\n");
+    file.write("Field[1].VIn = %21.14E;\n", clmax_1);
+    file.write("Field[1].VolumesList = {1};\n");
+    file.write("Background Field = 1;\n");
+    file.write("Field[2] = Constant;\n");
+    file.write("Field[2].VIn = %21.14E;\n", clmax_2);
+    file.write("Field[2].VolumesList = {2};\n");
     file.close();
 }

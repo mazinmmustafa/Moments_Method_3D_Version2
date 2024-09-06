@@ -193,6 +193,83 @@ void test_engine_3d_sphere_near_field(){
     
 }
 
+
+void test_engine_3d_mixed_shape_near_field(){
+
+    // problem defintions 
+    const real_t mm=1.0E-3;
+    const real_t GHz=1.0E+9;
+    const real_t freq=0.2*GHz;
+    const real_t lambda=c_0/freq;
+    const complex_t mu_s1=1.0, eps_s1=10.0;
+    const complex_t mu_s2=1.0, eps_s2=4.0;
+    const real_t clmax=(lambda/4.0);
+    const complex_t mu_b=1.0, eps_b=1.0;
+
+    const size_t Ns=1001;
+    complex_t E_TM, E_TE;
+    real_t theta_i, phi_i;
+
+    engine_t engine;
+    create_mixed_shape((clmax/sqrt(abs(eps_s1)))/mm, (clmax/sqrt(abs(eps_s2)))/mm);
+    engine.set(freq, mu_b, eps_b, clmax/mm, mm, 0, 0);
+    engine.set_material(1, mu_s1, eps_s1);
+    engine.set_material(2, mu_s2, eps_s2);
+
+    engine.compute_Z_mn();
+    // engine.load_Z_mn("data/Z_mn.bin");
+    file_t file;
+    range_t x;
+    real_t x_min, x_max, y, z;
+
+    x_min = -1.0;
+    x_max = +1.0;
+    y = +0.0;
+    z = +0.0;
+
+    x.set(x_min, x_max, Ns);
+    x.linspace();
+
+    E_TM = +1.0;
+    E_TE = +0.0;
+    theta_i = deg2rad(0.0);
+    phi_i = deg2rad(0.0);
+    engine.compute_V_m_incident(E_TM, E_TE, theta_i, phi_i);
+    engine.compute_I_n();
+    vector_t<real_t> r;
+
+    incident_field_t incident_field;
+    vector_t<complex_t> E, H;
+    file.open("data/near_field.txt", 'w');
+    for (size_t i=0; i<Ns; i++){
+        progress_bar(i, Ns, "computing near fields...");
+        r = vector_t<real_t>(x(i), y, z);
+        E = engine.compute_near_field_E(r);
+        H = engine.compute_near_field_H(r);
+        incident_field = compute_incident_field(E_TM, E_TE, theta_i, phi_i, 
+            2.0*pi/lambda, sqrt(mu_0/eps_0), r);
+        // E = E+incident_field.E;
+        // H = H+incident_field.H;
+        file.write("%21.14E ", x(i));
+        file.write("%21.14E %21.14E %21.14E %21.14E %21.14E %21.14E ", 
+            real(E.x), imag(E.x),
+            real(E.y), imag(E.y),
+            real(E.z), imag(E.z));
+        file.write("%21.14E %21.14E %21.14E %21.14E %21.14E %21.14E ", 
+            real(H.x), imag(H.x),
+            real(H.y), imag(H.y),
+            real(H.z), imag(H.z));
+        file.write("\n");
+    }
+    file.close();
+
+    //
+    x.unset();
+
+    engine.unset();
+    
+}
+
 struct integrand_args_3d{
     tetrahedron_t tet;
     vector_t<real_t> r, unit_vector;

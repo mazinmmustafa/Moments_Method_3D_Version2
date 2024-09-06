@@ -17,5 +17,7 @@ complex_t sinc_dx(const complex_t z);
 real_t round_m(const real_t x, const real_t n);
 real_t sign_function(const real_t x, const real_t y);
 real_t sign(const real_t x);
+real_t max(const real_t a, const real_t b);
+real_t min(const real_t a, const real_t b);
 
 #endif

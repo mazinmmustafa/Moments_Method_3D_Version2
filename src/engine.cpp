@@ -2,8 +2,8 @@
 #include "engine.hpp"
 
 // #define only_1d
-#define only_2d
-// #define only_3d
+// #define only_2d
+#define only_3d
 
 void engine_t::set(const real_t freq, const complex_t mu_b, const complex_t eps_b, 
     const real_t clmax, const real_t unit_metric, const real_t a, const size_t N_ports){
@@ -122,7 +122,7 @@ void engine_t::compute_Z_mn(){
             }
             if (m==0){
                 T.unset_silent();
-                real_t expected_time=(T.get_elapsed()*(N_basis_2d-1)/2.0);
+                real_t expected_time=(T.get_elapsed()*(N_basis_1d-1)/2.0);
                 if (expected_time<60.0){
                     print("\nexpected time is %0.1f seconds\n", expected_time);
                 }else
@@ -216,7 +216,7 @@ void engine_t::compute_Z_mn(){
             }
             if (m==0){
                 T.unset_silent();
-                real_t expected_time=(T.get_elapsed()*(N_basis_2d-1)/2.0);
+                real_t expected_time=(T.get_elapsed()*(N_basis_3d-1)/2.0);
                 if (expected_time<60.0){
                     print("\nexpected time is %0.1f seconds\n", expected_time);
                 }else

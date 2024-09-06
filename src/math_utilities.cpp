@@ -39,3 +39,10 @@ real_t sign_function(const real_t x, const real_t y){
 real_t sign(const real_t x){
     return x<0.0 ? -1.0 : (x>0.0 ? +1.0 : 0.0);
 }
+
+real_t max(const real_t a, const real_t b){
+    return a>b ? a : b;
+}
+real_t min(const real_t a, const real_t b){
+    return a<b ? a : b;
+}

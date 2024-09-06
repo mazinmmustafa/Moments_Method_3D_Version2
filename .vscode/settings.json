@@ -12,6 +12,10 @@
         "memory_resource": "cpp",
         "*.tcc": "cpp",
         "fstream": "cpp",
-        "format": "cpp"
+        "format": "cpp",
+        "limits": "cpp",
+        "semaphore": "cpp",
+        "valarray": "cpp",
+        "algorithm": "cpp"
     }
 }

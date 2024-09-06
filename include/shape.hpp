@@ -266,5 +266,6 @@ void create_sphere(const real_t radius);
 void create_patch_antenna();
 void create_sheet(const real_t Lx, const real_t Ly, const real_t clmax);
 void create_box();
+void create_mixed_shape(const real_t clmax_1, const real_t clmax_2);
 
 #endif

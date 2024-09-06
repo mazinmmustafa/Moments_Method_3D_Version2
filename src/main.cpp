@@ -26,15 +26,20 @@ int main(){
     // test_engine_2d_sphere_near_field();
     // test_engine_2d_debug();
     // test_engine_2d_sheet_near_field();
-    test_engine_2d_box_RCS();
+    // test_engine_2d_box_RCS();
     // test_engine_2d_box_near_field();
     // test_engine_2d_sphere_near_field_2d();
     // 
     // test_engine_3d_debug();
     // test_engine_3d_sphere_RCS();
     // test_engine_3d_sphere_near_field();
+    test_engine_3d_mixed_shape_near_field();
 
 
+
+
+
+    // Keep it for MFIE
     // const real_t y=-1.0;
     // vector_t<real_t> r_m=vector_t<real_t>(-1.0, 0.0, +0.0);
     // vector_t<real_t> e_1=vector_t<real_t>(+0.0, y, +1.0);
