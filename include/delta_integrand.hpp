@@ -1,5 +1,5 @@
-#ifndef __DELTA_INTEGRAND_1D_HPP__
-#define __DELTA_INTEGRAND_1D_HPP__
+#ifndef __DELTA_INTEGRAND_HPP__
+#define __DELTA_INTEGRAND_HPP__
 
 // Libraries
 #include "lib_basic.hpp"

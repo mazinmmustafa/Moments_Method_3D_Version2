@@ -138,7 +138,7 @@ struct basis_3d_t{
     vector_t<real_t> n_m[3], n_p[3];
     real_t A_m[3], A_p[3];
     real_t A;
-    vector_t<real_t> nA_m, nA_p;
+    vector_t<real_t> nA;
     real_t V_m, V_p;
     int_t pg_m, pg_p;
     complex_t mu_m=0.0, eps_m=0.0;
@@ -156,10 +156,9 @@ struct basis_3d_t{
         basis_3d_t::get_parameters();
     }
     void get_parameters(){
-        vector_t<real_t> vector=(this->e[2]-this->e[0])^(this->e[1]-this->e[0]);
+        vector_t<real_t> vector=(this->e[1]-this->e[0])^(this->e[2]-this->e[0]);
         this->A = mag(vector)/2.0;
-        this->nA_m = +1.0*unit(vector);
-        this->nA_p = -1.0*unit(vector);
+        this->nA = +1.0*unit(vector);
         for (size_t i=0; i<3; i++){
             this->L_m[i] = this->e[i]-this->r_m;
             this->L_p[i] = this->e[i]-this->r_p;

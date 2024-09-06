@@ -1,5 +1,5 @@
-#ifndef __PHI_INTEGRAND_1D_HPP__
-#define __PHI_INTEGRAND_1D_HPP__
+#ifndef __PHI_INTEGRAND_HPP__
+#define __PHI_INTEGRAND_HPP__
 
 // Libraries
 #include "lib_basic.hpp"

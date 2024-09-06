@@ -16,6 +16,7 @@
 #include "phi_integrand.hpp"
 #include "delta_integrand.hpp"
 #include "nu_integrand.hpp"
+#include "kappa_integrand.hpp"
 
 // Definitions
 

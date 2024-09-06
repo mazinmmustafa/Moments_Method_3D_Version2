@@ -1,5 +1,5 @@
-#ifndef __NU_INTEGRAND_HPP__
-#define __NU_INTEGRAND_HPP__
+#ifndef __KAPPA_INTEGRAND_HPP__
+#define __KAPPA_INTEGRAND_HPP__
 
 // Libraries
 #include "lib_basic.hpp"
@@ -21,6 +21,7 @@
 // Definitions
 
 // Functions
-complex_t nu_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const real_t lambda, const complex_t eps_b);
+complex_t kappa_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const complex_t k, const real_t lambda, 
+    const quadl_domain_t quadl, int_t &flag);
 
 #endif

@@ -45,11 +45,13 @@ complex_t Z_mn_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const complex_t
     args.eta = eta;
     args.lambda = lambda;
     const complex_t j=complex_t(0.0, 1.0);
-    complex_t psi, phi, nu;
+    complex_t psi, phi, nu, kappa;
     psi = psi_3d_3d(b_m, b_n, k, lambda, quadl, flag);
     if (flag){print("psi\n");}
     phi = phi_3d_3d(b_m, b_n, k, lambda, quadl, flag);
     if (flag){print("phi\n");}
+    kappa = kappa_3d_3d(b_m, b_n, k, lambda, quadl, flag);
+    if (flag){print("kappa\n");}
     nu = nu_3d_3d(b_m, b_n, lambda, eps_b);
-    return +j*k*eta*psi-j*(eta/k)*phi-j*(eta/k)*nu;
+    return +j*k*eta*psi-j*(eta/k)*phi-j*(eta/k)*nu+kappa/eps_b;
 }

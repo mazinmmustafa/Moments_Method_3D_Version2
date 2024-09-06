@@ -25,4 +25,10 @@ void integrand_L2_2d_2d(const real_t alpha, const real_t beta, basis_2d_t b_m, b
     vector_t<real_t> &I_mm, vector_t<real_t> &I_mp, vector_t<real_t> &I_pm, vector_t<real_t> &I_pp);
 void integrand_L3_2d_2d(const real_t alpha, const real_t beta, basis_2d_t b_m, basis_2d_t b_n, 
     vector_t<real_t> &I_mm, vector_t<real_t> &I_mp, vector_t<real_t> &I_pm, vector_t<real_t> &I_pp);
+//
+void integrand_L1_3d_2d(const real_t alpha, const real_t beta, const real_t gamma, basis_3d_t b_m, basis_2d_t b_n, 
+    real_t &I_mm, real_t &I_mp, real_t &I_pm, real_t &I_pp);
+void integrand_L2_3d_2d(const real_t alpha, const real_t beta, const real_t gamma, basis_3d_t b_m, basis_2d_t b_n, 
+    vector_t<real_t> &I_mm, vector_t<real_t> &I_mp, vector_t<real_t> &I_pm, vector_t<real_t> &I_pp);
+
 #endif

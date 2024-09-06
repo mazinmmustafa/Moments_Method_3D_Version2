@@ -37,7 +37,7 @@ complex_t nu_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const real_t lamb
             }
         }
     }
-    if (counter==4 && b_m.pg_m==b_m.pg_p==b_n.pg_m==b_n.pg_p){
+    if (counter==4){
         chi = (b_n.eps_m/eps_b)-1.0;
         factor = +1.0*(2.0*b_m.A*b_n.A)/(3.0*b_n.V_m);
         factor*=1.0/chi;
@@ -62,7 +62,7 @@ complex_t nu_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const real_t lamb
             }
         }
     }
-    if (counter==4 && b_m.pg_m==b_m.pg_p==b_n.pg_m==b_n.pg_p){
+    if (counter==4){
         chi = (b_n.eps_p/eps_b)-1.0;
         factor = -1.0*(2.0*b_m.A*b_n.A)/(3.0*b_n.V_p);
         factor*=1.0/chi;
@@ -87,7 +87,7 @@ complex_t nu_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const real_t lamb
             }
         }
     }
-    if (counter==4 && b_m.pg_m==b_m.pg_p==b_n.pg_m==b_n.pg_p){
+    if (counter==4){
         chi = (b_n.eps_m/eps_b)-1.0;
         factor = -1.0*(2.0*b_m.A*b_n.A)/(3.0*b_n.V_m);
         factor*=1.0/chi;
@@ -112,7 +112,7 @@ complex_t nu_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const real_t lamb
             }
         }
     }
-    if (counter==4 && b_m.pg_m==b_m.pg_p==b_n.pg_m==b_n.pg_p){
+    if (counter==4){
         chi = (b_n.eps_p/eps_b)-1.0;
         factor = +1.0*(2.0*b_m.A*b_n.A)/(3.0*b_n.V_p);
         factor*=1.0/chi;
