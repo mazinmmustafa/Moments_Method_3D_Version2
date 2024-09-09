@@ -203,7 +203,7 @@ void test_engine_3d_mixed_shape_near_field(){
     const real_t lambda=c_0/freq;
     const complex_t mu_s1=1.0, eps_s1=10.0;
     const complex_t mu_s2=1.0, eps_s2=4.0;
-    const real_t clmax=(lambda/7.0);
+    const real_t clmax=(lambda/4.0);
     const complex_t mu_b=1.0, eps_b=1.0;
 
     const size_t Ns=1001;
