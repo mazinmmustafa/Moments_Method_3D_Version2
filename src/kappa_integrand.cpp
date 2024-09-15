@@ -16,8 +16,8 @@ complex_t kappa_3d_3d_singular_integrand_inner(const complex_t alpha_, const com
     complex_t gamma_=1.0-alpha_-beta_;
     R_mn_3d_3d(real(alpha), real(beta), real(gamma), real(alpha_), real(beta_), real(gamma_), 
         b_m, b_n, R_mm, R_mp, R_pm, R_pp);
-    I_mm = +1.0*(-j*k*exp(-j*k*R_mm/2.0))*sinc(k*R_mm/2.0)*(b_n.V_m/b_n.A);
-    I_pp = -1.0*(-j*k*exp(-j*k*R_pp/2.0))*sinc(k*R_pp/2.0)*(b_n.V_p/b_n.A);
+    I_mm = +1.0*(-j*k*exp(-j*k*R_mm/2.0))*sinc(k*R_mm/2.0);
+    I_pp = -1.0*(-j*k*exp(-j*k*R_pp/2.0))*sinc(k*R_pp/2.0);
     return 12.0*b_m.A*b_n.A*(I_mm+I_pp)/(4.0*pi);
 }
 
@@ -40,8 +40,8 @@ complex_t kappa_3d_3d_integrand_1(const complex_t alpha, const complex_t beta, c
     basis_2d_t b_n_=basis_2d_t(b_n.e[0], b_n.e[1], b_n.e[2], b_n.e[0], b_n.pg_m, b_n.pg_p);
     integrand_L1_3d_2d(real(alpha), real(beta), real(gamma), b_m, b_n_, I_mm, I_mp, I_pm, I_pp);
     complex_t ans=0.0;  
-    ans+= +1.0*I_mm*(b_n.V_m/b_n.A);
-    ans+= -1.0*I_pp*(b_n.V_p/b_n.A);
+    ans+= +1.0*I_mm;
+    ans+= -1.0*I_pp;
     return 6.0*b_m.A*ans/(4.0*pi);
 }
 
