@@ -203,11 +203,13 @@ complex_t compute_scattered_far_field_E_theta_integrand_3d(const complex_t alpha
     rho_m = +1.0*(real(alpha)*args->b_m.L_m[0]+real(beta)*args->b_m.L_m[1]+real(gamma)*args->b_m.L_m[2]);
     rho_p = +1.0*(real(alpha)*args->b_m.L_p[2]+real(beta)*args->b_m.L_p[1]+real(gamma)*args->b_m.L_p[0]);
     incident_field_t incident_field;
+    complex_t kappa_m=(b_m.eps_m-1.0)/b_m.eps_m;
+    complex_t kappa_p=(b_m.eps_p-1.0)/b_m.eps_p;
     r = b_m.r_m+rho_m;
     I_m = (k*eta/(4.0*pi))*(+1.0*theta_i_u*rho_m)*exp(+j*(k_i*r));
     r = b_m.r_p+rho_p;
     I_p = (k*eta/(4.0*pi))*(-1.0*theta_i_u*rho_p)*exp(+j*(k_i*r));
-    return 2.0*args->b_m.A*(I_m+I_p);
+    return 2.0*args->b_m.A*(I_m*kappa_m+I_p*kappa_p);
 }
 
 complex_t compute_scattered_far_field_E_phi_integrand_3d(const complex_t alpha, const complex_t beta, const complex_t gamma, void *args_){
@@ -228,11 +230,13 @@ complex_t compute_scattered_far_field_E_phi_integrand_3d(const complex_t alpha, 
     rho_m = +1.0*(real(alpha)*args->b_m.L_m[0]+real(beta)*args->b_m.L_m[1]+real(gamma)*args->b_m.L_m[2]);
     rho_p = +1.0*(real(alpha)*args->b_m.L_p[2]+real(beta)*args->b_m.L_p[1]+real(gamma)*args->b_m.L_p[0]);
     incident_field_t incident_field;
+    complex_t kappa_m=(b_m.eps_m-1.0)/b_m.eps_m;
+    complex_t kappa_p=(b_m.eps_p-1.0)/b_m.eps_p;
     r = b_m.r_m+rho_m;
     I_m = (k*eta/(4.0*pi))*(+1.0*phi_i_u*rho_m)*exp(+j*(k_i*r));
     r = b_m.r_p+rho_p;
     I_p = (k*eta/(4.0*pi))*(-1.0*phi_i_u*rho_p)*exp(+j*(k_i*r));
-    return 2.0*args->b_m.A*(I_m+I_p);
+    return 2.0*args->b_m.A*(I_m*kappa_m+I_p*kappa_p);
 }
 
 

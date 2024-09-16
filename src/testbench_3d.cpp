@@ -55,7 +55,7 @@ void test_engine_3d_sphere_RCS(){
     const real_t lambda=c_0/freq;
     const complex_t mu_b=1.0, eps_b=1.0;
     const complex_t mu_s=1.0, eps_s=4.0;
-    const real_t clmax=(lambda/11.0)/sqrt(abs(eps_s));
+    const real_t clmax=(lambda/4.0)/sqrt(abs(eps_s));
     const real_t radius=0.2;
 
     const size_t Ns=1001;

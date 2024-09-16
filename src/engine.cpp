@@ -416,6 +416,9 @@ void engine_t::compute_V_m_incident(const complex_t E_TM, const complex_t E_TE, 
             args.eta = real(this->eta_b);
             int_t flag;
             this->V_m(i+m, 0) = this->quadl.integral_3d(compute_incident_E_integrand_3d, &args, tetrahedron, flag);
+            complex_t j=complex_t(0.0, 1.0);
+            real_t omega=2.0*pi*this->freq;
+            this->V_m(i+m, 0) = this->V_m(i+m, 0)/(j*omega);
         }
     }
     #endif
@@ -530,8 +533,10 @@ sigma_t engine_t::compute_RCS(const real_t theta_i, const real_t phi_i){
         for (size_t m=0; m<this->N_basis_3d; m++){
             basis_3d_t b_m=this->shape.get_basis_3d(m);
             args.b_m = b_m;
-            sum_theta+=this->quadl.integral_3d(compute_scattered_far_field_E_theta_integrand_3d, &args, tetrahedron, flag)*this->I_n(m, 0);
-            sum_phi+=this->quadl.integral_3d(compute_scattered_far_field_E_phi_integrand_3d, &args, tetrahedron, flag)*this->I_n(m, 0);
+            complex_t j=complex_t(0.0, 1.0);
+            real_t omega=2.0*pi*this->freq;
+            sum_theta+=(j*omega)*this->quadl.integral_3d(compute_scattered_far_field_E_theta_integrand_3d, &args, tetrahedron, flag)*this->I_n(m, 0);
+            sum_phi+=(j*omega)*this->quadl.integral_3d(compute_scattered_far_field_E_phi_integrand_3d, &args, tetrahedron, flag)*this->I_n(m, 0);
         }
     }
     #endif
@@ -591,8 +596,10 @@ far_field_t engine_t::compute_far_field(const real_t theta_i, const real_t phi_i
         for (size_t m=0; m<this->N_basis_3d; m++){
             basis_3d_t b_m=this->shape.get_basis_3d(m);
             args_3d.b_m = b_m;
-            sum_theta+=this->quadl.integral_3d(compute_scattered_far_field_E_theta_integrand_3d, &args_3d, tetrahedron, flag)*this->I_n(m, 0);
-            sum_phi+=this->quadl.integral_3d(compute_scattered_far_field_E_phi_integrand_3d, &args_3d, tetrahedron, flag)*this->I_n(m, 0);
+            complex_t j=complex_t(0.0, 1.0);
+            real_t omega=2.0*pi*this->freq;
+            sum_theta+=(j*omega)*this->quadl.integral_3d(compute_scattered_far_field_E_theta_integrand_3d, &args_3d, tetrahedron, flag)*this->I_n(m, 0);
+            sum_phi+=(j*omega)*this->quadl.integral_3d(compute_scattered_far_field_E_phi_integrand_3d, &args_3d, tetrahedron, flag)*this->I_n(m, 0);
         }
     }
     #endif
@@ -631,9 +638,11 @@ vector_t<complex_t> engine_t::compute_near_field_E(const vector_t<real_t> r){
     #ifdef only_3d
     for (size_t m=0; m<this->N_basis_3d; m++){
         basis_3d_t b_m=this->shape.get_basis_3d(m);
-        E.x+= compute_E_3d(b_m, r, x, k_b, eta_b, quadl)*this->I_n(m, 0);
-        E.y+= compute_E_3d(b_m, r, y, k_b, eta_b, quadl)*this->I_n(m, 0);
-        E.z+= compute_E_3d(b_m, r, z, k_b, eta_b, quadl)*this->I_n(m, 0);
+        complex_t j=complex_t(0.0, 1.0);
+        real_t omega=2.0*pi*this->freq;
+        E.x+= (j*omega)*compute_E_3d(b_m, r, x, k_b, eta_b, quadl)*this->I_n(m, 0);
+        E.y+= (j*omega)*compute_E_3d(b_m, r, y, k_b, eta_b, quadl)*this->I_n(m, 0);
+        E.z+= (j*omega)*compute_E_3d(b_m, r, z, k_b, eta_b, quadl)*this->I_n(m, 0);
     }
     #endif
     return E;

@@ -135,7 +135,9 @@ complex_t phi_3d_3d_singular_integrand_inner(const complex_t alpha_, const compl
     I_mp = (-j*k*exp(-j*k*R_mp/2.0))*sinc(k*R_mp/2.0);
     I_pm = (-j*k*exp(-j*k*R_pm/2.0))*sinc(k*R_pm/2.0);
     I_pp = (-j*k*exp(-j*k*R_pp/2.0))*sinc(k*R_pp/2.0);
-    return 36.0*b_m.A*b_n.A*(I_mm-I_mp-I_pm+I_pp)/(4.0*pi);
+    complex_t kappa_m=(b_n.eps_m-1.0)/b_n.eps_m;
+    complex_t kappa_p=(b_n.eps_p-1.0)/b_n.eps_p;
+    return 36.0*b_m.A*b_n.A*(kappa_m*I_mm-kappa_p*I_mp-kappa_m*I_pm+kappa_p*I_pp)/(4.0*pi);
 }
 
 complex_t phi_3d_3d_singular_integrand_outer(const complex_t alpha, const complex_t beta, const complex_t gamma, void *args_){
@@ -157,7 +159,9 @@ complex_t phi_3d_3d_integrand_1(const complex_t alpha, const complex_t beta, con
     basis_3d_t b_n=args->b_n;
     real_t I_mm, I_mp, I_pm, I_pp;
     integrand_L1_3d_3d(real(alpha), real(beta), real(gamma), b_m, b_n, I_mm, I_mp, I_pm, I_pp);
-    complex_t ans=I_mm/b_n.V_m-I_mp/b_n.V_p-I_pm/b_n.V_m+I_pp/b_n.V_p;
+    complex_t kappa_m=(b_n.eps_m-1.0)/b_n.eps_m;
+    complex_t kappa_p=(b_n.eps_p-1.0)/b_n.eps_p;
+    complex_t ans=kappa_m*I_mm/b_n.V_m-kappa_p*I_mp/b_n.V_p-kappa_m*I_pm/b_n.V_m+kappa_p*I_pp/b_n.V_p;
     return 6.0*b_m.A*b_n.A*ans/(4.0*pi);
 }
 

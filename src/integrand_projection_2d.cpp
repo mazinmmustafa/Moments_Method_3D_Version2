@@ -219,43 +219,25 @@ void integrand_L1_3d_2d(const real_t alpha, const real_t beta, const real_t gamm
 }
 
 void integrand_L2_3d_2d(const real_t alpha, const real_t beta, const real_t gamma, basis_3d_t b_m, basis_2d_t b_n, 
-    vector_t<real_t> &I_mm, vector_t<real_t> &I_mp, vector_t<real_t> &I_pm, vector_t<real_t> &I_pp){
+    vector_t<real_t> &I_m, vector_t<real_t> &I_p){
     projection_2d_para para;
     vector_t<real_t> p;
-    // mm
+    // m
     p = b_m.r_m+alpha*b_m.L_m[0]+beta*b_m.L_m[1]+gamma*b_m.L_m[2];
     para = prjection_2d(b_n.r_m, b_n.e[0], b_n.e[1], p);
-    I_mm = vector_t<real_t>(0.0, 0.0, 0.0);
+    I_m = vector_t<real_t>(0.0, 0.0, 0.0);
     for (size_t i=0; i<3; i++){
         real_t A=para.R_p[i]*para.para_1d[i].l_p-para.R_m[i]*para.para_1d[i].l_m;
         real_t B=pow(para.R_0[i], 2.0)*log((para.R_p[i]+para.para_1d[i].l_p)/(para.R_m[i]+para.para_1d[i].l_m));
-        I_mm = I_mm+0.5*(A+B)*para.u[i];
+        I_m = I_m+0.5*(A+B)*para.u[i];
     }
-    // mp
-    p = b_m.r_m+alpha*b_m.L_m[0]+beta*b_m.L_m[1]+gamma*b_m.L_m[2];
-    para = prjection_2d(b_n.r_p, b_n.e[1], b_n.e[0], p);
-    I_mp = vector_t<real_t>(0.0, 0.0, 0.0);
-    for (size_t i=0; i<3; i++){
-        real_t A=para.R_p[i]*para.para_1d[i].l_p-para.R_m[i]*para.para_1d[i].l_m;
-        real_t B=pow(para.R_0[i], 2.0)*log((para.R_p[i]+para.para_1d[i].l_p)/(para.R_m[i]+para.para_1d[i].l_m));
-        I_mp = I_mp+0.5*(A+B)*para.u[i];
-    }
-    // pm
-    p = b_m.r_p+alpha*b_m.L_p[2]+beta*b_m.L_p[1]+gamma*b_m.L_p[0];
-    para = prjection_2d(b_n.r_m, b_n.e[0], b_n.e[1], p);
-    I_pm = vector_t<real_t>(0.0, 0.0, 0.0);
-    for (size_t i=0; i<3; i++){
-        real_t A=para.R_p[i]*para.para_1d[i].l_p-para.R_m[i]*para.para_1d[i].l_m;
-        real_t B=pow(para.R_0[i], 2.0)*log((para.R_p[i]+para.para_1d[i].l_p)/(para.R_m[i]+para.para_1d[i].l_m));
-        I_pm = I_pm+0.5*(A+B)*para.u[i];
-    }
-    // pp
+    // p
     p = b_m.r_p+alpha*b_m.L_p[2]+beta*b_m.L_p[1]+gamma*b_m.L_p[0];
     para = prjection_2d(b_n.r_p, b_n.e[1], b_n.e[0], p);
-    I_pp = vector_t<real_t>(0.0, 0.0, 0.0);
+    I_p = vector_t<real_t>(0.0, 0.0, 0.0);
     for (size_t i=0; i<3; i++){
         real_t A=para.R_p[i]*para.para_1d[i].l_p-para.R_m[i]*para.para_1d[i].l_m;
         real_t B=pow(para.R_0[i], 2.0)*log((para.R_p[i]+para.para_1d[i].l_p)/(para.R_m[i]+para.para_1d[i].l_m));
-        I_pp = I_pp+0.5*(A+B)*para.u[i];
+        I_p = I_p+0.5*(A+B)*para.u[i];
     }
 }
