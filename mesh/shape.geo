@@ -1,4 +1,13 @@
 SetFactory("OpenCASCADE");
-Sphere(1) = { 0.00000000000000E+00,  0.00000000000000E+00,  0.00000000000000E+00,  2.00000000000000E-01, -Pi/2, Pi/2, 2*Pi};
-Physical Surface("Surface", 1) = {1};
-Physical Volume("Volume", 1) = {1};
+Merge "cad/mixed_dielectric_1.brep";
+Merge "cad/mixed_dielectric_2.brep";
+Coherence;
+Physical Volume("Half_Volume_1", 1) = {1};
+Physical Volume("Half_Volume_2", 2) = {2};
+Field[1] = Constant;
+Field[1].VIn =  1.18503374077546E+02;
+Field[1].VolumesList = {1};
+Background Field = 1;
+Field[2] = Constant;
+Field[2].VIn =  1.87370286250000E+02;
+Field[2].VolumesList = {2};

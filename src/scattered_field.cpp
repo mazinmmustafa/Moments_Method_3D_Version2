@@ -653,25 +653,6 @@ complex_t E_3d_singular_integrand_2(const complex_t alpha, const complex_t beta,
     return (I_m*kappa_m-I_p*kappa_p)/(4.0*pi);
 }
 
-complex_t E_3d_singular_integrand_3(const complex_t alpha, const complex_t beta, void *args_){
-    scattered_field_args_3d_t *args=(scattered_field_args_3d_t*)args_;
-    basis_3d_t b_m=args->b_m;
-    const complex_t k=args->k;
-    const vector_t<real_t> r=args->r;
-    complex_t I_m, I_p;
-    const complex_t j=complex_t(0.0, 1.0);
-    real_t R_m, R_p;
-    vector_t<real_t> dist=b_m.e[0]+real(alpha)*b_m.e[1]+real(beta)*b_m.e[2];
-    R_m = mag(r-dist);
-    R_p = mag(r-dist);
-    vector_t<real_t> R_m_vector=b_m.r_m+(1.0)*b_m.L_m[0];
-    vector_t<real_t> R_p_vector=b_m.r_p+(1.0)*b_m.L_p[2];
-    real_t factor=b_m.nA*(real(alpha)*b_m.e[0]+real(beta)*b_m.e[1]+real(1.0-alpha-beta)*b_m.e[2]);
-    I_m = -0.5*k*k*exp(-j*k*R_m/2.0)*(sinc(k*R_m/2.0)+j*sinc_dx(k*R_m/2.0))*(unit(R_m_vector-r)*args->unit_vector)/b_m.V_m;
-    I_p = -0.5*k*k*exp(-j*k*R_p/2.0)*(sinc(k*R_p/2.0)+j*sinc_dx(k*R_p/2.0))*(unit(R_p_vector-r)*args->unit_vector)/b_m.V_p;
-    return (2.0/3.0)*factor*(I_m-I_p)/(4.0*pi);
-}
-
 complex_t E_3d_integral_1(void *args_){
     scattered_field_args_3d_t *args=(scattered_field_args_3d_t*)args_;
     basis_3d_t b_m=args->b_m;
@@ -718,15 +699,17 @@ complex_t E_3d_integral_4(void *args_){
     scattered_field_args_3d_t *args=(scattered_field_args_3d_t*)args_;
     basis_3d_t b_m=args->b_m;
     const vector_t<real_t> r=args->r;
-    vector_t<real_t> I_m, I_p;
-    basis_2d_t b_n_=basis_2d_t(b_m.e[0], b_m.e[1], b_m.e[2], b_m.e[0], b_m.pg_m, b_m.pg_p);
-    integrand_L3_2d(b_n_, r, I_m, I_p);
+    vector_t<real_t> dist=b_m.e[0]+b_m.e[1]/3.0+b_m.e[2]/3.0;
+    vector_t<real_t> R_vector;
+    R_vector = r-dist;
+    real_t R=mag(R_vector);
     complex_t ans=0.0;  
-    real_t alpha, beta, gamma;
-    alpha = beta = gamma = 1.0/3.0; 
-    real_t factor=b_m.nA*(r-b_m.e[0]);
-    ans+= +1.0*factor*(I_m*args->unit_vector)/(3.0*b_m.V_m);
-    ans+= -1.0*factor*(I_p*args->unit_vector)/(3.0*b_m.V_p);
+    real_t factor=b_m.nA*(b_m.r_m+b_m.e[0]/3.0+b_m.e[1]/3.0+b_m.e[2]/3.0);
+    const complex_t k=args->k;
+    const complex_t j=complex_t(0.0, 1.0);
+    complex_t I;
+    I = -j*k*(1.0+1.0/(j*k*R))*exp(-j*k*R)/R;
+    ans+= +1.0*factor*(I*unit(R_vector)*args->unit_vector)/(3.0*b_m.V_m);
     return b_m.A*ans/(4.0*pi);
 }
 
@@ -752,13 +735,12 @@ complex_t compute_E_3d(const basis_3d_t b_m, const vector_t<real_t> r, const vec
     assert_error(!flag, "no convergence");
     I5 = E_3d_integral_3(&args);
     //
-    complex_t I6=0.0, I7=0.0;
+    complex_t I6=0.0;
     triangle_domain_t triangle={vector_t<real_t>(0.0, 0.0, 0.0), vector_t<real_t>(1.0, 0.0, 0.0), vector_t<real_t>(0.0, 1.0, 0.0)};
-    I6 = quadl.integral_2d(E_3d_singular_integrand_3, &args, triangle, flag);
-    I7 = E_3d_integral_4(&args);
+    I6 = E_3d_integral_4(&args);
     complex_t kappa_m=(b_m.eps_m-1.0)/b_m.eps_m;
     complex_t kappa_p=(b_m.eps_p-1.0)/b_m.eps_p;
-    return -j*k*eta*(I1+I2+I3)+j*(eta/k)*(I4+I5)+j*(eta/k)*(kappa_p-kappa_m)*(I6+I7);
+    return -j*k*eta*(I1+I2+I3)+j*(eta/k)*(I4+I5)-j*(eta/k)*(kappa_p-kappa_m)*(I6);
 }
 
 complex_t H_3d_singular_integrand_1(const complex_t alpha, const complex_t beta, const complex_t gamma, void *args_){
