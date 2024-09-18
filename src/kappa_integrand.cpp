@@ -10,13 +10,13 @@ complex_t kappa_3d_3d_singular_integrand_outer(const complex_t alpha, const comp
     complex_t I_m, I_p;
     const complex_t j=complex_t(0.0, 1.0);
     real_t R_m, R_p;
-    vector_t<real_t> dist=b_n.e[0]+(b_n.e[1]-b_n.e[0])/3.0+(b_n.e[2]-b_n.e[0])/3.0;
+    vector_t<real_t> dist=b_n.r_m+b_n.L_m[0]/3.0+b_n.L_m[1]/3.0+b_n.L_m[2]/3.0;
     R_m = mag(b_m.r_m+real(alpha)*b_m.L_m[0]+real(beta)*b_m.L_m[1]+real(gamma)*b_m.L_m[2]-dist);
     R_p = mag(b_m.r_p+real(alpha)*b_m.L_p[2]+real(beta)*b_m.L_p[1]+real(gamma)*b_m.L_p[0]-dist);
-    real_t factor=b_n.nA*(b_n.r_m+b_n.L_m[0]/3.0+b_n.L_m[1]/3.0+b_n.L_m[2]/3.0);
+    real_t factor=b_n.nA*(b_n.L_m[0]/3.0+b_n.L_m[1]/3.0+b_n.L_m[2]/3.0);
     I_m = +1.0*(exp(-j*k*R_m)/R_m)*factor;
     I_p = -1.0*(exp(-j*k*R_p)/R_p)*factor;
-    return 36.0*b_m.A*b_n.A*(I_m/b_n.V_m+I_p/b_n.V_p)/(4.0*pi);
+    return 12.0*b_m.A*b_n.A*(I_m+I_p)/(4.0*pi);
 }
 
 complex_t kappa_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const complex_t k, const real_t lambda, 

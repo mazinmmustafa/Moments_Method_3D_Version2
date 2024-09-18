@@ -699,18 +699,18 @@ complex_t E_3d_integral_4(void *args_){
     scattered_field_args_3d_t *args=(scattered_field_args_3d_t*)args_;
     basis_3d_t b_m=args->b_m;
     const vector_t<real_t> r=args->r;
-    vector_t<real_t> dist=b_m.e[0]+(b_m.e[1]-b_m.e[0])/3.0+(b_m.e[2]-b_m.e[0])/3.0;
+    vector_t<real_t> dist=b_m.r_m+b_m.L_m[0]/3.0+b_m.L_m[1]/3.0+b_m.L_m[2]/3.0;
     vector_t<real_t> R_vector;
     R_vector = r-dist;
     real_t R=mag(R_vector);
     complex_t ans=0.0;  
-    real_t factor=b_m.nA*(b_m.r_m+b_m.L_m[0]/3.0+b_m.L_m[1]/3.0+b_m.L_m[2]/3.0);
+    real_t factor=b_m.nA*(b_m.L_m[0]/3.0+b_m.L_m[1]/3.0+b_m.L_m[2]/3.0);
     const complex_t k=args->k;
     const complex_t j=complex_t(0.0, 1.0);
     complex_t I;
     I = -j*k*(1.0+1.0/(j*k*R))*exp(-j*k*R)/R;
-    ans+= +1.0*factor*(I*unit(R_vector)*args->unit_vector)/(3.0*b_m.V_m);
-    return b_m.A*ans/(4.0*pi);
+    ans+= +1.0*factor*(I*unit(R_vector)*args->unit_vector)/(3.0);
+    return 6.0*b_m.A*ans/(4.0*pi);
 }
 
 complex_t compute_E_3d(const basis_3d_t b_m, const vector_t<real_t> r, const vector_t<real_t> unit_vector, 
