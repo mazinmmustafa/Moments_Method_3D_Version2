@@ -216,8 +216,8 @@ void test_engine_3d_mixed_shape_near_field(){
     engine.set_material(1, mu_s1, eps_s1);
     engine.set_material(2, mu_s2, eps_s2);
 
-    // engine.compute_Z_mn();
-    engine.load_Z_mn("data/Z_mn.bin");
+    engine.compute_Z_mn();
+    // engine.load_Z_mn("data/Z_mn.bin");
     file_t file;
     range_t x;
     real_t x_min, x_max, y, z;
