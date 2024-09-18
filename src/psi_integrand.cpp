@@ -218,10 +218,12 @@ complex_t psi_3d_3d_integrand_1(const complex_t alpha, const complex_t beta, con
     complex_t ans=0.0;  
     complex_t kappa_m=(b_n.eps_m-1.0)/b_n.eps_m;
     complex_t kappa_p=(b_n.eps_p-1.0)/b_n.eps_p;
-    ans+= -1.0*((alpha*b_m.L_m[0]+beta*b_m.L_m[1]+gamma*b_m.L_m[2])*(b_n.r_m-b_m.r_m))*I_mm*kappa_m/(3.0*b_n.V_m);
-    ans+= +1.0*((alpha*b_m.L_m[0]+beta*b_m.L_m[1]+gamma*b_m.L_m[2])*(b_n.r_p-b_m.r_m))*I_mp*kappa_p/(3.0*b_n.V_p);
-    ans+= +1.0*((alpha*b_m.L_p[2]+beta*b_m.L_p[1]+gamma*b_m.L_p[0])*(b_n.r_m-b_m.r_p))*I_pm*kappa_m/(3.0*b_n.V_m);
-    ans+= -1.0*((alpha*b_m.L_p[2]+beta*b_m.L_p[1]+gamma*b_m.L_p[0])*(b_n.r_p-b_m.r_p))*I_pp*kappa_p/(3.0*b_n.V_p);
+    vector_t<real_t> rho_m=b_m.r_m+real(alpha)*b_m.L_m[0]+real(beta)*b_m.L_m[1]+real(gamma)*b_m.L_m[2];
+    vector_t<real_t> rho_p=b_m.r_p+real(alpha)*b_m.L_p[2]+real(beta)*b_m.L_p[1]+real(gamma)*b_m.L_p[0];
+    ans+= -1.0*((alpha*b_m.L_m[0]+beta*b_m.L_m[1]+gamma*b_m.L_m[2])*(b_n.r_m-rho_m))*I_mm*kappa_m/(3.0*b_n.V_m);
+    ans+= +1.0*((alpha*b_m.L_m[0]+beta*b_m.L_m[1]+gamma*b_m.L_m[2])*(b_n.r_p-rho_m))*I_mp*kappa_p/(3.0*b_n.V_p);
+    ans+= +1.0*((alpha*b_m.L_p[2]+beta*b_m.L_p[1]+gamma*b_m.L_p[0])*(b_n.r_m-rho_p))*I_pm*kappa_m/(3.0*b_n.V_m);
+    ans+= -1.0*((alpha*b_m.L_p[2]+beta*b_m.L_p[1]+gamma*b_m.L_p[0])*(b_n.r_p-rho_p))*I_pp*kappa_p/(3.0*b_n.V_p);
     return 2.0*b_m.A*b_n.A*ans/(4.0*pi);
 }
 
