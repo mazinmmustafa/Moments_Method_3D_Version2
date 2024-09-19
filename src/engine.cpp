@@ -678,9 +678,11 @@ vector_t<complex_t> engine_t::compute_near_field_H(const vector_t<real_t> r){
     #ifdef only_3d
     for (size_t m=0; m<this->N_basis_3d; m++){
         basis_3d_t b_m=this->shape.get_basis_3d(m);
-        H.x+= compute_H_3d(b_m, r, x, k_b, eta_b, quadl)*this->I_n(m, 0);
-        H.y+= compute_H_3d(b_m, r, y, k_b, eta_b, quadl)*this->I_n(m, 0);
-        H.z+= compute_H_3d(b_m, r, z, k_b, eta_b, quadl)*this->I_n(m, 0);
+        complex_t j=complex_t(0.0, 1.0);
+        real_t omega=2.0*pi*this->freq;
+        H.x+= (j*omega)*compute_H_3d(b_m, r, x, k_b, eta_b, quadl)*this->I_n(m, 0);
+        H.y+= (j*omega)*compute_H_3d(b_m, r, y, k_b, eta_b, quadl)*this->I_n(m, 0);
+        H.z+= (j*omega)*compute_H_3d(b_m, r, z, k_b, eta_b, quadl)*this->I_n(m, 0);
     }
     #endif
     return H;

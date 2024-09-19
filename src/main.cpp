@@ -31,9 +31,9 @@ int main(){
     // test_engine_2d_sphere_near_field_2d();
     // 
     // test_engine_3d_debug();
-    // test_engine_3d_sphere_RCS();
+    test_engine_3d_sphere_RCS();
     // test_engine_3d_sphere_near_field();
-    test_engine_3d_mixed_shape_near_field();
+    // test_engine_3d_mixed_shape_near_field();
 
 
     // Keep it for MFIE
