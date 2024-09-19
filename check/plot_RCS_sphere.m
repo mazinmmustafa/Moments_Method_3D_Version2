@@ -8,7 +8,7 @@ hold on
 plot(data1(:, 1), 10*log10(data1(:, 2)))
 plot(data1(:, 1), 10*log10(data1(:, 3)))
 hold off
-xlim([0 180])
+##xlim([0 180])
 ylim([-20 +30])
 ##ylim([-30 +20])
 
@@ -17,6 +17,6 @@ hold on
 plot(data2(:, 1), 10*log10(data2(:, 2)))
 plot(data2(:, 1), 10*log10(data2(:, 3)))
 hold off
-xlim([0 180])
-ylim([-20 +30])
-##ylim([-30 +20])
+##xlim([0 180])
+ylim([-30 +20])
+##ylim([-20 +30])

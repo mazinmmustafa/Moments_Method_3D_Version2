@@ -47,7 +47,8 @@ complex_t nu_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const real_t lamb
                 }
             }
         }
-        ans/=b_n.eps_m;
+        // ans/=b_n.eps_m;
+        ans/=(b_n.eps_m-1.0);
     }
     // mp
     tetrahedron_m = tetrahedron_t(b_m.r_m, b_m.e[0], b_m.e[1], b_m.e[2], b_m.pg_m);
@@ -71,7 +72,8 @@ complex_t nu_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const real_t lamb
                 }
             }
         }
-        ans/=b_n.eps_p;
+        // ans/=b_n.eps_p;
+        ans/=(b_n.eps_p-1.0);
     }
     // pm
     tetrahedron_m = tetrahedron_t(b_m.r_p, b_m.e[2], b_m.e[1], b_m.e[0], b_m.pg_p);
@@ -95,7 +97,8 @@ complex_t nu_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const real_t lamb
                 }
             }
         }
-        ans/=b_n.eps_m;
+        // ans/=b_n.eps_m;
+        ans/=(b_n.eps_m-1.0);
     }
     // pp
     tetrahedron_m = tetrahedron_t(b_m.r_p, b_m.e[2], b_m.e[1], b_m.e[0], b_m.pg_p);
@@ -119,7 +122,8 @@ complex_t nu_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const real_t lamb
                 }
             }
         }
-        ans/=b_n.eps_p;
+        // ans/=b_n.eps_p;
+        ans/=(b_n.eps_p-1.0);
     }
     //
     return ans;
