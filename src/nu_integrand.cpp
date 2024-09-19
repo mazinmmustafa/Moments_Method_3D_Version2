@@ -38,6 +38,7 @@ complex_t nu_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const real_t lamb
     }
     if (counter==4){
         factor = +1.0*(2.0*b_m.A*b_n.A)/(3.0*b_n.V_m);
+        factor = factor/(b_n.eps_m-1.0);
         for (size_t i=0; i<3; i++){
             for (size_t j=0; j<3; j++){
                 if (is_equal(b_m.L_m[i]-b_n.L_m[j], -1.0*(b_m.r_m-b_n.r_m), tol)){
@@ -47,8 +48,6 @@ complex_t nu_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const real_t lamb
                 }
             }
         }
-        // ans/=b_n.eps_m;
-        ans/=(b_n.eps_m-1.0);
     }
     // mp
     tetrahedron_m = tetrahedron_t(b_m.r_m, b_m.e[0], b_m.e[1], b_m.e[2], b_m.pg_m);
@@ -63,6 +62,7 @@ complex_t nu_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const real_t lamb
     }
     if (counter==4){
         factor = -1.0*(2.0*b_m.A*b_n.A)/(3.0*b_n.V_p);
+        factor = factor/(b_n.eps_p-1.0);
         for (size_t i=0; i<3; i++){
             for (size_t j=0; j<3; j++){
                 if (is_equal(b_m.L_m[i]-b_n.L_p[j], -1.0*(b_m.r_m-b_n.r_p), tol)){
@@ -72,8 +72,6 @@ complex_t nu_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const real_t lamb
                 }
             }
         }
-        // ans/=b_n.eps_p;
-        ans/=(b_n.eps_p-1.0);
     }
     // pm
     tetrahedron_m = tetrahedron_t(b_m.r_p, b_m.e[2], b_m.e[1], b_m.e[0], b_m.pg_p);
@@ -88,6 +86,7 @@ complex_t nu_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const real_t lamb
     }
     if (counter==4){
         factor = -1.0*(2.0*b_m.A*b_n.A)/(3.0*b_n.V_m);
+        factor = factor/(b_n.eps_m-1.0);
         for (size_t i=0; i<3; i++){
             for (size_t j=0; j<3; j++){
                 if (is_equal(b_m.L_p[i]-b_n.L_m[j], -1.0*(b_m.r_p-b_n.r_m), tol)){
@@ -97,8 +96,6 @@ complex_t nu_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const real_t lamb
                 }
             }
         }
-        // ans/=b_n.eps_m;
-        ans/=(b_n.eps_m-1.0);
     }
     // pp
     tetrahedron_m = tetrahedron_t(b_m.r_p, b_m.e[2], b_m.e[1], b_m.e[0], b_m.pg_p);
@@ -113,6 +110,7 @@ complex_t nu_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const real_t lamb
     }
     if (counter==4){
         factor = +1.0*(2.0*b_m.A*b_n.A)/(3.0*b_n.V_p);
+        factor = factor/(b_n.eps_p-1.0);
         for (size_t i=0; i<3; i++){
             for (size_t j=0; j<3; j++){
                 if (is_equal(b_m.L_p[i]-b_n.L_p[j], -1.0*(b_m.r_p-b_n.r_p), tol)){
@@ -122,8 +120,6 @@ complex_t nu_3d_3d(const basis_3d_t b_m, const basis_3d_t b_n, const real_t lamb
                 }
             }
         }
-        // ans/=b_n.eps_p;
-        ans/=(b_n.eps_p-1.0);
     }
     //
     return ans;
